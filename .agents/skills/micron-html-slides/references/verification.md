@@ -24,6 +24,7 @@ Use fewer slides if the deck is short.
 - Mobile/narrow viewport does not collapse critical content.
 - Use `--fail-on-warnings` when warnings should block delivery.
 - The verifier fails on DOM overflow, blank slide geometry, console errors, nav-dot mismatches, and overview-card mismatches.
+- For demo-matched dark engineering decks, transformed 1600x900 stages are valid; verify visual fit, not raw unscaled scroll dimensions.
 
 ## If verification fails
 

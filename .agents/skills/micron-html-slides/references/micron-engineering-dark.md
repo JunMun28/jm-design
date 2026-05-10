@@ -6,6 +6,27 @@ data pipelines, technical launches, training, or product demos.
 
 Source preference: `micron_engineering_slide_demo_d_3.html`, reviewed May 2026.
 
+## Demo fidelity contract
+
+When the user asks for Micron engineering style, a technical/business explainer,
+or gives no theme, match the local demo's visual system. Do not fall back to the
+light Micron slide style.
+
+Use this page model:
+
+- Body/page background: `#151515`; slide background: black with restrained radial/diagonal blue-purple energy.
+- Stage: `.slide` fills viewport and centers a fixed `.slide-content` stage.
+- Design stage: `--slide-w: 1600px; --slide-h: 900px; --margin: 72px`.
+- Scaling: `--slide-scale = min(1, viewportW / 1600, viewportH / 900)`.
+- Cover visuals may use cover scale, but title/text content must stay fit-scaled and readable on mobile.
+- Content shell: `.content { position:absolute; inset: var(--margin); }`.
+- Typography at 1600x900: h1 64px, h2 42px, h3 25px, subtitle 24px/1.35, section labels 15px uppercase.
+- Navigation/overview: dark progress bar, dark nav dots, black blurred overview, 16:9 thumbnails.
+- Brand: use `assets/micron-logo-white-tm-rgb.png` if present; otherwise omit logo. Do not invent a wordmark.
+
+The fixed stage is intentional. Keep vertical scroll snap and `SlidePresentation`,
+but do not replace the demo model with a fully fluid light layout.
+
 ## Core preference
 
 Make production-grade technical slides, not generic generated UI.
@@ -75,6 +96,15 @@ Treat these as reusable preferences, not mandatory templates.
 | Milestone lightspeed | Adoption or launch milestone | Three.js/canvas energy field, centered metric, 2-3 proof points only |
 | Screen stack | Product walkthrough | Use plausible UI cards only when tied to actual workflow content |
 
+For a single-slide explainer, prefer one of these demo-native compositions:
+
+- Left title/summary + right screen-stack or process-control panel.
+- Topbar + 3-4 metric/action cards + one active decision or gate card.
+- Compact process board with current checkpoint panel.
+- Before/after bridge with 3-4 concrete transition steps.
+
+Avoid a white two-column handout layout unless the user explicitly asks for light.
+
 ## Component style
 
 Use these values as a starting system and adapt with `clamp()` for viewport decks.
@@ -108,6 +138,19 @@ Use these values as a starting system and adapt with `clamp()` for viewport deck
   background: linear-gradient(180deg, rgba(70,30,82,0.92), rgba(20,13,23,0.96));
 }
 ```
+
+Also preserve the demo vocabulary when useful:
+
+- `.topbar`, `.section-label`, `.subtitle`, `.accent-line`
+- `.card`, `.card.white`, `.card.accented`, `.status`, `.metric`
+- `.process-board`, `.process-map`, `.process-control`
+- `.timeline`, `.timeline-status`, `.timeline-board`
+- `.change-board`, `.change-panel`, `.change-bridge`
+- `.screen-swap-stage`, `.screen-swap-card`, `.screen-kpis`
+
+Cards are 8px radius, dark vertical gradients, subtle borders, inset top
+highlights, and deep shadows. Purple marks active state; cyan marks data/input
+movement. Do not spread purple across every component.
 
 ## React Flow diagram rules
 

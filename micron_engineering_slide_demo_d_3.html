@@ -29,12 +29,29 @@
       --slide-h: 900px;
       --margin: 72px;
       --slide-scale: 1;
+      --cover-slide-scale: 1;
     }
 
     * { box-sizing: border-box; }
 
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+
     html {
       scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
     }
 
     body {
@@ -46,22 +63,14 @@
     }
 
     .deck {
-      display: grid;
-      gap: max(16px, calc(40px * var(--slide-scale)));
-      padding: max(12px, calc(40px * var(--slide-scale)));
-      justify-content: center;
-    }
-
-    .slide-shell {
-      width: calc(var(--slide-w) * var(--slide-scale));
-      height: calc(var(--slide-h) * var(--slide-scale));
-      position: relative;
-      scroll-snap-align: start;
+      display: block;
+      padding: 0;
     }
 
     .slide {
-      width: var(--slide-w);
-      height: var(--slide-h);
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
       background:
         linear-gradient(135deg, rgba(32,68,255,0.10), transparent 28%),
         radial-gradient(circle at 92% 10%, rgba(189,3,247,0.18), transparent 32%),
@@ -69,9 +78,21 @@
       color: var(--white);
       position: relative;
       overflow: hidden;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.22);
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: none;
+    }
+
+    .slide-content {
+      position: relative;
+      width: var(--slide-w);
+      height: var(--slide-h);
+      flex: 0 0 auto;
       transform: scale(var(--slide-scale));
-      transform-origin: top left;
+      transform-origin: center;
+      z-index: 3;
     }
 
     .slide.dark { background: var(--black); color: var(--white); }
@@ -198,6 +219,9 @@
         linear-gradient(135deg, rgba(32,68,255,0.08), transparent 32%),
         var(--black);
     }
+    .cover-slide > .slide-content {
+      transform: scale(var(--cover-slide-scale));
+    }
     .cover-three {
       position: absolute;
       inset: 0;
@@ -244,6 +268,143 @@
       height: auto;
       opacity: 0.86;
       z-index: 3;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      height: 3px;
+      width: 0;
+      background: linear-gradient(90deg, var(--blue), var(--purple), var(--purple-b));
+      box-shadow: 0 0 18px rgba(189,3,247,0.48);
+      transition: width 0.35s ease;
+    }
+
+    .nav-dots {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      z-index: 9998;
+      display: grid;
+      gap: 8px;
+      transform: translateY(-50%);
+    }
+
+    .nav-dots button {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: 50%;
+      background: rgba(255,255,255,0.20);
+      cursor: pointer;
+    }
+
+    .nav-dots button.active {
+      background: var(--purple);
+      border-color: var(--purple-b);
+      box-shadow: 0 0 12px rgba(189,3,247,0.72);
+    }
+
+    #overview {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      overflow-y: auto;
+      padding: clamp(24px, 4vw, 60px);
+      background: rgba(0,0,0,0.92);
+      color: var(--white);
+      backdrop-filter: blur(12px);
+    }
+
+    #overview[aria-hidden="false"] { display: block; }
+
+    #overview .ov-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin: 0 auto 28px;
+      max-width: 1280px;
+      color: var(--gray-c);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    #overview .ov-head b { color: var(--white); }
+
+    #overview .ov-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: clamp(16px, 2vw, 24px);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    #overview .ov-card {
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    #overview .ov-card:hover,
+    #overview .ov-card:focus-visible,
+    #overview .ov-card.active {
+      border-color: var(--purple);
+      outline: none;
+      transform: translateY(-2px);
+    }
+
+    #overview .ov-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      position: relative;
+      pointer-events: none;
+      background: var(--black);
+    }
+
+    #overview .ov-thumb .clone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      transform-origin: top left;
+    }
+
+    #overview .ov-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      color: var(--gray-c);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #overview .ov-label b { color: var(--white); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: none;
     }
 
     .status {
@@ -1211,7 +1372,7 @@
       transform-style: preserve-3d;
       backface-visibility: hidden;
       will-change: transform, opacity;
-      transition: transform 1.6s cubic-bezier(.2,.8,.2,1), opacity 0.7s ease;
+      transition: transform 0.9s cubic-bezier(.2,.8,.2,1), opacity 0.45s ease;
     }
     .screen-swap-card.is-dropping {
       opacity: 0;
@@ -1312,13 +1473,16 @@
 
     @media print {
       body { background: white; }
-      .deck { padding: 0; gap: 0; display: block; }
-      .slide-shell { width: var(--slide-w); height: var(--slide-h); page-break-after: always; }
-      .slide { box-shadow: none; transform: none; }
+      .deck { padding: 0; display: block; }
+      .slide { width: var(--slide-w); height: var(--slide-h); page-break-after: always; }
+      .slide-content { transform: none; }
+      .progress-bar, .nav-dots, #overview { display: none !important; }
     }
   </style>
 </head>
 <body>
+  <div class="progress-bar"></div>
+  <nav class="nav-dots" aria-label="Slide navigation"></nav>
   <main class="deck">
     <section class="slide dark cover-slide">
       <canvas id="coverThreeCanvas" class="cover-three" aria-hidden="true"></canvas>
@@ -1485,21 +1649,6 @@
         </div>
       </div>
       <div class="slide-number">02 / Project update</div>
-    </section>
-
-    <section class="slide">
-      <div class="content">
-        <div class="section-label">Problem statement</div>
-        <h2>Current overtime planning is fragmented</h2>
-        <p class="subtitle">Use this slide when explaining why a technical or process improvement is needed.</p>
-        <div class="grid-3" style="margin-top:38px;">
-          <div class="card"><h3>Manual consolidation</h3><p style="margin-top:18px;">Supervisors collect inputs from multiple sources, making the latest plan hard to verify.</p></div>
-          <div class="card accented"><h3>Compliance risk</h3><p style="margin-top:18px;">Rule validation is inconsistent, increasing risk of unintended RBA or MOM violations.</p></div>
-          <div class="card"><h3>Low visibility</h3><p style="margin-top:18px;">Assignees and planners do not always see the same real-time job allocation picture.</p></div>
-        </div>
-        <div class="callout"><h3>Key takeaway</h3><p style="font-size:24px; line-height:1.35; color:var(--gray-a); margin-top:8px;">The goal is one reliable planning source that engineers and supervisors can trust.</p></div>
-      </div>
-      <div class="slide-number">03 / Problem statement</div>
     </section>
 
     <section class="slide">
@@ -1818,6 +1967,7 @@
       <div class="slide-number">20 / Closing</div>
     </section>
   </main>
+  <div id="overview" aria-hidden="true"></div>
 
   <link rel="stylesheet" href="https://unpkg.com/@xyflow/react@12.10.2/dist/style.css" />
   <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
@@ -1847,7 +1997,7 @@
       camera.position.set(0, 0, 9);
 
       const planet = new THREE.Group();
-      planet.position.set(4.45, 0.08, 0);
+      planet.position.set(4.55, 0.02, 0);
       planet.rotation.set(-0.18, -0.58, 0.18);
       scene.add(planet);
 
@@ -1898,11 +2048,11 @@
         `
       });
 
-      const wafer = new THREE.Mesh(new THREE.SphereGeometry(3.92, 128, 72), waferMaterial);
+      const wafer = new THREE.Mesh(new THREE.SphereGeometry(2.86, 128, 72), waferMaterial);
       planet.add(wafer);
 
       const rim = new THREE.Mesh(
-        new THREE.SphereGeometry(3.98, 96, 48),
+          new THREE.SphereGeometry(2.92, 96, 48),
         new THREE.MeshBasicMaterial({
           color: '#ff8cff',
           transparent: true,
@@ -2583,29 +2733,33 @@
     }
   </script>
   <script>
-    function setupResponsiveDeck() {
+    function setupSlideArchitecture() {
       const deck = document.querySelector('.deck');
       if (!deck) return;
 
       deck.querySelectorAll(':scope > .slide').forEach((slide, index) => {
         slide.id ||= `slide-${String(index + 1).padStart(2, '0')}`;
-        const shell = document.createElement('div');
-        shell.className = 'slide-shell';
-        slide.parentNode.insertBefore(shell, slide);
-        shell.appendChild(slide);
+        slide.dataset.slideKind ||= slide.querySelector('.section-label')?.textContent?.trim() || slide.querySelector('.eyebrow')?.textContent?.trim() || 'slide';
+        if (!slide.querySelector(':scope > .slide-content')) {
+          const content = document.createElement('div');
+          content.className = 'slide-content';
+          while (slide.firstChild) content.appendChild(slide.firstChild);
+          slide.appendChild(content);
+        }
       });
 
       function updateScale() {
-        const availableWidth = Math.max(280, window.innerWidth - 32);
-        const scale = Math.min(1, availableWidth / 1600);
+        const scale = Math.min(1, window.innerWidth / 1600, window.innerHeight / 900);
+        const coverScale = Math.max(window.innerWidth / 1600, window.innerHeight / 900);
         document.documentElement.style.setProperty('--slide-scale', scale.toFixed(4));
+        document.documentElement.style.setProperty('--cover-slide-scale', coverScale.toFixed(4));
       }
 
       updateScale();
       window.addEventListener('resize', updateScale);
 
       function scrollToHash() {
-        document.querySelector(location.hash)?.closest('.slide-shell')?.scrollIntoView();
+        document.querySelector(location.hash)?.scrollIntoView();
       }
 
       if (location.hash) {
@@ -2613,6 +2767,195 @@
         window.scrollTo(0, 0);
       }
       window.addEventListener('hashchange', () => setTimeout(scrollToHash, 0));
+    }
+
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.locked = false;
+        this.overviewOpen = false;
+        this.navDotsContainer = document.querySelector('.nav-dots');
+        this.progressBar = document.querySelector('.progress-bar');
+        this.overview = document.getElementById('overview');
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.applySlide(0);
+      }
+
+      clamp(index) {
+        return Math.max(0, Math.min(this.slides.length - 1, index));
+      }
+
+      applySlide(index) {
+        const next = this.clamp(index);
+        this.currentSlide = next;
+        this.slides.forEach((slide, i) => {
+          slide.classList.toggle('active', i === next);
+          slide.classList.toggle('visible', i === next);
+        });
+        this.navDotsContainer?.querySelectorAll('button').forEach((dot, i) => {
+          dot.classList.toggle('active', i === next);
+          dot.setAttribute('aria-current', i === next ? 'true' : 'false');
+        });
+        if (this.progressBar) {
+          this.progressBar.style.width = `${((next + 1) / this.slides.length) * 100}%`;
+        }
+      }
+
+      goTo(index, options = {}) {
+        const next = this.clamp(index);
+        if (this.locked && !options.immediate) return;
+        this.applySlide(next);
+        this.slides[next].scrollIntoView({
+          behavior: options.immediate ? 'auto' : 'smooth',
+          block: 'start'
+        });
+        if (!options.immediate) {
+          this.locked = true;
+          window.setTimeout(() => { this.locked = false; }, 650);
+        }
+      }
+
+      next() { this.goTo(this.currentSlide + 1); }
+      prev() { this.goTo(this.currentSlide - 1); }
+
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) this.applySlide(this.slides.indexOf(entry.target));
+          });
+        }, { threshold: 0.6 });
+        this.slides.forEach(slide => observer.observe(slide));
+      }
+
+      setupNavDots() {
+        if (!this.navDotsContainer) return;
+        this.navDotsContainer.innerHTML = '';
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+          dot.addEventListener('click', () => this.goTo(i));
+          this.navDotsContainer.appendChild(dot);
+        });
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', event => {
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            this.toggleOverview();
+            return;
+          }
+          if (this.overviewOpen) return;
+          if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(event.key)) {
+            event.preventDefault();
+            this.next();
+          } else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) {
+            event.preventDefault();
+            this.prev();
+          } else if (event.key === 'Home') {
+            event.preventDefault();
+            this.goTo(0);
+          } else if (event.key === 'End') {
+            event.preventDefault();
+            this.goTo(this.slides.length - 1);
+          }
+        });
+      }
+
+      setupWheelNav() {
+        let wheelAcc = 0;
+        let wheelTimer = null;
+        window.addEventListener('wheel', event => {
+          if (this.overviewOpen) return;
+          wheelAcc += event.deltaY + event.deltaX;
+          if (Math.abs(wheelAcc) > 80) {
+            event.preventDefault();
+            wheelAcc > 0 ? this.next() : this.prev();
+            wheelAcc = 0;
+          }
+          window.clearTimeout(wheelTimer);
+          wheelTimer = window.setTimeout(() => { wheelAcc = 0; }, 150);
+        }, { passive: false });
+      }
+
+      setupTouchNav() {
+        let startX = 0;
+        let startY = 0;
+        window.addEventListener('touchstart', event => {
+          const touch = event.changedTouches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+        }, { passive: true });
+        window.addEventListener('touchend', event => {
+          if (this.overviewOpen) return;
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 42) {
+            dx < 0 ? this.next() : this.prev();
+          } else if (Math.abs(dy) > 42) {
+            dy < 0 ? this.next() : this.prev();
+          }
+        }, { passive: true });
+      }
+
+      buildOverview() {
+        if (!this.overview) return;
+        this.overview.innerHTML = '';
+        const head = document.createElement('div');
+        head.className = 'ov-head';
+        head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, '0')} / ${String(this.slides.length).padStart(2, '0')}</span>`;
+        this.overview.appendChild(head);
+
+        const grid = document.createElement('div');
+        grid.className = 'ov-grid';
+        this.slides.forEach((slide, i) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = `ov-card${i === this.currentSlide ? ' active' : ''}`;
+          card.setAttribute('aria-label', `Go to slide ${i + 1}`);
+          const thumb = document.createElement('div');
+          thumb.className = 'ov-thumb';
+          const clone = slide.cloneNode(true);
+          clone.classList.add('clone', 'visible');
+          thumb.appendChild(clone);
+          const label = document.createElement('div');
+          label.className = 'ov-label';
+          label.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b><span>${slide.dataset.slideKind || 'slide'}</span>`;
+          card.appendChild(thumb);
+          card.appendChild(label);
+          card.addEventListener('click', () => {
+            this.toggleOverview(false);
+            this.goTo(i, { immediate: true });
+          });
+          grid.appendChild(card);
+        });
+        this.overview.appendChild(grid);
+
+        requestAnimationFrame(() => {
+          this.overview.querySelectorAll('.ov-thumb').forEach(thumb => {
+            const clone = thumb.querySelector('.clone');
+            clone.style.transform = `scale(${thumb.clientWidth / window.innerWidth})`;
+          });
+        });
+      }
+
+      toggleOverview(force) {
+        this.overviewOpen = typeof force === 'boolean' ? force : !this.overviewOpen;
+        if (!this.overview) return;
+        if (this.overviewOpen) {
+          this.buildOverview();
+          this.overview.setAttribute('aria-hidden', 'false');
+        } else {
+          this.overview.setAttribute('aria-hidden', 'true');
+        }
+      }
     }
 
     function renderReactFlowDiagram(containerId, nodes, edges, fitPadding = 0.18) {
@@ -2816,19 +3159,20 @@
         window.setTimeout(() => {
           order = [...order.slice(1), frontIndex];
           placeCards();
-        }, 1050);
+        }, 620);
       }
 
       placeCards();
-      window.setTimeout(swap, 900);
-      window.setInterval(swap, 5200);
+      window.setTimeout(swap, 450);
+      window.setInterval(swap, 2600);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      setupResponsiveDeck();
+      setupSlideArchitecture();
       initScreenCardSwap();
       renderReactFlowArchitecture();
       renderReactFlowPipeline();
+      window.presentation = new SlidePresentation();
     });
   </script>
 </body>

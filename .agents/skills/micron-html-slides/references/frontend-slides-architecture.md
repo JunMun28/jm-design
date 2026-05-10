@@ -105,6 +105,23 @@ Every generated deck must preserve these:
 - `prefers-reduced-motion` is included.
 - never use internal slide scrolling to solve overflow.
 
+## Demo-matched engineering exception
+
+For Micron dark engineering decks that should resemble
+`micron_engineering_slide_demo_d_3.html`, use the demo's fixed-stage model
+instead of the generic fluid `.slide-content` model:
+
+- Keep `.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; }`.
+- Wrap each slide in `.slide-content` if missing.
+- Use `.slide-content { width: 1600px; height: 900px; transform: scale(var(--slide-scale)); transform-origin: center; }`.
+- Center the stage with flex on `.slide`.
+- Use `.content { position: absolute; inset: 72px; }` for normal slides.
+- Set `--slide-scale` from `min(1, window.innerWidth / 1600, window.innerHeight / 900)`.
+- Preserve the same `SlidePresentation` controller, nav dots, progress bar, touch/wheel/keyboard nav, and ESC overview.
+
+This exception is preferred when demo fidelity matters. It produces the crisp,
+presentation-native engineering look that the generic fluid template does not.
+
 ## Controller requirements
 
 `SlidePresentation` must provide:

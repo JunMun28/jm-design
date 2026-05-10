@@ -76,9 +76,21 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         if (!slide) return ['missing slide'];
                         const content = slide.querySelector('.slide-content') || slide;
                         const out = [];
-                        if (content.scrollHeight > content.clientHeight + 2) out.push('vertical overflow');
-                        if (content.scrollWidth > content.clientWidth + 2) out.push('horizontal overflow');
                         const rect = slide.getBoundingClientRect();
+                        const contentRect = content.getBoundingClientRect();
+                        const style = getComputedStyle(content);
+                        const transformed = style.transform && style.transform !== 'none';
+                        if (transformed) {
+                            if (contentRect.top < rect.top - 2 || contentRect.bottom > rect.bottom + 2) {
+                                out.push('vertical visual overflow');
+                            }
+                            if (contentRect.left < rect.left - 2 || contentRect.right > rect.right + 2) {
+                                out.push('horizontal visual overflow');
+                            }
+                        } else {
+                            if (content.scrollHeight > content.clientHeight + 2) out.push('vertical overflow');
+                            if (content.scrollWidth > content.clientWidth + 2) out.push('horizontal overflow');
+                        }
                         if (rect.width < 1 || rect.height < 1) out.push('blank slide geometry');
                         return out;
                     }""",
