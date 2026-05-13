@@ -3,8 +3,8 @@
 Use the engineering dark style tokens from `micron-engineering-dark.md`, but
 take title selection and layout guidance from this standalone file.
 
-These templates are standalone recipes. Do not read or depend on
-`micron_engineering_slide_demo_d_3.html`.
+These templates are standalone recipes. Do not read or depend on the old
+engineering demo HTML file.
 
 ## Rules
 

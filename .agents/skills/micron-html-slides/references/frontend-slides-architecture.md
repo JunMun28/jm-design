@@ -105,22 +105,17 @@ Every generated deck must preserve these:
 - `prefers-reduced-motion` is included.
 - never use internal slide scrolling to solve overflow.
 
-## Demo-matched engineering exception
+## Micron dark engineering runtime choice
 
-For Micron dark engineering decks that should resemble
-`micron_engineering_slide_demo_d_3.html`, use the demo's fixed-stage model
-instead of the generic fluid `.slide-content` model:
+For Micron dark engineering decks, choose the runtime model that best fits the
+content instead of matching a demo file.
 
 - Keep `.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; }`.
-- Wrap each slide in `.slide-content` if missing.
-- Use `.slide-content { width: 1600px; height: 900px; transform: scale(var(--slide-scale)); transform-origin: center; }`.
-- Center the stage with flex on `.slide`.
-- Use `.content { position: absolute; inset: 72px; }` for normal slides.
-- Set `--slide-scale` from `min(1, window.innerWidth / 1600, window.innerHeight / 900)`.
+- Use the generic fluid `.slide-content` model for editorial, training, and simple explainer decks.
+- Use a fixed 16:9 stage only when precise presentation geometry is useful for dense boards, diagrams, or title visuals.
+- When using a fixed stage, set scale from `min(1, window.innerWidth / stageWidth, window.innerHeight / stageHeight)`.
 - Preserve the same `SlidePresentation` controller, nav dots, progress bar, touch/wheel/keyboard nav, and ESC overview.
-
-This exception is preferred when demo fidelity matters. It produces the crisp,
-presentation-native engineering look that the generic fluid template does not.
+- Do not use fixed-stage mode as a reason to copy a previous content layout.
 
 ## Controller requirements
 
