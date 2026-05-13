@@ -126,6 +126,16 @@ Cards are 8px radius, dark vertical gradients, subtle borders, inset top
 highlights, and deep shadows. Purple marks active state; cyan marks data/input
 movement. Do not spread purple across every component.
 
+## Anti-repetition guardrails
+
+When generating a new deck:
+
+- Do not default to the same hero/content split across generated decks.
+- Do not make every content slide a topbar plus card grid.
+- Do not use process boards, dashboards, or timelines unless the topic calls for them.
+- Do not invent data to make a dashboard look real.
+- Prefer one strong custom visual over many small decorative panels.
+
 ## React Flow diagram rules
 
 Use React Flow for diagrams with enough relationship complexity to justify it.
