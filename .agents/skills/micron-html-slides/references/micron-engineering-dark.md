@@ -4,39 +4,23 @@ Use this after `micron-dark-design.md` when creating practical Micron dark decks
 for engineering reviews, rollout updates, process sharing, system architecture,
 data pipelines, technical launches, training, or product demos.
 
-Source preference: `micron_engineering_slide_demo_d_3.html`, reviewed May 2026.
+This file defines visual principles for content slides. It is not a fixed layout
+template and does not depend on any external source HTML.
 
-## Demo fidelity contract
+For title-slide recipes, read `micron-engineering-title-templates.md`.
 
-When the user asks for Micron engineering style, a technical/business explainer,
-or gives no theme, match the local demo's visual system. Do not fall back to the
-light Micron slide style.
-
-Use this page model:
-
-- Body/page background: `#151515`; slide background: black with restrained radial/diagonal blue-purple energy.
-- Stage: `.slide` fills viewport and centers a fixed `.slide-content` stage.
-- Design stage: `--slide-w: 1600px; --slide-h: 900px; --margin: 72px`.
-- Scaling: `--slide-scale = min(1, viewportW / 1600, viewportH / 900)`.
-- Cover visuals may use cover scale, but title/text content must stay fit-scaled and readable on mobile.
-- Content shell: `.content { position:absolute; inset: var(--margin); }`.
-- Typography at 1600x900: h1 64px, h2 42px, h3 25px, subtitle 24px/1.35, section labels 15px uppercase.
-- Navigation/overview: dark progress bar, dark nav dots, black blurred overview, 16:9 thumbnails.
-- Brand: use `assets/micron-logo-white-tm-rgb.png` if present; otherwise omit logo. Do not invent a wordmark.
-
-The fixed stage is intentional. Keep vertical scroll snap and `SlidePresentation`,
-but do not replace the demo model with a fully fluid light layout.
-
-## Core preference
+## Core principles
 
 Make production-grade technical slides, not generic generated UI.
 
 - Black primary field with restrained blue/purple/cyan energy.
-- Precise grid, exact alignment, and strong reading order.
-- Left text, sentence case headings, compact labels, useful chrome.
+- Precise grid, exact alignment, strong reading order, and enough negative space.
+- Left-aligned text by default, sentence case headings, compact labels, useful chrome.
 - Dark panels with 8px radius, subtle borders, inset highlights, and deep shadows.
 - One accent role per slide: active gate, key metric, selected node, or current phase.
+- One visual protagonist per slide: diagram, object, timeline, comparison, quote, chart, workflow, screenshot, or generated visual.
 - Visuals explain engineering work: flows, systems, timelines, release gates, dashboards.
+- Content layout is chosen per topic. Do not reuse fixed process boards, dashboard grids, or demo-like topbar patterns by default.
 - Avoid random blobs, filler icons, fake stats, fake product screenshots, and decorative bento cards.
 
 ## Runtime and tech
@@ -44,66 +28,57 @@ Make production-grade technical slides, not generic generated UI.
 Keep the canonical slide runtime from `frontend-slides-architecture.md`.
 Use one no-build HTML file. Authored CSS and JS stay inline.
 
+Choose the stage model based on content:
+
+- Use fluid viewport layouts for editorial explainers, simple visual stories, and responsive decks.
+- Use fixed 16:9 stage layouts for dense presentation-native boards or precise diagrams.
+- Use full-bleed layouts for title, closing, object-focused, or image-led moments.
+- Preserve keyboard, wheel, touch/swipe, nav dots, progress bar, and ESC overview.
+
 Approved CDN exceptions:
 
 | Need | Runtime | Notes |
 |---|---|---|
 | Complex architecture, pipeline, dependency, or system flow | React 18 UMD + ReactDOM UMD + `@xyflow/react` UMD/CSS | Use controlled nodes, hidden handles, curved connectors, `fitView`, disabled drag/zoom/pan/select |
-| Cinematic title, shader field, 3D wafer, milestone motion | Three.js module | Use canvas, `ResizeObserver`, device-pixel-ratio cap, static or reduced-motion fallback |
+| Hero, section divider, closing, shader field, 3D wafer, milestone motion | Three.js module | Use canvas, `ResizeObserver`, device-pixel-ratio cap, static or reduced-motion fallback |
 | Simple timeline, swimlane, status, metric, table, card, or lane diagram | HTML/CSS/SVG | Do not add React Flow for simple layouts |
 
 If external network access is not acceptable, replace React Flow with inline SVG
 and replace Three.js title motion with static CSS gradients/canvas-free art.
 
-## Title template picker
+## Title templates
 
-For a new Micron dark engineering deck, offer a short title choice if the user
-has not given direction and the title page matters. Do not show option labels in
-the final deck unless the deck is specifically demonstrating title options.
+Title templates live in `micron-engineering-title-templates.md`.
 
-| Template | Use when | Visual recipe |
-|---|---|---|
-| `wafer-hero` | Default flagship technical deck, strategy, review, launch | Black cover, left text, Micron logo top-left when available, Three.js wafer/planet or semiconductor object on right, quiet radial purple/blue glow |
-| `divider-band` | Fast project update, sober status deck, minimal motion | Dark blue/black field, large diagonal gradient band from lower right, left title block |
-| `grain-wave` | Research, infrastructure, data-intensive topic | Full-canvas grain/noise shader, left black readability overlay, purple/blue/cyan wave energy |
-| `silk-wave` | Premium keynote, transformation, architecture story | Flowing shader ribbon across right side, strong left title, black overlay for copy |
-| `purple-silk` | High-energy milestone or launch | Silk-wave variant with stronger `#BD03F7`; use sparingly |
-| `screen-stack` | Product demo, UI rollout, workflow walkthrough | Animated stacked interface cards on right with real workflow labels and metrics |
-| `grid-scan` | System launch, architecture walkthrough, technical deep dive | Scan-grid shader or static grid field, pointer/subtle skew optional, left title |
+- Use title templates for title slides, section dividers, or closing moments.
+- Do not use title templates as default content-slide layouts.
+- Vary title treatment across generated decks unless the user names a specific direction.
+- Do not include visible template labels in generated decks.
 
-Title anatomy:
+## Content slide principles
 
-- Logo: use official `assets/micron-logo-white-tm-rgb.png` if available; otherwise omit logo rather than inventing one.
-- Text block: eyebrow, h1, subtitle, accent line.
-- Footer note: only meaningful metadata such as audience, date, program, or confidentiality.
-- H1: 56-72px on 16:9 desktop, max 2 lines.
-- Subtitle: 20-26px, max 2 lines.
-- Do not center the main title block.
+Content slides are freeform per topic. Do not start from a fixed pattern unless
+the user asks for a specific layout.
 
-## Content layout preferences
+Before designing each content slide, decide:
 
-Treat these as reusable preferences, not mandatory templates.
+- What is the single message?
+- What visual protagonist best explains it?
+- What can be removed?
+- What should purple highlight?
+- What should cyan indicate?
+- Does the slide need a dense fixed stage, a fluid editorial layout, or a full-bleed visual?
 
-| Pattern | Best for | Design notes |
-|---|---|---|
-| Metric strip + status cards | Weekly rollout, UAT, readiness | 3-4 large metrics, one purple key number, then Done / In progress / Needs help |
-| Problem cards + takeaway | Problem statement, RCA setup | 3 causes max, one accented risk card, one sharp callout with actual takeaway |
-| Process control board | Workflow, handoff, exception gate | Large lane map plus right control panel showing current step, input/gate/output |
-| React Flow architecture | App architecture, system context | Dark diagram field, gray nodes, purple core node, cyan/purple key edges, hidden handles |
-| React Flow pipeline | Source-to-trusted-output flow | Left explanation card plus diagram; show raw sources, transform/gate, trusted view |
-| Timeline command board | Release or migration plan | Left current-phase panel, right week/phase board, active bar in purple |
-| Swimlane / RACI / SOP | Responsibilities, operations, training | Dense but scannable, clear owner labels, no icon clutter |
-| Milestone lightspeed | Adoption or launch milestone | Three.js/canvas energy field, centered metric, 2-3 proof points only |
-| Screen stack | Product walkthrough | Use plausible UI cards only when tied to actual workflow content |
+Use layout families only as mental prompts, not templates:
 
-For a single-slide explainer, prefer one of these demo-native compositions:
+- Comparison: before/after, tradeoff, current/future, risk/control.
+- Flow: system, process, data, handoff, dependency, journey.
+- Evidence: chart, table, metric, source excerpt, test result.
+- Narrative: quote, statement, object spotlight, sequence, closing.
+- Tool: dashboard, checklist, SOP, action tracker, command board.
 
-- Left title/summary + right screen-stack or process-control panel.
-- Topbar + 3-4 metric/action cards + one active decision or gate card.
-- Compact process board with current checkpoint panel.
-- Before/after bridge with 3-4 concrete transition steps.
-
-Avoid a white two-column handout layout unless the user explicitly asks for light.
+Each generated deck with five or more slides should include at least two clearly
+different content compositions.
 
 ## Component style
 
@@ -139,14 +114,13 @@ Use these values as a starting system and adapt with `clamp()` for viewport deck
 }
 ```
 
-Also preserve the demo vocabulary when useful:
+Use component vocabulary only when it fits the content:
 
-- `.topbar`, `.section-label`, `.subtitle`, `.accent-line`
-- `.card`, `.card.white`, `.card.accented`, `.status`, `.metric`
-- `.process-board`, `.process-map`, `.process-control`
-- `.timeline`, `.timeline-status`, `.timeline-board`
-- `.change-board`, `.change-panel`, `.change-bridge`
-- `.screen-swap-stage`, `.screen-swap-card`, `.screen-kpis`
+- `.section-label`, `.subtitle`, `.accent-line`
+- `.engineering-card`, `.status`, `.metric`
+- `.visual-field`, `.diagram-field`, `.comparison-field`
+- `.timeline-item`, `.source-note`, `.callout`
+- `.screen-frame`, `.workflow-node`, `.evidence-row`
 
 Cards are 8px radius, dark vertical gradients, subtle borders, inset top
 highlights, and deep shadows. Purple marks active state; cyan marks data/input
@@ -186,5 +160,6 @@ Before final, inspect screenshots for:
 - Purple is intentional, not everywhere.
 - No card nesting.
 - No fake dashboard values unless provided by user or clearly marked placeholder.
-- No visible title-option labels left from the demo.
+- No visible template labels or copied demo wording.
+- Content slides do not repeat one layout structure across the whole deck.
 - CDN dependencies are disclosed when used.
