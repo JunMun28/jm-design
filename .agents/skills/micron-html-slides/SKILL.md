@@ -7,12 +7,14 @@ description: Use when creating or editing single-file HTML slide decks, Micron-s
 
 ## Defaults
 
-- Default to Micron dark engineering when theme is unspecified. Match `micron_engineering_slide_demo_d_3.html`.
+- Default to Micron dark engineering when theme is unspecified.
+- Use Micron dark engineering as a visual language, not as a fixed layout system.
 - Use Micron light only when the user explicitly asks for light/white slides or the deck is mainly print-style data tables.
 - Use Micron dark only when requested or when content clearly needs dark mode.
 - For practical technical or engineering decks in Micron dark, use the engineering dark style reference.
-- Use a custom template only when requested or when user names course module, weekly update, or editorial pitch deck.
-- For a new Micron dark engineering deck, let the user choose a title template when title direction is material; otherwise use `wafer-hero`.
+- For a new Micron dark engineering deck, pick or adapt one title template from `references/micron-engineering-title-templates.md` unless the user names a specific title direction.
+- Content slides should be custom to the topic. Do not reuse fixed demo layouts by default.
+- If the user asks for `.pptx`, PowerPoint, or editable Office output, use `micron-pptx-slides` instead of generating HTML first.
 - Ask only when theme/template choice changes the outcome materially.
 - Confirm HTML only vs HTML plus PDF when delivery is unclear.
 
@@ -24,7 +26,8 @@ Read only what applies:
 |---|---|
 | Light theme | `references/micron-light-design.md` |
 | Dark theme | `references/micron-dark-design.md` |
-| Dark engineering style and title templates | `references/micron-engineering-dark.md` |
+| Dark engineering style | `references/micron-engineering-dark.md` |
+| Dark engineering title templates | `references/micron-engineering-title-templates.md` |
 | Runtime checklist | `references/frontend-slides-architecture.md` |
 | HTML skeleton | `references/html-template.md` |
 | Viewport CSS | `references/viewport-base.css` |
@@ -32,6 +35,7 @@ Read only what applies:
 | Custom templates | `references/custom-templates.md` |
 | Verification | `references/verification.md` |
 | PDF export | `references/export-workflows.md` |
+| PPTX output | Use sibling skill `micron-pptx-slides` |
 
 For a blank deck, start with `scripts/scaffold-deck.py` or adapt `references/html-template.md`.
 
@@ -40,7 +44,8 @@ For a blank deck, start with `scripts/scaffold-deck.py` or adapt `references/htm
 - One no-build `.html`; inline CSS/JS by default.
 - Use approved CDN runtimes only when the selected reference explicitly calls for them, such as React Flow for complex diagrams or Three.js for shader/canvas title systems.
 - One `<section class="slide">` per slide.
-- Use full `viewport-base.css` for light/simple decks. For demo-matched dark engineering decks, use the equivalent fixed-stage runtime from `micron_engineering_slide_demo_d_3.html`.
+- Every generated HTML deck starts with a dedicated title slide. This applies even when the user asks for "a slide"; make the requested content slide 2 unless they explicitly ask for a standalone content slide only.
+- Use full `viewport-base.css` for light/simple decks. For Micron dark engineering decks, choose the runtime model that best fits the content while preserving navigation, fit, and verification requirements.
 - Vertical scroll-snap is main flow.
 - `window.presentation = new SlidePresentation()`.
 - Keyboard, wheel, touch/swipe, nav dots, progress bar.
@@ -63,9 +68,11 @@ Micron:
 Micron dark engineering:
 
 - Read `references/micron-dark-design.md` first, then `references/micron-engineering-dark.md`.
-- Treat `micron_engineering_slide_demo_d_3.html` as the visual source of truth, not a loose inspiration.
-- Use a black engineering canvas, 1600x900 fixed stage scaled into viewport, 72px design margin, dark cards, purple/cyan accent logic, and the demo's topbar/content rhythm.
-- Title templates are selectable; content layouts are preferences, not a rigid slide taxonomy.
+- For title slides, also read `references/micron-engineering-title-templates.md`.
+- Treat Micron dark engineering as a visual language: black canvas, precise grid, strong hierarchy, dark panels, restrained purple/cyan accents, and useful technical visuals.
+- Do not read or depend on the old engineering demo HTML file.
+- Do not use fixed demo content layouts. Content slides should be custom to the topic and message.
+- Use a black engineering canvas, crisp typography, purposeful contrast, and one visual protagonist per slide.
 - Avoid generic AI slide tropes: random neon blobs, decorative bento grids, fake dashboards, and meaningless visual noise.
 
 Custom:
@@ -79,13 +86,15 @@ Custom:
 1. Select theme/template from user request, default Micron dark engineering.
 2. Confirm PDF only if needed.
 3. Read relevant design reference plus runtime checklist.
-4. If using dark engineering, inspect `micron_engineering_slide_demo_d_3.html` or `references/micron-engineering-dark.md` and reuse its stage model, component vocabulary, and dark overview/nav.
+4. If using dark engineering, read `references/micron-engineering-dark.md`; read `references/micron-engineering-title-templates.md` only for title slide direction.
 5. Build outline from user content.
-6. Define deck system: title template, background, type, rhythm, layouts, image role, and approved runtime tech.
-7. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
-8. Generate `micron-slides.html` unless user names another file.
-9. Run verification at desktop and mobile viewport.
-10. Export PDF only when requested.
+6. Add slide 1 as a title page with title, short subtitle, optional audience/date/source note, and a suitable Micron title treatment.
+7. Put the requested explanatory/content material after the title page.
+8. Define deck system: title treatment, background, type, rhythm, visual protagonists, and approved runtime tech. Make content layouts custom to the topic.
+9. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
+10. Generate `micron-slides.html` unless user names another file.
+11. Run verification at desktop and mobile viewport.
+12. Export PDF only when requested.
 
 ## Density Limits
 
@@ -108,4 +117,5 @@ Report only:
 - Title template used, when applicable
 - External runtimes used, when applicable
 - Slide count
+- Confirm title slide included
 - Navigation: arrows, space, vertical scroll/swipe, nav dots, Esc overview
