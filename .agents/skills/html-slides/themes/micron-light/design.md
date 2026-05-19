@@ -2,7 +2,9 @@
 
 Purpose: light-theme Micron slide reference. Style, philosophy, gotchas only — **no fixed layouts.** Use this for the look-and-feel; invent the layout for whatever the deck needs.
 
-Compiled: May 2026. Last evolution informed by `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html` (a managerial training deck — Apple/Cursor restraint).
+Compiled: May 2026. Canonical live precedent:
+`docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html`
+(a managerial training deck — Apple/Cursor restraint).
 
 ---
 
@@ -42,6 +44,7 @@ Inherits `references/tokens/micron-tokens.css`. The theme is a thin layer on top
   --micron-black: #000;
   --micron-white: #fff;
   --micron-accent: #bd03f7;
+  --micron-accent-display: var(--micron-accent); /* optional alias for large display accents */
 
   /* light-theme working palette */
   --ink: #0f172a;            /* near-black with a slate undertone — softer than #000 */
@@ -70,9 +73,49 @@ Inherits `references/tokens/micron-tokens.css`. The theme is a thin layer on top
 
 The accent (purple) is precious. **One accent word per H2**, **one wash per deck**, **one highlight per chart**. If you spend it on chrome, you can't spend it on emphasis.
 
+For illustrated training decks, count accent by **role**, not by SVG path:
+one headline accent, one active state, one visual cluster, one focal wash.
+The verifier allows this because a single diagram can contain many accent
+strokes; the human rule is still that purple marks the point, not decoration.
+
 ---
 
-## 4. Typography
+## 4. Reference deck recipe: Copilot for managers
+
+When asked for a light Micron deck like
+`2026-05-15-github-copilot-for-everyone-deck.html`, reproduce the **system**,
+not the subject matter:
+
+- **Physical scene:** managers in a bright meeting room, reading a training deck
+  on a projector and later as a PDF. Light theme is forced by the room and use.
+- **Fixed 16:9 sheet:** white 1600×900 stage centered in a cool letterbox with a
+  soft shadow. Do not stretch the slide to the browser viewport.
+- **Cover:** big left title, italic purple subtitle or accent phrase, one
+  inspectable product/subject mark on the right, subtle dotted purple fields.
+  Micron logo sits in the footer block, not as a huge hero logo.
+- **Narrative rhythm:** evolution → shift → how it works → examples → live try
+  → deeper concept → progressive discovery. Use this cadence for training:
+  name the change, show the old/new split, give the action loop, then rehearse.
+- **Layouts:** vary signatures every slide. Use timelines, two-column then/now
+  comparisons, prompt tables, a centered live-demo prompt, and progressive flow
+  diagrams. Avoid repeated card grids.
+- **Visual protagonists:** custom inline SVG diagrams, product marks, prompt
+  tables, and progressive build fragments. Icons are drawn as thin-line figures,
+  not emoji or stock clipart.
+- **Interaction:** build fragments are allowed for teaching sequences. Arrow /
+  space advances the staged build before moving slides.
+- **One wash moment:** reserve `--soft-purple-wash` for the memorable quote or
+  prompt slide. Do not make it the default panel style.
+- **Brand marks:** content slides may place the black Micron logo on the
+  fixed-stage pseudo-element (`.slide-stage::after`) or use the text fallback.
+  The verifier accepts stage-level marks.
+
+The reference deck is intentionally more elaborate than the small data example:
+it is the standard for managerial training / enablement decks in `micron-light`.
+
+---
+
+## 5. Typography
 
 ```css
 :root {
@@ -102,37 +145,37 @@ Restraint rules that the brand depends on:
 
 ---
 
-## 5. The restraint principles
+## 6. The restraint principles
 
 These are *the* rules of this theme. They apply whether you're building a data slide, a training slide, or a poster slide.
 
-### 5.1 Hairlines, not boxes
+### 6.1 Hairlines, not boxes
 
 A page covered in rounded rectangles looks spreadsheety. Use **1px hairline rules** (`--hairline`) and **whitespace** to do the gridding work cards used to. A vertical hairline split makes the same comparison feel as a split-card without the borders.
 
 If you reach for a card, ask: *would a hairline + whitespace work here instead?* If yes, use the hairline.
 
-### 5.2 Card budget for the entire deck: 1
+### 6.2 Card budget for the entire deck: 1
 
 A whole deck should have **at most one visible panel** — almost always the soft-purple wash, used once at the climactic moment. If you find yourself drawing a second panel, you're telling two climaxes. Cut one.
 
 The wash is not chrome. It is a focal point. Don't frame every slide in it.
 
-### 5.3 White is the protagonist
+### 6.3 White is the protagonist
 
 The 16:9 stage is white. The browser viewport outside the stage is `--letterbox` (a near-white #eef0f4) so the slide reads as a printed sheet on a desk. Don't fill the slide with grey to "soften" it — use whitespace.
 
 `--gray-f` is allowed for the rare grouping panel, but never as a full-slide background.
 
-### 5.4 Each slide answers one question
+### 6.4 Each slide answers one question
 
 If you can't write the slide's question down on a sticky note, the slide hasn't earned its place. Two slides answering the same question = merge or kill one.
 
-### 5.5 Variety map across the deck
+### 6.5 Variety map across the deck
 
 No two adjacent slides should share the same layout signature. If slide 03 is a three-row stack, slide 04 is not another three-row stack. Restraint at the slide level + variety at the deck level keeps the rhythm awake.
 
-### 5.6 Refuse decoration
+### 6.6 Refuse decoration
 
 No drop shadows on text. No glow on type. No gradients behind body. No 3D charts. No emoji used as bullet markers. No clipart. No floating card stacks.
 
@@ -140,7 +183,7 @@ The accent's job is to make one moment loud, and silence is the rest of the deck
 
 ---
 
-## 6. Brand chrome (what every content slide reuses)
+## 7. Brand chrome (what every content slide reuses)
 
 These are *available* — not mandatory. Use the ones the slide actually needs.
 
@@ -155,7 +198,7 @@ These are *available* — not mandatory. Use the ones the slide actually needs.
 
 ---
 
-## 7. Stage geometry
+## 8. Stage geometry
 
 Light theme decks are **fixed-stage**: a 16:9 white canvas, centered in a `--letterbox` viewport, with a subtle drop shadow.
 
@@ -165,9 +208,14 @@ Why fixed-stage: a white slide that stretches edge-to-edge in a 1440×900 browse
 
 The non-negotiable from the skill (`Fixed-stage decks must expose a real 16:9 slide canvas`) applies here. **Do not hand-roll it** — paste the shared `references/runtime/fixed-stage.md` overlay (after `viewport-base.css`) and set `--stage-w/--stage-h`. That file is the single source for the fixed-stage CSS + scale JS; micron-light always uses it.
 
+Decks copied from the Copilot precedent may wrap each slide's content in an
+explicit `.slide-stage`. That is acceptable when the wrapper stays 1600×900,
+letterboxes correctly, and keeps the canonical controller (`window.presentation
+= new SlidePresentation()`).
+
 ---
 
-## 8. Motion
+## 9. Motion
 
 Single ease, single duration, single transform pattern.
 
@@ -187,7 +235,7 @@ No bouncing eases. No spring physics. No parallax. The motion is editorial — i
 
 ---
 
-## 9. Gotchas
+## 10. Gotchas
 
 The recurring failure modes when building in this theme:
 
@@ -204,7 +252,7 @@ The recurring failure modes when building in this theme:
 
 ---
 
-## 10. Voice the type carries
+## 11. Voice the type carries
 
 Sample H2s that fit this theme — note the cadence:
 
@@ -218,7 +266,7 @@ Note the ingredients: short clauses, period-after-each, one italic+purple accent
 
 ---
 
-## 11. Data viz (when the deck has charts/tables)
+## 12. Data viz (when the deck has charts/tables)
 
 The theme stays calm even in data slides:
 
@@ -236,7 +284,7 @@ If the chart needs more than one accent to read, the chart is doing too much —
 
 ---
 
-## 12. Imagery (when the deck has images)
+## 13. Imagery (when the deck has images)
 
 Light decks tolerate imagery if it's crisp and inspectable:
 
@@ -251,7 +299,7 @@ If using an image, give it room. One image per slide, max. The image is a quote 
 
 ---
 
-## 13. Quick acceptance checklist
+## 14. Quick acceptance checklist
 
 Before you ship a slide:
 

@@ -10,6 +10,7 @@ description: Use when creating or editing single-file HTML slide decks across mu
 - When theme is unspecified, ask the user to choose a style before building.
 - Use Micron dark engineering as a visual language, not as a fixed layout system.
 - Use Micron light only when the user explicitly asks for light/white slides or the deck is mainly print-style data tables.
+- Use Micron light for managerial training / enablement decks that need the bright fixed-stage cadence shown in `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html`.
 - Use Micron dark only when requested or when content clearly needs dark mode.
 - For practical technical or engineering decks in Micron dark, use the engineering dark style reference.
 - For a new Micron dark engineering deck, pick or adapt one title template from `themes/micron-dark-engineering/title-templates.md` unless the user names a specific title direction.
@@ -43,6 +44,7 @@ Read only what applies:
 | Theme manifest (start here) | `themes/themes.json` |
 | Theme chooser (show to user) | `themes/selector.html` |
 | Theme rules + example | `themes/<id>/design.md` and `themes/<id>/example.html` |
+| Micron light managerial training precedent | `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html` plus `themes/micron-light/design.md` |
 | Tokens (always paste, in order) | `references/tokens/micron-tokens.css`, `references/tokens/viewport-base.css`, `references/tokens/layout-kit.css` |
 | HTML skeleton + controller | `references/runtime/html-template.md` |
 | Fixed 16:9 stage (opt-in; micron-light mandates it) | `references/runtime/fixed-stage.md` |
@@ -93,8 +95,9 @@ Theme rules live in each theme's `design.md`. Read `themes/<id>/design.md` for t
 6. Add slide 1 as a title page with title, short subtitle, optional audience/date/source note, and a title treatment that fits the chosen theme.
 7. Put the requested explanatory/content material after the title page.
 8. Define deck system: title treatment, background, type, rhythm, visual protagonists, and approved runtime tech. Make content layouts custom to the topic.
+   - For Micron light training / enablement decks, use the Copilot reference as the pattern language: fixed 16:9 sheet, large left headline, one right-side subject mark or diagram, section labels, hairline comparisons, prompt/demo slides, progressive build fragments, and one soft-purple wash moment.
 9. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
-10. Generate a filename from the deck content/title as a lowercase kebab-case slug, for example `github-copilot-workflow.html` or `factory-yield-review.html`. Do not default to `micron-slides.html` unless the user explicitly names that file.
+10. For Micron decks, default the generated HTML file to `micron-slides.html` unless the user explicitly names another file. For non-Micron decks, generate a lowercase kebab-case slug from the title.
 11. Run verification at desktop, mobile, and a non-16:9 browser viewport when fixed-stage output is used, such as `1127x1084`, to confirm the slide canvas letterboxes instead of stretching.
 12. Export PDF only when requested.
 

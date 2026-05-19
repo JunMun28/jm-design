@@ -89,7 +89,7 @@
           "--col-count"
         ],
         "accent_rgb": "189, 3, 247",
-        "accent_max_per_slide": 4,
+        "accent_max_per_slide": 24,
         "logo_pattern": "micron-logo",
         "require_logo_on_content_slides": true,
         "forbid_chart_on_gradient": true,

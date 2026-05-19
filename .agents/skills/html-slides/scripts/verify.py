@@ -155,15 +155,20 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 // the brand keyword ("micron" from "micron-logo")
                                 // so the no-binary "MICRON" fallback passes too.
                                 const brandWord = cfg.logo_pattern.replace(/-logo.*/i, '').toLowerCase();
-                                const after = getComputedStyle(s, '::after');
-                                const before = getComputedStyle(s, '::before');
-                                const bg = (after.backgroundImage || '') + ' ' + (before.backgroundImage || '');
-                                const content = ((after.content || '') + ' ' + (before.content || '')).toLowerCase();
+                                const markHosts = [s, s.querySelector(':scope > .slide-stage'), s.querySelector(':scope > .slide-content')].filter(Boolean);
+                                let bg = '';
+                                let content = '';
+                                markHosts.forEach((host) => {
+                                    const after = getComputedStyle(host, '::after');
+                                    const before = getComputedStyle(host, '::before');
+                                    bg += ' ' + (after.backgroundImage || '') + ' ' + (before.backgroundImage || '');
+                                    content += ' ' + ((after.content || '') + ' ' + (before.content || '')).toLowerCase();
+                                });
                                 const hasLogoImage = new RegExp(cfg.logo_pattern, 'i').test(bg);
                                 const hasTextMark = content.includes(cfg.logo_pattern.toLowerCase()) ||
                                     (brandWord.length >= 3 && content.includes(brandWord));
                                 if (!hasLogoImage && !hasTextMark) {
-                                    out.push(`slide ${i + 1}: missing brand mark — slide::after must set background-image matching /${cfg.logo_pattern}/i or content containing "${brandWord}"`);
+                                    out.push(`slide ${i + 1}: missing brand mark — slide/stage pseudo-element must set background-image matching /${cfg.logo_pattern}/i or content containing "${brandWord}"`);
                                 }
                             }
                             // Accent overuse check (theme-driven RGB).
@@ -175,14 +180,21 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             // does not inflate every descendant.
                             if (cfg.accent_rgb && cfg.accent_max_per_slide) {
                                 let accentCount = 0;
+                                const accentedSvgs = new Set();
+                                const hasAccent = (v) => v && v.toLowerCase().includes(cfg.accent_rgb);
                                 s.querySelectorAll('*').forEach((el) => {
                                     const cs = getComputedStyle(el);
                                     const parentColor = el.parentElement ? getComputedStyle(el.parentElement).color : '';
-                                    const colorHit = cs.color && cs.color.toLowerCase().includes(cfg.accent_rgb) && cs.color !== parentColor;
+                                    const colorHit = hasAccent(cs.color) && cs.color !== parentColor;
                                     const otherHit = [cs.backgroundColor, cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor, cs.outlineColor, cs.fill, cs.stroke]
-                                        .some(v => v && v.toLowerCase().includes(cfg.accent_rgb));
-                                    if (colorHit || otherHit) accentCount += 1;
+                                        .some(hasAccent);
+                                    if (colorHit || otherHit) {
+                                        const svg = el.closest('svg');
+                                        if (svg) accentedSvgs.add(svg);
+                                        else accentCount += 1;
+                                    }
                                 });
+                                accentCount += accentedSvgs.size;
                                 if (accentCount > cfg.accent_max_per_slide) {
                                     out.push(`slide ${i + 1}: accent overused (${accentCount} elements > max ${cfg.accent_max_per_slide}).`);
                                 }
