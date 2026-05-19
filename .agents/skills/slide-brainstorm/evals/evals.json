@@ -1,0 +1,104 @@
+{
+  "skill_name": "slide-brainstorm",
+  "evals": [
+    {
+      "id": 1,
+      "name": "vague-brief-triggers-intake",
+      "prompt": "i want to make a deck about kubernetes for non-engineers",
+      "expected_output": "Skill should ask intake questions (audience, goal, length, scope, optional style) before drafting any file. Once enough is known, produces a brainstorm .txt file under docs/brainstorms/ with the expected structure.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "asks_intake_questions_before_drafting",
+          "description": "Before writing any file, the skill asks at least 2 intake questions covering audience and either goal or length"
+        },
+        {
+          "name": "produces_brainstorm_txt_file",
+          "description": "A .txt file is created under docs/brainstorms/ with YYYY-MM-DD- prefix"
+        },
+        {
+          "name": "file_has_header_box",
+          "description": "Brainstorm file contains a HEADER box at the top with Audience, Goal, Style, Format, Date lines"
+        },
+        {
+          "name": "file_has_narrative_arc_section",
+          "description": "Brainstorm file contains a NARRATIVE ARC section with a story spine listing one question per slide"
+        },
+        {
+          "name": "file_has_per_slide_ascii_frames",
+          "description": "Brainstorm file contains at least 3 slide sections, each with an ASCII frame drawn with box characters (┌─┐│└─┘)"
+        },
+        {
+          "name": "refuses_to_build_actual_deck",
+          "description": "Skill does NOT produce a .pptx, .html, or .pdf file — only the .txt brainstorm"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "rich-brief-with-reference-style",
+      "prompt": "Help me plan a 7-slide deck for our Q3 board review. Audience is our 8-person board — mix of operators and investors, mostly non-technical. I want them to understand why we're shifting our customer-acquisition strategy from outbound sales to product-led growth. Match the style of docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.txt — Apple/Cursor restraint, hairlines not cards, italic purple accent. Save the brainstorm to docs/brainstorms/.",
+      "expected_output": "Skill recognizes most intake questions are already answered, reads the referenced style file, extracts the design grammar, and produces a 7-slide brainstorm in the same visual idiom. Should not re-ask audience/goal/length.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "skips_already_answered_intake",
+          "description": "Skill does NOT re-ask audience, goal, scope, or length since all are in the prompt"
+        },
+        {
+          "name": "reads_referenced_style_file",
+          "description": "The reference file docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.txt is read (visible in tool calls or transcript)"
+        },
+        {
+          "name": "produces_7_slide_brainstorm",
+          "description": "Brainstorm file contains exactly 7 slide sections (SLIDE 01 through SLIDE 07)"
+        },
+        {
+          "name": "uses_design_vocabulary",
+          "description": "Brainstorm references hairlines, manuscript rows, italic accent word, or other terms from references/design-vocabulary.md"
+        },
+        {
+          "name": "low_card_count",
+          "description": "DESIGN SYSTEM or per-slide layout explicitly limits cards (e.g., 'card budget: 1') consistent with the reference style"
+        },
+        {
+          "name": "refuses_to_build_actual_deck",
+          "description": "Skill does NOT produce a .pptx, .html, or .pdf file — only the .txt brainstorm"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "different-audience-and-tone",
+      "prompt": "I'm presenting to a room of public school teachers next week about how AI can help with lesson planning. ~6 slides. Should feel warm and trustworthy, not cold tech vibes. Brainstorm please.",
+      "expected_output": "Skill should NOT default to the same Apple/Cursor minimalist tone — it should adapt voice and design system to feel warm and approachable for a teacher audience. Quick intake (since most is provided), then a 6-slide brainstorm.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "adapts_voice_to_warm",
+          "description": "DESIGN SYSTEM section or per-slide copy reflects a warm/approachable voice (e.g., mentions warmth, friendly tone, contractions, accessible language) rather than 'periods are loud' restraint"
+        },
+        {
+          "name": "produces_6_slide_brainstorm",
+          "description": "Brainstorm file contains 6 slide sections"
+        },
+        {
+          "name": "uses_teacher_relevant_examples",
+          "description": "At least one slide includes examples that speak to teacher workflows (lesson plans, rubrics, parent communication, differentiation, classroom mgmt)"
+        },
+        {
+          "name": "file_has_narrative_arc_section",
+          "description": "Brainstorm file contains a NARRATIVE ARC section with a story spine listing one question per slide"
+        },
+        {
+          "name": "file_has_per_slide_ascii_frames",
+          "description": "Brainstorm file contains at least 3 slide sections, each with an ASCII frame drawn with box characters"
+        },
+        {
+          "name": "refuses_to_build_actual_deck",
+          "description": "Skill does NOT produce a .pptx, .html, or .pdf file — only the .txt brainstorm"
+        }
+      ]
+    }
+  ]
+}

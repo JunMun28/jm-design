@@ -1,0 +1,276 @@
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Vertical scroll-snap deck + ESC overview architecture.
+   =========================================== */
+
+/* 1. Lock horizontal overflow; vertical scroll-snap remains the deck flow. */
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+/* 2. Each slide = exact viewport height */
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 3. Content container — optically-centred content band.
+   Raw `justify-content:center` puts a short content block at the dead
+   geometric 50%, which reads as "floating" with symmetric voids. We bias
+   the centre upward (~45%, the classic optical centre) by carrying extra
+   bottom padding, so thin and dense slides share one confident anchor in
+   the lower-middle instead of drifting. Cover/title opts out below. */
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--element-gap);
+    max-height: 100%;
+    overflow: hidden;
+    padding: var(--slide-padding);
+    padding-bottom: calc(var(--slide-padding) + clamp(1rem, 8vh, 4rem));
+}
+.slide.title-slide .slide-content,
+.slide[data-slide-kind="cover"] .slide-content {
+    padding-bottom: var(--slide-padding);
+}
+
+/* 4. ALL typography uses clamp() for responsive scaling */
+:root {
+    --title-size: clamp(1.5rem, 5vw, 4rem);
+    --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+    --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+    --small-size: clamp(0.65rem, 1vw, 0.875rem);
+    --slide-padding: clamp(1rem, 4vw, 4rem);
+    --content-gap: clamp(0.5rem, 2vw, 2rem);
+    --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+
+/* 5. Cards/containers use viewport-relative max sizes */
+.card,
+.container,
+.content-box {
+    max-width: min(90vw, 1000px);
+    max-height: min(80vh, 700px);
+}
+
+/* 6. Lists auto-scale with viewport */
+.feature-list,
+.bullet-list {
+    gap: clamp(0.4rem, 1vh, 1rem);
+}
+
+.feature-list li,
+.bullet-list li {
+    font-size: var(--body-size);
+    line-height: 1.4;
+}
+
+/* 7. Grids adapt to available space */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+/* 8. Images constrained to viewport */
+img,
+.image-container {
+    max-width: 100%;
+    max-height: min(50vh, 400px);
+    object-fit: contain;
+}
+
+/* 9. ESC slide overview. JS builds cards from slide clones. */
+#overview {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    overflow-y: auto;
+    padding: clamp(1.5rem, 4vw, 3.75rem);
+    /* Opaque: a translucent overview lets the live slide ghost through
+       behind the thumbnails (a real artifact seen in review). */
+    background: var(--overview-bg, var(--bg-primary, #0b0b0d));
+    color: var(--overview-text, var(--text-primary, #f4f0e6));
+    backdrop-filter: blur(12px);
+}
+
+#overview[aria-hidden="false"] {
+    display: block;
+}
+
+#overview .ov-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    font-family: var(--font-display, system-ui, sans-serif);
+    font-size: var(--small-size);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--overview-muted, var(--text-secondary, #666));
+}
+
+#overview .ov-head b {
+    color: var(--overview-text, var(--text-primary, #111));
+    font-weight: 700;
+}
+
+#overview .ov-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: clamp(1rem, 2vw, 1.4rem);
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+#overview .ov-card {
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid var(--overview-line, rgba(0, 0, 0, 0.16));
+    border-radius: 8px;
+    background: var(--overview-card, rgba(255, 255, 255, 0.62));
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+#overview .ov-card:hover,
+#overview .ov-card:focus-visible {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    outline: none;
+}
+
+#overview .ov-card.active {
+    border-color: var(--accent);
+    border-width: 2px;
+}
+
+#overview .ov-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    position: relative;
+    pointer-events: none;
+    background: var(--bg-primary, #fff);
+}
+
+#overview .ov-thumb .clone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    transform-origin: top left;
+}
+
+#overview .ov-thumb .clone .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+
+#overview .ov-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0.75rem;
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: clamp(0.58rem, 0.8vw, 0.7rem);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--overview-muted, var(--text-secondary, #666));
+}
+
+#overview .ov-label b {
+    color: var(--overview-text, var(--text-primary, #111));
+    font-weight: 700;
+}
+
+/* ===========================================
+   RESPONSIVE BREAKPOINTS
+   Aggressive scaling for smaller viewports
+   =========================================== */
+
+@media (max-height: 700px) {
+    :root {
+        --slide-padding: clamp(0.75rem, 3vw, 2rem);
+        --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+        --title-size: clamp(1.25rem, 4.5vw, 2.5rem);
+        --h2-size: clamp(1rem, 3vw, 1.75rem);
+    }
+}
+
+@media (max-height: 600px) {
+    :root {
+        --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+        --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+        --title-size: clamp(1.1rem, 4vw, 2rem);
+        --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+    }
+
+    .nav-dots,
+    .keyboard-hint,
+    .decorative {
+        display: none;
+    }
+}
+
+@media (max-height: 500px) {
+    :root {
+        --slide-padding: clamp(0.4rem, 2vw, 1rem);
+        --title-size: clamp(1rem, 3.5vw, 1.5rem);
+        --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+        --body-size: clamp(0.65rem, 1vw, 0.85rem);
+    }
+}
+
+@media (max-width: 600px) {
+    :root {
+        --title-size: clamp(1.25rem, 7vw, 2.5rem);
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    #overview {
+        padding: 1rem;
+    }
+}
+
+/* ===========================================
+   REDUCED MOTION
+   Respect user preferences
+   =========================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+
+    html {
+        scroll-behavior: auto;
+    }
+}

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Brutalist — example</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { scroll-snap-type: y mandatory; overflow-y: auto; }
+  .slide {
+    min-height: 100vh; min-height: 100dvh;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    padding: var(--margin-outer);
+    box-sizing: border-box; position: relative;
+    border-bottom: var(--border-width) solid var(--ink);
+  }
+  .slide.title-slide h1 { font-size: var(--title-size); margin: 0; }
+  .slide:not(.title-slide) h2 { font-size: var(--headline-size); margin: 0 0 1.5rem; }
+  .meta { font-family: var(--font-body); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.75rem; }
+
+  .nav-dots { position: fixed; right: 8px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 6px; z-index: 50; }
+  .nav-dots button {
+    width: 16px; height: 16px; padding: 0;
+    background: transparent; border: var(--border-width) solid var(--ink); cursor: pointer;
+    transition: none;
+  }
+  .nav-dots button[aria-current="true"] { background: var(--accent); }
+  .nav-dots button:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+
+  .progress { position: fixed; left: 0; top: 0; height: 4px; background: var(--accent); width: 0%; z-index: 60; }
+
+  #overview {
+    position: fixed; inset: 0; background: var(--bg);
+    padding: var(--margin-outer); display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+    overflow: auto; z-index: 100;
+  }
+  #overview[aria-hidden="true"] { display: none; }
+  .ov-card {
+    border: var(--border-width) solid var(--ink); padding: 1rem; cursor: pointer; background: var(--bg);
+    font-family: var(--font-body); text-align: left;
+  }
+  .ov-card:hover, .ov-card:focus-visible { background: var(--accent-2); outline: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<section class="slide title-slide" data-slide-kind="cover" data-title="LOUD">
+  <p class="meta">SPECIMEN / BRUTALIST / 2026</p>
+  <h1>LOUD<br><span class="accent">ENOUGH.</span></h1>
+</section>
+
+<section class="slide" data-title="What this theme is for">
+  <p class="meta">01 / WHY</p>
+  <h2>This deck does <span class="block-accent">not</span> want your trust.</h2>
+  <p>It wants your attention. Use brutalist when the message is the brand.</p>
+</section>
+
+<section class="slide" data-title="What it isn't">
+  <p class="meta">02 / NOT FOR</p>
+  <h2>NOT FOR PITCH DECKS.</h2>
+  <p>If you need a board to believe you, pick another theme.</p>
+</section>
+
+<section class="slide" data-title="The rules">
+  <p class="meta">03 / RULES</p>
+  <h2>NO RADIUS. NO SHADOW. NO TRANSITION.</h2>
+  <p>The web's defaults are the design.</p>
+</section>
+
+<section class="slide" data-title="End">
+  <p class="meta">END</p>
+  <h2>—</h2>
+</section>
+
+<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+
+<script>
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.dots = document.getElementById('navDots');
+    this.progress = document.getElementById('progress');
+    this.overview = document.getElementById('overview');
+    this.index = 0;
+    this.buildDots(); this.buildOverview(); this.bind(); this.update();
+  }
+  buildDots() {
+    this.slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      b.addEventListener('click', () => this.goTo(i));
+      this.dots.appendChild(b);
+    });
+  }
+  buildOverview() {
+    this.slides.forEach((s, i) => {
+      const c = document.createElement('button');
+      c.className = 'ov-card';
+      c.setAttribute('aria-label', `Slide ${i + 1}: ${s.dataset.title || ''}`);
+      c.innerHTML = `<div class="meta">${String(i + 1).padStart(2, '0')}</div><div><strong>${s.dataset.title || ''}</strong></div>`;
+      c.addEventListener('click', () => { this.toggleOverview(false); this.goTo(i); });
+      this.overview.appendChild(c);
+    });
+  }
+  bind() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.toggleOverview(this.overview.getAttribute('aria-hidden') === 'true');
+      if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); this.goTo(this.index + 1); }
+      if (['ArrowUp','ArrowLeft'].includes(e.key)) { e.preventDefault(); this.goTo(this.index - 1); }
+    });
+    window.addEventListener('scroll', () => {
+      const i = this.slides.findIndex(s => s.getBoundingClientRect().top >= -1);
+      if (i >= 0 && i !== this.index) { this.index = i; this.update(); }
+    }, { passive: true });
+  }
+  goTo(i, { immediate = false } = {}) {
+    i = Math.max(0, Math.min(this.slides.length - 1, i));
+    this.index = i;
+    this.slides[i].scrollIntoView({ behavior: immediate ? 'instant' : 'smooth', block: 'start' });
+    this.update();
+  }
+  toggleOverview(open) { this.overview.setAttribute('aria-hidden', open ? 'false' : 'true'); }
+  update() {
+    this.dots.querySelectorAll('button').forEach((d, i) => d.setAttribute('aria-current', i === this.index ? 'true' : 'false'));
+    this.progress.style.width = `${((this.index + 1) / this.slides.length) * 100}%`;
+  }
+}
+window.presentation = new SlidePresentation();
+</script>
+</body>
+</html>

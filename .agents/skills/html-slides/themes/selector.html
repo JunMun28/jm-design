@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Micron slides — theme selector</title>
+<style>
+  :root {
+    --bg: #0a0a0c; --panel: #14151a; --line: rgba(255,255,255,.1);
+    --text: #fff; --muted: #bfbfbf; --accent: #bd03f7; --cyan: #32c8ff;
+    --font: "Plus Jakarta Sans", -apple-system, Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); padding: 3rem clamp(1.5rem, 4vw, 4rem); line-height: 1.5; min-height: 100vh; }
+  header { max-width: 1280px; margin: 0 auto 2.5rem; }
+  .eyebrow { font-family: var(--mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+  .lede { color: var(--muted); max-width: 60ch; margin-top: 1rem; }
+  main { max-width: 1280px; margin: 0 auto; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1.25rem; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .preview { aspect-ratio: 16 / 9; background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%23111'/%3E%3Ctext x='160' y='95' fill='%23555' font-family='monospace' font-size='12' text-anchor='middle'%3Eno preview%3C/text%3E%3C/svg%3E") center/cover no-repeat; border-bottom: 1px solid var(--line); position: relative; }
+  .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .body { padding: 1.25rem 1.5rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: .75rem; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .name { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
+  .status { font-family: var(--mono); font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+  .status.stable { color: var(--cyan); border-color: rgba(50,200,255,.4); }
+  .status.experimental { color: #ffbe1e; border-color: rgba(255,190,30,.4); }
+  .status.deprecated { color: #ec0b00; border-color: rgba(236,11,0,.4); }
+  .tone { font-family: var(--mono); font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .when { color: var(--muted); font-size: .9rem; }
+  .links { margin-top: auto; display: flex; gap: .75rem; flex-wrap: wrap; padding-top: .5rem; border-top: 1px solid var(--line); }
+  .links a { color: var(--text); text-decoration: none; font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; transition: border-color .2s, color .2s; }
+  .links a:hover { color: var(--accent); border-color: var(--accent); }
+  .links a.disabled { opacity: .35; pointer-events: none; }
+  footer { max-width: 1280px; margin: 3rem auto 0; color: var(--muted); font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
+  .err { color: #ec0b00; padding: 1rem; border: 1px solid #ec0b00; border-radius: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <p class="eyebrow">Micron slides · theme selector</p>
+  <h1>Pick a theme.</h1>
+  <p class="lede">Each theme is a self-contained folder under <code>themes/</code>. Card content is read from <code>themes/themes.json</code> at load — never edit this file directly to add a theme.</p>
+</header>
+<main id="grid"><p class="muted">Loading themes…</p></main>
+<footer><span id="counts"></span></footer>
+
+<script>
+async function load() {
+  const grid = document.getElementById("grid");
+  const counts = document.getElementById("counts");
+  try {
+    const res = await fetch("themes.json");
+    if (!res.ok) throw new Error("themes.json " + res.status);
+    const data = await res.json();
+    const themes = data.themes || [];
+    const stable = themes.filter(t => t.status === "stable").length;
+    const exp = themes.filter(t => t.status === "experimental").length;
+    counts.textContent = `${themes.length} themes · ${stable} stable · ${exp} experimental`;
+
+    grid.innerHTML = "";
+    const root = document.createElement("div");
+    root.className = "grid";
+    for (const t of themes) {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="preview" data-preview="${t.preview || ""}">
+          ${t.preview ? `<img alt="${t.name} preview" loading="lazy" onerror="this.remove()" src="../${t.preview}" />` : ""}
+        </div>
+        <div class="body">
+          <div class="row">
+            <span class="name">${t.name}</span>
+            <span class="status ${t.status}">${t.status}</span>
+          </div>
+          <div class="tone">${t.tone || ""}</div>
+          <p class="when">${t.when || ""}</p>
+          <div class="links">
+            <a href="../${t.design}">design</a>
+            <a class="${t.example ? "" : "disabled"}" href="${t.example ? "../" + t.example : "#"}">example</a>
+            ${(t.extras || []).map(x => `<a href="../${x}">${x.split("/").pop().replace(".md","")}</a>`).join("")}
+          </div>
+        </div>`;
+      root.appendChild(card);
+    }
+    grid.appendChild(root);
+  } catch (err) {
+    grid.innerHTML = `<div class="err">Failed to load themes.json: ${err.message}. Open this file via a local server (paths are relative to themes/).</div>`;
+  }
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "eval_id": 2,
+  "eval_name": "rich-brief-with-reference-style",
+  "run_kind": "without_skill",
+  "files": [
+    "2026-05-16-q3-board-plg-shift-deck.txt"
+  ],
+  "brainstorm_picked": "2026-05-16-q3-board-plg-shift-deck.txt",
+  "expectations": [
+    {
+      "text": "Skill does NOT re-ask audience, goal, scope, or length since all are in the prompt",
+      "passed": true,
+      "evidence": "no re-asking detected",
+      "name": "skips_already_answered_intake"
+    },
+    {
+      "text": "The reference file is read",
+      "passed": true,
+      "evidence": "style cues from reference present in design system",
+      "name": "reads_referenced_style_file"
+    },
+    {
+      "text": "Brainstorm file contains exactly 7 slide sections (SLIDE 01 through SLIDE 07)",
+      "passed": true,
+      "evidence": "detected 7 SLIDE blocks (expected 7)",
+      "name": "produces_7_slide_brainstorm"
+    },
+    {
+      "text": "Brainstorm references hairlines, manuscript rows, italic accent word, or other terms from references/design-vocabulary.md",
+      "passed": true,
+      "evidence": "matched terms: ['hairline', 'manuscript row', 'stat[- ]row', 'italic closer', 'inline action']",
+      "name": "uses_design_vocabulary"
+    },
+    {
+      "text": "DESIGN SYSTEM or per-slide layout explicitly limits cards consistent with the reference style",
+      "passed": true,
+      "evidence": "explicit 'card budget: 1' found",
+      "name": "low_card_count"
+    },
+    {
+      "text": "Skill does NOT produce a .pptx, .html, or .pdf file",
+      "passed": true,
+      "evidence": "only .txt/.md outputs",
+      "name": "refuses_to_build_actual_deck"
+    }
+  ]
+}

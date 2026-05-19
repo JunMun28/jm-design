@@ -1,0 +1,54 @@
+/* =============================================================
+   NON-MICRON RUNTIME CONTRACT — single source of truth.
+
+   Paste order for any non-Micron theme:
+     1. themes/<id>/tokens.css      (palette, fonts, motion)
+     2. references/tokens/non-micron-contract.css   <-- THIS FILE
+     3. references/tokens/viewport-base.css
+     4. references/tokens/layout-kit.css
+     5. universal skeleton from references/runtime/html-template.md
+
+   This file is identical for every non-Micron theme — it is pure
+   var()-fallback plumbing. It maps whatever names a theme's
+   tokens.css defines (--bg / --bg-gradient / --ink / --rule / …)
+   onto the names the always-paste viewport-base.css + layout-kit.css
+   + universal skeleton consume (--bg-primary, --space-*, …).
+
+   What is NOT here (stays in themes/<id>/tokens.css, because it is
+   theme expression, not structural plumbing):
+     --ease-out-expo, --duration-normal   (brutalist is instant)
+     --font-mono                          (brutalist uses system mono)
+
+   verify.py enforces this by sentinel: if the shared runtime is pasted
+   (viewport-base.css defines --slide-padding) but a contract token below
+   is missing, verification fails. Self-contained single-file decks that
+   inline their own complete CSS define no --slide-padding and are left
+   alone — the contract only binds decks that use the shared runtime.
+   ============================================================= */
+
+:root {
+  /* Surface + text — glass themes carry --bg-gradient, others --bg. */
+  --bg-primary: var(--bg-gradient, var(--bg, #0a0a0c));
+  --text-primary: var(--ink, #ffffff);
+  --text-secondary: var(--ink-muted, var(--ink, #bfbfbf));
+
+  /* 12-col grid gutter (layout-kit reads --col-gutter; themes set --col-gap). */
+  --col-gutter: var(--col-gap, 24px);
+
+  /* 8px baseline rhythm consumed by layout-kit + skeleton. */
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+
+  /* Small mono/eyebrow type + tracking for chrome (slide-coord, eyebrow). */
+  --type-xs: 0.72rem;
+  --track-eyebrow: 0.14em;
+  --track-mono: 0.08em;
+
+  /* Hairlines for layout-kit .rule/.regmark + overview borders.
+     Prefers the theme's own rule colour, then a glass border, then
+     a neutral mid-grey that reads on both light and dark surfaces. */
+  --hairline: 1px solid var(--rule, var(--glass-border, rgba(127, 127, 127, 0.22)));
+  --hairline-dark: 1px solid var(--rule, var(--glass-border, rgba(127, 127, 127, 0.22)));
+}

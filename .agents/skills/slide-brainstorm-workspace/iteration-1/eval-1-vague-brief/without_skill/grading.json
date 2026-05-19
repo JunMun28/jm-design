@@ -1,0 +1,50 @@
+{
+  "eval_id": 1,
+  "eval_name": "vague-brief-triggers-intake",
+  "run_kind": "without_skill",
+  "files": [
+    "README.md",
+    "assumptions.md",
+    "kubernetes-for-non-engineers.html",
+    "outline.md"
+  ],
+  "brainstorm_picked": "assumptions.md",
+  "expectations": [
+    {
+      "text": "Before writing any file, the skill asks at least 2 intake questions covering audience and either goal or length",
+      "passed": true,
+      "evidence": "found INTAKE NOTE / assumptions / open questions block",
+      "name": "asks_intake_questions_before_drafting"
+    },
+    {
+      "text": "A .txt file is created under docs/brainstorms/ with YYYY-MM-DD- prefix",
+      "passed": false,
+      "evidence": "files: ['README.md', 'assumptions.md', 'kubernetes-for-non-engineers.html', 'outline.md']",
+      "name": "produces_brainstorm_txt_file"
+    },
+    {
+      "text": "Brainstorm file contains a HEADER box at the top with Audience, Goal, Style, Format, Date lines",
+      "passed": false,
+      "evidence": "missing one of: box chars, audience, goal, format, date",
+      "name": "file_has_header_box"
+    },
+    {
+      "text": "Brainstorm file contains a NARRATIVE ARC section with a story spine listing one question per slide",
+      "passed": false,
+      "evidence": "no narrative arc section",
+      "name": "file_has_narrative_arc_section"
+    },
+    {
+      "text": "Brainstorm file contains at least 3 slide sections, each with an ASCII frame drawn with box characters",
+      "passed": false,
+      "evidence": "detected 0 SLIDE blocks; box chars present=False",
+      "name": "file_has_per_slide_ascii_frames"
+    },
+    {
+      "text": "Skill does NOT produce a .pptx, .html, or .pdf file",
+      "passed": false,
+      "evidence": "forbidden extensions present: ['kubernetes-for-non-engineers.html']",
+      "name": "refuses_to_build_actual_deck"
+    }
+  ]
+}

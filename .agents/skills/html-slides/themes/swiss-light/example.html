@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Swiss minimal — example deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Inline viewport-base + layout-kit equivalents kept minimal for the example. */
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { scroll-snap-type: y mandatory; overflow-y: auto; }
+  .slide {
+    min-height: 100vh; min-height: 100dvh;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--col-gap);
+    padding: clamp(48px, 6vw, 96px) var(--margin-outer);
+    box-sizing: border-box; position: relative;
+    background: var(--bg);
+  }
+  .slide-content { grid-column: 1 / span 8; align-self: center; }
+  .slide.title-slide .slide-content { grid-column: 2 / span 8; text-align: left; }
+  .slide.title-slide h1 { font-size: var(--title-size); margin: 0.5rem 0 1rem; }
+  .slide:not(.title-slide) h2 { font-size: var(--headline-size); margin: 0.5rem 0 1.25rem; }
+  .meta-line { font-family: var(--font-mono); color: var(--ink-muted); font-size: 0.875rem; }
+  ul.bullets { list-style: none; padding: 0; margin: 0; }
+  ul.bullets li { padding: 0.5rem 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 2rem 1fr; gap: 0.5rem; }
+  ul.bullets li:last-child { border-bottom: 1px solid var(--rule); }
+  ul.bullets li::before { content: counter(b, decimal-leading-zero); counter-increment: b; color: var(--ink-muted); font-family: var(--font-mono); font-size: 0.875rem; align-self: baseline; }
+  ul.bullets { counter-reset: b; }
+  .accent-rule { width: 64px; height: 4px; background: var(--accent); margin-bottom: 1.5rem; }
+  .chart-wrap { grid-column: 9 / span 4; align-self: center; }
+  .takeaway { font-family: var(--font-mono); color: var(--ink-muted); font-size: 0.875rem; margin-top: 1rem; }
+
+  /* Nav */
+  .nav-dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 50; }
+  .nav-dots button {
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 1px solid var(--rule-strong); background: transparent;
+    padding: 0; cursor: pointer;
+    transition: background 200ms ease-out, transform 200ms ease-out;
+  }
+  .nav-dots button[aria-current="true"] { background: var(--ink); border-color: var(--ink); }
+  .nav-dots button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+  .progress { position: fixed; left: 0; top: 0; height: 2px; background: var(--accent); width: 0%; z-index: 60; transition: width 200ms ease-out; }
+
+  /* Overview */
+  #overview {
+    position: fixed; inset: 0; background: var(--bg);
+    padding: var(--margin-outer); display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    overflow: auto; z-index: 100;
+  }
+  #overview[aria-hidden="true"] { display: none; }
+  .ov-card {
+    border: 1px solid var(--rule); padding: 1rem; cursor: pointer; background: var(--bg);
+    transition: border-color 200ms ease-out;
+    font-family: var(--font-body); text-align: left;
+  }
+  .ov-card:hover, .ov-card:focus-visible { border-color: var(--ink); outline: none; }
+  .ov-card .ov-num { font-family: var(--font-mono); color: var(--ink-muted); font-size: 0.75rem; }
+  .ov-card .ov-title { font-weight: 700; margin-top: 0.5rem; }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    html, body { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<section class="slide title-slide" data-slide-kind="cover" data-title="The grid is the message">
+  <div class="slide-content">
+    <div class="eyebrow">Swiss minimal · example</div>
+    <h1>The grid is the message.</h1>
+    <p class="meta-line">2026 · Specimen deck · Section 01</p>
+  </div>
+</section>
+
+<section class="slide" data-title="What this theme is for">
+  <div class="slide-content">
+    <div class="eyebrow">Section 01</div>
+    <div class="accent-rule"></div>
+    <h2>Use Swiss minimal when the deck behaves like a document.</h2>
+    <ul class="bullets">
+      <li>Research summaries with citations.</li>
+      <li>Technical talks read by speaker, not performed.</li>
+      <li>Dense agendas where structure is the point.</li>
+      <li>Reports whose authority comes from restraint.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="slide" data-title="One accent, one purpose">
+  <div class="slide-content">
+    <div class="eyebrow">Section 02</div>
+    <h2>One accent per slide. The accent points at the takeaway.</h2>
+    <p>If the slide has no takeaway, the accent doesn't appear. Discipline is the design; accent inflation flattens the hierarchy and erodes the theme.</p>
+    <p class="takeaway"><span class="accent">→</span> Author intent: one focal use.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="Data slide">
+  <div class="slide-content">
+    <div class="eyebrow">Section 03</div>
+    <h2>Charts read on white. One series highlighted.</h2>
+    <p class="takeaway">Q3 conversion rose to 4.8%, the highest reading in the trailing twelve months.</p>
+  </div>
+  <div class="chart-wrap">
+    <svg viewBox="0 0 240 140" role="img" aria-label="Quarterly conversion sparkline">
+      <polyline fill="none" stroke="#94A3B8" stroke-width="1" points="10,90 50,100 90,80 130,95 170,85" />
+      <polyline fill="none" stroke="#E53935" stroke-width="2" points="170,85 210,40" />
+      <circle cx="210" cy="40" r="4" fill="#E53935" />
+      <text x="216" y="42" font-family="IBM Plex Mono" font-size="10" fill="#475569">4.8%</text>
+    </svg>
+  </div>
+</section>
+
+<section class="slide" data-title="Close">
+  <div class="slide-content">
+    <div class="eyebrow">End</div>
+    <div class="accent-rule"></div>
+    <h2>Restraint scales. Decoration doesn't.</h2>
+    <p class="meta-line">Specimen deck · swiss-light theme</p>
+  </div>
+</section>
+
+<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+
+<script>
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.dots = document.getElementById('navDots');
+    this.progress = document.getElementById('progress');
+    this.overview = document.getElementById('overview');
+    this.index = 0;
+    this.buildDots();
+    this.buildOverview();
+    this.bind();
+    this.update();
+  }
+  buildDots() {
+    this.slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      b.addEventListener('click', () => this.goTo(i));
+      this.dots.appendChild(b);
+    });
+  }
+  buildOverview() {
+    this.slides.forEach((s, i) => {
+      const c = document.createElement('button');
+      c.className = 'ov-card';
+      c.setAttribute('aria-label', `Slide ${i + 1}: ${s.dataset.title || ''}`);
+      c.innerHTML = `<div class="ov-num">${String(i + 1).padStart(2, '0')}</div><div class="ov-title">${s.dataset.title || ''}</div>`;
+      c.addEventListener('click', () => { this.toggleOverview(false); this.goTo(i); });
+      this.overview.appendChild(c);
+    });
+  }
+  bind() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { this.toggleOverview(this.overview.getAttribute('aria-hidden') === 'true'); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); this.goTo(this.index + 1); }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); this.goTo(this.index - 1); }
+    });
+    window.addEventListener('scroll', () => {
+      const i = this.slides.findIndex(s => s.getBoundingClientRect().top >= -1);
+      if (i >= 0 && i !== this.index) { this.index = i; this.update(); }
+    }, { passive: true });
+  }
+  goTo(i, { immediate = false } = {}) {
+    i = Math.max(0, Math.min(this.slides.length - 1, i));
+    this.index = i;
+    this.slides[i].scrollIntoView({ behavior: immediate ? 'instant' : 'smooth', block: 'start' });
+    this.update();
+  }
+  toggleOverview(open) {
+    this.overview.setAttribute('aria-hidden', open ? 'false' : 'true');
+  }
+  update() {
+    const dots = this.dots.querySelectorAll('button');
+    dots.forEach((d, i) => d.setAttribute('aria-current', i === this.index ? 'true' : 'false'));
+    this.progress.style.width = `${((this.index + 1) / this.slides.length) * 100}%`;
+  }
+}
+window.presentation = new SlidePresentation();
+</script>
+</body>
+</html>

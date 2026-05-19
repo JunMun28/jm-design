@@ -1,0 +1,877 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot beyond coding - skill test</title>
+  <style>
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --gray-a: #262626;
+      --gray-b: #4d4d4d;
+      --gray-c: #8c8c8c;
+      --gray-d: #bfbfbf;
+      --gray-e: #e6e6e6;
+      --purple: #bd03f7;
+      --purple-b: #ff8cff;
+      --blue: #2044ff;
+      --cyan: #32c8ff;
+      --radius: 8px;
+      --stage-w: 1600px;
+      --stage-h: 900px;
+      --stage-scale: 1;
+      --slide-padding: 64px;
+      --content-gap: 32px;
+      --title-size: 92px;
+      --h2-size: 76px;
+      --body-size: 24px;
+      --small-size: 14px;
+      --overview-bg: rgba(0, 0, 0, 0.94);
+      --overview-card: rgba(255, 255, 255, 0.06);
+      --overview-line: rgba(255, 255, 255, 0.16);
+      --overview-muted: #8c8c8c;
+      --overview-text: #ffffff;
+      --font-display: Arial, Helvetica, sans-serif;
+      --font-body: Arial, Helvetica, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden;
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+    }
+
+    html {
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      scrollbar-width: none;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #030303;
+    }
+
+    .slide-content {
+      width: var(--stage-w);
+      height: var(--stage-h);
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-height: none;
+      overflow: hidden;
+      padding: var(--slide-padding);
+      position: relative;
+      z-index: 2;
+      background: var(--black);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+      transform: scale(var(--stage-scale));
+      transform-origin: center center;
+    }
+
+    img,
+    .image-container {
+      max-width: 100%;
+      max-height: min(50vh, 400px);
+      object-fit: contain;
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--purple), var(--purple-b));
+      box-shadow: 0 0 18px rgba(189, 3, 247, 0.48);
+    }
+
+    .nav-dots {
+      position: fixed;
+      right: 18px;
+      top: 50%;
+      z-index: 30;
+      display: grid;
+      gap: 8px;
+      transform: translateY(-50%);
+    }
+
+    .nav-dots button {
+      width: 8px;
+      height: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+    }
+
+    .nav-dots button.active {
+      border-color: var(--purple-b);
+      background: var(--purple);
+      box-shadow: 0 0 12px rgba(189, 3, 247, 0.72);
+    }
+
+    #overview {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      overflow-y: auto;
+      padding: clamp(1.5rem, 4vw, 3.75rem);
+      background: var(--overview-bg);
+      color: var(--overview-text);
+      backdrop-filter: blur(12px);
+    }
+
+    #overview[aria-hidden="false"] {
+      display: block;
+    }
+
+    #overview .ov-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+      max-width: 1280px;
+      font-family: var(--font-display);
+      font-size: var(--small-size);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--overview-muted);
+    }
+
+    #overview .ov-head b {
+      color: var(--overview-text);
+      font-weight: 700;
+    }
+
+    #overview .ov-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: clamp(1rem, 2vw, 1.4rem);
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    #overview .ov-card {
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid var(--overview-line);
+      border-radius: 8px;
+      background: var(--overview-card);
+      color: inherit;
+      text-align: left;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    #overview .ov-card:hover,
+    #overview .ov-card:focus-visible {
+      border-color: var(--purple);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    #overview .ov-card.active {
+      border-color: var(--purple);
+      border-width: 2px;
+    }
+
+    #overview .ov-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      position: relative;
+      pointer-events: none;
+      background: var(--black);
+    }
+
+    #overview .ov-thumb .clone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      transform-origin: top left;
+    }
+
+    #overview .ov-thumb .clone .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
+    #overview .ov-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      font-family: var(--font-mono);
+      font-size: clamp(0.58rem, 0.8vw, 0.7rem);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--overview-muted);
+    }
+
+    #overview .ov-label b {
+      color: var(--overview-text);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.58s var(--ease), transform 0.58s var(--ease);
+    }
+
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide.visible .reveal:nth-child(2) {
+      transition-delay: 0.08s;
+    }
+
+    .slide.visible .reveal:nth-child(3) {
+      transition-delay: 0.16s;
+    }
+
+    .eyebrow {
+      margin-bottom: clamp(0.9rem, 1.5vw, 1.4rem);
+      color: var(--purple-b);
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2 {
+      max-width: 780px;
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: var(--title-size);
+      line-height: 0.98;
+    }
+
+    h2 {
+      font-size: var(--h2-size);
+      line-height: 1;
+    }
+
+    p {
+      color: var(--gray-e);
+      font-size: var(--body-size);
+      line-height: 1.42;
+    }
+
+    .subtitle {
+      max-width: 680px;
+      margin-top: clamp(1rem, 2vw, 1.5rem);
+      color: var(--gray-d);
+    }
+
+    .accent-line {
+      width: 84px;
+      height: 7px;
+      margin-top: clamp(1.4rem, 2.5vw, 2rem);
+      border-radius: 999px;
+      background: var(--purple);
+      box-shadow: 0 0 24px rgba(189, 3, 247, 0.44);
+    }
+
+    .footer-note {
+      position: absolute;
+      left: var(--slide-padding);
+      bottom: clamp(1rem, 2vw, 2rem);
+      z-index: 3;
+      color: var(--gray-c);
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .title-slide .slide-content {
+      background:
+        radial-gradient(circle at 80% 22%, rgba(189, 3, 247, 0.22), transparent 30%),
+        radial-gradient(circle at 64% 72%, rgba(50, 200, 255, 0.12), transparent 28%),
+        linear-gradient(135deg, rgba(32, 68, 255, 0.14), transparent 42%),
+        var(--black);
+    }
+
+    .title-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.94fr) minmax(320px, 0.86fr);
+      gap: clamp(2rem, 5vw, 6rem);
+      align-items: center;
+      min-height: min(760px, 100%);
+    }
+
+    .title-copy {
+      max-width: 760px;
+    }
+
+    .screen-stack {
+      position: relative;
+      min-height: 520px;
+    }
+
+    .screen-card {
+      position: absolute;
+      width: min(100%, 540px);
+      border: 1px solid rgba(230, 230, 230, 0.18);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(48, 48, 48, 0.96), rgba(12, 12, 12, 0.98));
+      box-shadow: 0 26px 62px rgba(0, 0, 0, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transform: rotate(-4deg);
+    }
+
+    .screen-card.secondary {
+      right: 0;
+      top: 46px;
+      opacity: 0.44;
+      transform: rotate(5deg) scale(0.88);
+    }
+
+    .screen-card.primary {
+      top: 110px;
+      left: clamp(0rem, 3vw, 3rem);
+      z-index: 2;
+    }
+
+    .screen-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      border-bottom: 1px solid rgba(230, 230, 230, 0.12);
+      padding: 16px 18px;
+      color: var(--gray-c);
+      font-family: var(--font-mono);
+      font-size: var(--small-size);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .topbar-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-label svg {
+      width: 18px;
+      height: 18px;
+      color: var(--purple-b);
+    }
+
+    .screen-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 18px;
+      border-bottom: 1px solid rgba(230, 230, 230, 0.09);
+      padding: 18px;
+      color: var(--gray-e);
+      font-size: clamp(0.86rem, 1.1vw, 1rem);
+      line-height: 1.3;
+    }
+
+    .screen-row:last-child {
+      border-bottom: 0;
+    }
+
+    .screen-row strong {
+      color: var(--white);
+    }
+
+    .screen-row .active {
+      color: var(--purple-b);
+    }
+
+    .content-slide .slide-content {
+      background:
+        radial-gradient(circle at 18% 18%, rgba(32, 68, 255, 0.16), transparent 25%),
+        linear-gradient(135deg, rgba(189, 3, 247, 0.12), transparent 32%),
+        var(--black);
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(340px, 1fr);
+      gap: clamp(2rem, 5vw, 5.5rem);
+      align-items: center;
+      min-height: 100%;
+    }
+
+    .takeaway-list {
+      display: grid;
+      gap: clamp(0.8rem, 1.6vw, 1.2rem);
+      margin-top: clamp(1.5rem, 3vw, 2.7rem);
+      max-width: 650px;
+      list-style: none;
+    }
+
+    .takeaway-list li {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 14px;
+      align-items: start;
+      color: var(--gray-e);
+      font-size: clamp(0.92rem, 1.3vw, 1.1rem);
+      line-height: 1.42;
+    }
+
+    .icon-badge {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(255, 140, 255, 0.34);
+      border-radius: 50%;
+      background: rgba(189, 3, 247, 0.14);
+      box-shadow: 0 0 18px rgba(189, 3, 247, 0.28);
+    }
+
+    .icon-badge svg {
+      width: 16px;
+      height: 16px;
+      color: var(--purple-b);
+    }
+
+    .workflow-map {
+      position: relative;
+      min-height: 520px;
+      border: 1px solid rgba(230, 230, 230, 0.14);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(38, 38, 38, 0.96), rgba(6, 6, 6, 0.98));
+      background-size: 42px 42px, 42px 42px, 100% 100%;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .workflow-map::after {
+      content: "";
+      position: absolute;
+      inset: 18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(189, 3, 247, 0.24), transparent 64%);
+      filter: blur(6px);
+    }
+
+    .hub {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 2;
+      display: grid;
+      width: clamp(128px, 17vw, 188px);
+      aspect-ratio: 1;
+      place-items: center;
+      border: 1px solid rgba(255, 140, 255, 0.46);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(70, 30, 82, 0.96), rgba(8, 8, 8, 0.98) 70%);
+      box-shadow: 0 0 42px rgba(189, 3, 247, 0.32);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+      font-weight: 800;
+      text-align: center;
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 82%;
+      aspect-ratio: 1.55;
+      border: 1px solid rgba(50, 200, 255, 0.22);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .task-pill {
+      position: absolute;
+      z-index: 3;
+      max-width: 220px;
+      border: 1px solid rgba(230, 230, 230, 0.16);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.74);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      color: var(--gray-e);
+      font-size: clamp(0.72rem, 1.02vw, 0.92rem);
+      line-height: 1.25;
+      padding: 12px 16px;
+      text-wrap: balance;
+    }
+
+    .task-pill:nth-of-type(3) {
+      left: 7%;
+      top: 16%;
+    }
+
+    .task-pill:nth-of-type(4) {
+      right: 8%;
+      top: 12%;
+      border-color: rgba(50, 200, 255, 0.32);
+    }
+
+    .task-pill:nth-of-type(5) {
+      right: 6%;
+      bottom: 18%;
+    }
+
+    .task-pill:nth-of-type(6) {
+      left: 8%;
+      bottom: 12%;
+      border-color: rgba(255, 140, 255, 0.36);
+    }
+
+    .path-line {
+      position: absolute;
+      z-index: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(50, 200, 255, 0.72), rgba(189, 3, 247, 0.7), transparent);
+      transform-origin: left center;
+    }
+
+    .path-line.a {
+      left: 23%;
+      top: 28%;
+      width: 47%;
+      transform: rotate(18deg);
+    }
+
+    .path-line.b {
+      left: 36%;
+      top: 70%;
+      width: 48%;
+      transform: rotate(-19deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      html {
+        scroll-behavior: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar"></div>
+  <nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+  <section class="slide title-slide" data-slide-kind="cover">
+    <div class="slide-content">
+      <div class="title-grid">
+        <div class="title-copy">
+          <p class="eyebrow reveal">Micron skill smoke test</p>
+          <h1 class="reveal">Copilot beyond coding</h1>
+          <p class="subtitle reveal">A non-technical user can describe work in plain language and let Copilot help draft, automate, organize, and explain.</p>
+          <div class="accent-line reveal"></div>
+        </div>
+        <div class="screen-stack reveal" aria-hidden="true">
+          <div class="screen-card secondary">
+            <div class="screen-topbar"><span class="topbar-label"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" aria-hidden="true" focusable="false" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l176 0-10.7 32L160 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-69.3 0L336 416l176 0c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0zM512 64l0 224L64 288 64 64l448 0z"></path></svg>Desktop helper</span></div>
+            <div class="screen-row"><strong>Open</strong><span>Find the right app or file</span></div>
+            <div class="screen-row"><strong>Read</strong><span>Summarize long content</span></div>
+            <div class="screen-row"><strong>Draft</strong><span>Prepare next response</span></div>
+          </div>
+          <div class="screen-card primary">
+            <div class="screen-topbar"><span class="topbar-label"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" aria-hidden="true" focusable="false" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M234.7 42.7L197 56.8c-3 1.1-5 4-5 7.2s2 6.1 5 7.2l37.7 14.1L248.8 123c1.1 3 4 5 7.2 5s6.1-2 7.2-5l14.1-37.7L315 71.2c3-1.1 5-4 5-7.2s-2-6.1-5-7.2L277.3 42.7 263.2 5c-1.1-3-4-5-7.2-5s-6.1 2-7.2 5L234.7 42.7zM46.1 395.4c-18.7 18.7-18.7 49.1 0 67.9l34.6 34.6c18.7 18.7 49.1 18.7 67.9 0L529.9 116.5c18.7-18.7 18.7-49.1 0-67.9L495.3 14.1c-18.7-18.7-49.1-18.7-67.9 0L46.1 395.4zM484.6 82.6l-105 105-23.3-23.3 105-105 23.3 23.3zM7.5 117.2C3 118.9 0 123.2 0 128s3 9.1 7.5 10.8L64 160l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L128 160l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L128 96 106.8 39.5C105.1 35 100.8 32 96 32s-9.1 3-10.8 7.5L64 96 7.5 117.2zm352 256c-4.5 1.7-7.5 6-7.5 10.8s3 9.1 7.5 10.8L416 416l21.2 56.5c1.7 4.5 6 7.5 10.8 7.5s9.1-3 10.8-7.5L480 416l56.5-21.2c4.5-1.7 7.5-6 7.5-10.8s-3-9.1-7.5-10.8L480 352l-21.2-56.5c-1.7-4.5-6-7.5-10.8-7.5s-9.1 3-10.8 7.5L416 352l-56.5 21.2z"></path></svg>Workflow preview</span></div>
+            <div class="screen-row"><strong>Input</strong><span>Plain-language request</span></div>
+            <div class="screen-row"><strong>Action</strong><span class="active">Create useful first pass</span></div>
+            <div class="screen-row"><strong>Gate</strong><span>User reviews before sending</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="footer-note">Micron Technology / May 2026</p>
+  </section>
+
+  <section class="slide content-slide" data-slide-kind="content">
+    <div class="slide-content">
+      <div class="content-layout">
+        <div>
+          <p class="eyebrow reveal">What changes</p>
+          <h2 class="reveal">You write intent, not code</h2>
+          <p class="subtitle reveal">The important skill becomes asking clearly, checking the result, and keeping final approval with the person.</p>
+          <ul class="takeaway-list reveal">
+            <li><span class="icon-badge"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 384 512" aria-hidden="true" focusable="false" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M64 0C28.7 0 0 28.7 0 64L0 448c0 35.3 28.7 64 64 64l256 0c35.3 0 64-28.7 64-64l0-288-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM112 256l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16z"></path></svg></span><p>Turn messy notes into emails, summaries, checklists, or slide outlines.</p></li>
+            <li><span class="icon-badge"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 640 512" aria-hidden="true" focusable="false" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"></path></svg></span><p>Ask for scripts or formulas without knowing the programming language first.</p></li>
+            <li><span class="icon-badge"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 576 512" aria-hidden="true" focusable="false" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M64 0C28.7 0 0 28.7 0 64L0 352c0 35.3 28.7 64 64 64l176 0-10.7 32L160 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-69.3 0L336 416l176 0c35.3 0 64-28.7 64-64l0-288c0-35.3-28.7-64-64-64L64 0zM512 64l0 224L64 288 64 64l448 0z"></path></svg></span><p>Use Copilot as a guided operator for repeatable PC tasks.</p></li>
+          </ul>
+        </div>
+        <div class="workflow-map reveal" aria-hidden="true">
+          <div class="orbit"></div>
+          <div class="path-line a"></div>
+          <div class="path-line b"></div>
+          <div class="task-pill">Summarize this document</div>
+          <div class="task-pill">Rename and organize these files</div>
+          <div class="task-pill">Build a small automation</div>
+          <div class="task-pill">Explain the result in simple words</div>
+          <div class="hub">Copilot<br>as PC layer</div>
+        </div>
+      </div>
+    </div>
+    <p class="footer-note">Micron Technology / May 2026</p>
+  </section>
+
+  <div id="overview" aria-hidden="true"></div>
+
+  <script>
+    function updateStageScale() {
+      const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900, 1);
+      document.documentElement.style.setProperty("--stage-scale", scale.toFixed(4));
+    }
+
+    updateStageScale();
+    window.addEventListener("resize", updateStageScale);
+
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll(".slide"));
+        this.currentSlide = 0;
+        this.locked = false;
+        this.overviewOpen = false;
+        this.navDotsContainer = document.querySelector(".nav-dots");
+        this.progressBar = document.querySelector(".progress-bar");
+        this.overview = document.getElementById("overview");
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.applySlide(0);
+      }
+
+      clamp(index) {
+        return Math.max(0, Math.min(this.slides.length - 1, index));
+      }
+
+      applySlide(index) {
+        const next = this.clamp(index);
+        this.currentSlide = next;
+        this.slides.forEach((slide, i) => {
+          slide.classList.toggle("active", i === next);
+          slide.classList.toggle("visible", i === next);
+        });
+        this.navDotsContainer.querySelectorAll("button").forEach((dot, i) => {
+          dot.classList.toggle("active", i === next);
+          dot.setAttribute("aria-current", i === next ? "true" : "false");
+        });
+        this.progressBar.style.width = `${((next + 1) / this.slides.length) * 100}%`;
+      }
+
+      goTo(index, options = {}) {
+        const next = this.clamp(index);
+        if (this.locked && !options.immediate) return;
+        this.applySlide(next);
+        this.slides[next].scrollIntoView({
+          behavior: options.immediate ? "auto" : "smooth",
+          block: "start",
+        });
+        if (!options.immediate) {
+          this.locked = true;
+          window.setTimeout(() => {
+            this.locked = false;
+          }, 650);
+        }
+      }
+
+      next() {
+        this.goTo(this.currentSlide + 1);
+      }
+
+      prev() {
+        this.goTo(this.currentSlide - 1);
+      }
+
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              this.applySlide(this.slides.indexOf(entry.target));
+            }
+          });
+        }, { threshold: 0.6 });
+        this.slides.forEach((slide) => observer.observe(slide));
+      }
+
+      setupNavDots() {
+        this.navDotsContainer.innerHTML = "";
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+          dot.addEventListener("click", () => this.goTo(i));
+          this.navDotsContainer.appendChild(dot);
+        });
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") {
+            event.preventDefault();
+            this.toggleOverview();
+            return;
+          }
+          if (this.overviewOpen) return;
+          if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+            event.preventDefault();
+            this.next();
+          } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+            event.preventDefault();
+            this.prev();
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            this.goTo(0);
+          } else if (event.key === "End") {
+            event.preventDefault();
+            this.goTo(this.slides.length - 1);
+          }
+        });
+      }
+
+      setupWheelNav() {
+        let wheelAcc = 0;
+        let wheelTimer = null;
+        window.addEventListener("wheel", (event) => {
+          if (this.overviewOpen) return;
+          wheelAcc += event.deltaY + event.deltaX;
+          if (Math.abs(wheelAcc) > 60) {
+            event.preventDefault();
+            wheelAcc > 0 ? this.next() : this.prev();
+            wheelAcc = 0;
+          }
+          window.clearTimeout(wheelTimer);
+          wheelTimer = window.setTimeout(() => {
+            wheelAcc = 0;
+          }, 150);
+        }, { passive: false });
+      }
+
+      setupTouchNav() {
+        let startX = 0;
+        let startY = 0;
+        window.addEventListener("touchstart", (event) => {
+          const touch = event.changedTouches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+        }, { passive: true });
+        window.addEventListener("touchend", (event) => {
+          if (this.overviewOpen) return;
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+            dx < 0 ? this.next() : this.prev();
+          } else if (Math.abs(dy) > 40) {
+            dy < 0 ? this.next() : this.prev();
+          }
+        }, { passive: true });
+      }
+
+      buildOverview() {
+        this.overview.innerHTML = "";
+        const head = document.createElement("div");
+        head.className = "ov-head";
+        head.innerHTML = `<span><b>Slide overview</b> / esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
+        this.overview.appendChild(head);
+
+        const grid = document.createElement("div");
+        grid.className = "ov-grid";
+        this.slides.forEach((slide, i) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+          card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+
+          const thumb = document.createElement("div");
+          thumb.className = "ov-thumb";
+          const clone = slide.cloneNode(true);
+          clone.classList.add("clone", "visible");
+          thumb.appendChild(clone);
+
+          const label = document.createElement("div");
+          label.className = "ov-label";
+          label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind || "slide"}</span>`;
+
+          card.appendChild(thumb);
+          card.appendChild(label);
+          card.addEventListener("click", () => {
+            this.toggleOverview(false);
+            this.goTo(i, { immediate: true });
+          });
+          grid.appendChild(card);
+        });
+        this.overview.appendChild(grid);
+
+        requestAnimationFrame(() => {
+          this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+            const clone = thumb.querySelector(".clone");
+            clone.style.transform = `scale(${thumb.clientWidth / window.innerWidth})`;
+          });
+        });
+      }
+
+      toggleOverview(force) {
+        this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+        if (this.overviewOpen) {
+          this.buildOverview();
+          this.overview.setAttribute("aria-hidden", "false");
+        } else {
+          this.overview.setAttribute("aria-hidden", "true");
+        }
+      }
+    }
+
+    window.presentation = new SlidePresentation();
+  </script>
+</body>
+</html>

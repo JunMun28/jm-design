@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "rich-brief-with-reference-style",
+  "prompt": "Help me plan a 7-slide deck for our Q3 board review. Audience is our 8-person board — mix of operators and investors, mostly non-technical. I want them to understand why we're shifting our customer-acquisition strategy from outbound sales to product-led growth. Match the style of docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.txt — Apple/Cursor restraint, hairlines not cards, italic purple accent. Save the brainstorm to docs/brainstorms/.",
+  "assertions": [
+    {"name": "skips_already_answered_intake", "description": "Skill does NOT re-ask audience, goal, scope, or length since all are in the prompt"},
+    {"name": "reads_referenced_style_file", "description": "The reference file is read"},
+    {"name": "produces_7_slide_brainstorm", "description": "Brainstorm file contains exactly 7 slide sections (SLIDE 01 through SLIDE 07)"},
+    {"name": "uses_design_vocabulary", "description": "Brainstorm references hairlines, manuscript rows, italic accent word, or other terms from references/design-vocabulary.md"},
+    {"name": "low_card_count", "description": "DESIGN SYSTEM or per-slide layout explicitly limits cards consistent with the reference style"},
+    {"name": "refuses_to_build_actual_deck", "description": "Skill does NOT produce a .pptx, .html, or .pdf file"}
+  ]
+}

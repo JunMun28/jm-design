@@ -1,0 +1,169 @@
+/* =============================================================
+   MICRON TOKENS — single source of truth
+   Paste into the deck's <style> BEFORE any theme overrides.
+   Theme references (micron-dark-design.md, micron-engineering-dark.md,
+   micron-light-design.md) extend these tokens; they do not redefine them.
+
+   Required tokens (verify.py checks these are present):
+     --micron-black, --micron-white, --micron-accent,
+     --font-display, --scale-ratio, --col-count
+   ============================================================= */
+
+:root {
+    /* ---------- Brand colors ---------- */
+    --micron-black: #000000;
+    --micron-white: #ffffff;
+    --micron-off-white: #f0f0ee;
+    --micron-accent: #bd03f7;        /* Purple A — the only accent */
+    --micron-cyan: #32c8ff;          /* Data/input movement only */
+
+    --gray-a: #262626;
+    --gray-b: #4d4d4d;
+    --gray-c: #8c8c8c;
+    --gray-d: #bfbfbf;
+    --gray-e: #e6e6e6;
+    --gray-f: #f2f2f2;
+
+    /* ---------- Data-viz palette ---------- */
+    --dv-purple-a: #bd03f7;
+    --dv-blue-a:   #2044ff;
+    --dv-green-a:  #01ab01;
+    --dv-purple-b: #ff8cff;
+    --dv-blue-b:   #32c8ff;
+    --dv-green-b:  #78f05a;
+    --dv-gold-b:   #ffbe1e;
+    --dv-purple-c: #fccafa;
+    --dv-blue-c:   #96fafc;
+    --dv-green-c:  #b6fcb4;
+    --dv-gold-c:   #ffec32;
+
+    --semiotic-green:  #00891c;
+    --semiotic-yellow: #ffde00;
+    --semiotic-red:    #ec0b00;
+
+    /* ---------- Approved gradients (use at most one per slide) ---------- */
+    --grad-hero:       linear-gradient(135deg, #434c5c 0%, #2c013b 55%, #9601c5 100%);
+    --grad-blue-dark:  linear-gradient(135deg, #0156d5 0%, #012152 50%, #14151a 100%);
+    --grad-bright-1:   linear-gradient(135deg, #fac30b 0%, #f58c29 50%, #e8156b 100%);
+    --grad-bright-2:   linear-gradient(135deg, #a60cf6 0%, #6027f5 50%, #0b5efe 100%);
+    --grad-bright-3:   linear-gradient(135deg, #e70470 0%, #e70c55 50%, #c605d3 100%);
+    --grad-bright-4:   linear-gradient(135deg, #01a02b 0%, #017dae 50%, #2b42f7 100%);
+
+    /* ---------- Typography ---------- */
+    --font-display: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+    --font-body:    "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* Single scale ratio drives the whole type system (perfect fourth).
+       Sizes use clamp(min, fluid, max) but their max values follow the ratio
+       so headlines lock into a real scale instead of overlapping body. */
+    --scale-ratio: 1.333;
+    --type-base: clamp(0.75rem, 1.05vw, 1rem);                /* 12-16px body */
+    --type-sm:   clamp(0.625rem, 0.9vw, 0.8125rem);           /* 10-13px */
+    --type-xs:   clamp(0.5625rem, 0.75vw, 0.6875rem);         /* 9-11px mono */
+    --type-h3:   clamp(1.125rem, 2.4vw, 1.75rem);             /* base * r^2 ish */
+    --type-h2:   clamp(1.5rem,  3.5vw, 2.75rem);              /* base * r^3 */
+    --type-h1:   clamp(2.25rem, 6vw,   4.5rem);               /* base * r^5 */
+
+    /* Letter spacing */
+    --track-eyebrow:  0.18em;
+    --track-headline: -0.025em;
+    --track-mono:     0.12em;
+
+    /* Line-heights tuned to the 4/8px baseline */
+    --leading-tight: 1.05;
+    --leading-snug:  1.2;
+    --leading-body:  1.45;
+
+    /* ---------- 8px baseline rhythm ---------- */
+    --space-1: 0.25rem;   /* 4 */
+    --space-2: 0.5rem;    /* 8 */
+    --space-3: 0.75rem;   /* 12 */
+    --space-4: 1rem;      /* 16 */
+    --space-5: 1.5rem;    /* 24 */
+    --space-6: 2rem;      /* 32 */
+    --space-7: 3rem;      /* 48 */
+    --space-8: 4rem;      /* 64 */
+    --space-9: 6rem;      /* 96 */
+
+    /* ---------- 12-col grid (consumed by layout-kit.css) ---------- */
+    --col-count: 12;
+    --col-gutter: clamp(1rem, 1.5vw, 1.5rem);
+    --col-margin: clamp(1.5rem, 4vw, 4rem);
+
+    /* ---------- Surface, radius, line ---------- */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --hairline: 1px solid rgba(255, 255, 255, 0.08);
+    --hairline-dark: 1px solid rgba(0, 0, 0, 0.12);
+
+    /* ---------- Motion ---------- */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --duration-fast: 0.25s;
+    --duration-normal: 0.6s;
+    --duration-slow: 1.1s;
+}
+
+/* =============================================================
+   Theme aliases — themes pick which canvas they paint on.
+   Generated decks should set --bg-primary / --text-primary
+   from these tokens, not from raw hex values.
+   ============================================================= */
+
+[data-theme="dark"], .theme-dark {
+    --bg-primary: var(--micron-black);
+    --bg-secondary: var(--gray-a);
+    --text-primary: var(--micron-white);
+    --text-secondary: var(--micron-off-white);
+    --line: rgba(255, 255, 255, 0.12);
+    --panel: #0e0e10;
+    --panel-2: #14151a;
+}
+
+[data-theme="light"], .theme-light {
+    --bg-primary: var(--micron-white);
+    --bg-secondary: var(--gray-f);
+    --text-primary: var(--micron-black);
+    --text-secondary: var(--gray-b);
+    --line: rgba(0, 0, 0, 0.12);
+    --panel: var(--gray-f);
+    --panel-2: var(--gray-e);
+}
+
+/* =============================================================
+   Font face — Micron Basis with metric-matched Arial fallback.
+   Drop a webfont at assets/fonts/micron-basis.woff2 to enable.
+   The size-adjust + override values keep CLS to ~zero while the
+   webfont loads.
+   ============================================================= */
+
+@font-face {
+    font-family: "Micron Basis";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local("Micron Basis"),
+         url("assets/fonts/micron-basis.woff2") format("woff2"),
+         url("assets/fonts/MicronBasis-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: "Micron Basis";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: local("Micron Basis Bold"), local("Micron Basis"),
+         url("assets/fonts/micron-basis-bold.woff2") format("woff2");
+}
+
+/* Fallback face — matches Arial metrics to Micron Basis so swap is invisible. */
+@font-face {
+    font-family: "Micron Basis Fallback";
+    src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+    size-adjust: 98%;
+    ascent-override: 92%;
+    descent-override: 22%;
+    line-gap-override: 0%;
+}

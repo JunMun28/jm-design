@@ -1,4 +1,0 @@
-interface:
-  display_name: "Micron HTML Slides"
-  short_description: "Generate Micron HTML decks and title templates"
-  default_prompt: "Use $micron-html-slides to create a single-file HTML slide deck."

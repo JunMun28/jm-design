@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://micron.slides/themes.schema.json",
+  "title": "html-slides theme manifest",
+  "type": "object",
+  "required": ["version", "themes"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "minimum": 1 },
+    "shared": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "logos": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "themes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/theme" }
+    }
+  },
+  "definitions": {
+    "theme": {
+      "type": "object",
+      "required": ["id", "name", "status", "design", "verify"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string" },
+        "status": { "enum": ["stable", "experimental", "deprecated"] },
+        "tone": { "type": "string" },
+        "when": { "type": "string" },
+        "design": { "type": "string" },
+        "example": { "type": ["string", "null"] },
+        "preview": {
+          "type": ["string", "null"],
+          "description": "Path to a real preview/overview image, or null when none exists. Never point at a file that is not in the repo — selector.html shows a placeholder for null."
+        },
+        "extras": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "verify": { "$ref": "#/definitions/verify" }
+      }
+    },
+    "verify": {
+      "type": "object",
+      "required": [
+        "required_tokens",
+        "accent_rgb",
+        "accent_max_per_slide",
+        "logo_pattern",
+        "require_logo_on_content_slides",
+        "forbid_chart_on_gradient",
+        "headline_contrast_min",
+        "palette_lock"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "required_tokens": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^--" }
+        },
+        "accent_rgb": {
+          "type": ["string", "null"],
+          "description": "Decimal 'r, g, b' triplet of the theme accent, matched as a substring of computed colours."
+        },
+        "accent_max_per_slide": { "type": ["integer", "null"], "minimum": 1 },
+        "logo_pattern": {
+          "type": ["string", "null"],
+          "description": "Regex matched against slide::after background-image. null for unbranded themes."
+        },
+        "require_logo_on_content_slides": { "type": "boolean" },
+        "forbid_chart_on_gradient": { "type": "boolean" },
+        "headline_contrast_min": { "type": "number", "minimum": 1 },
+        "palette_lock": { "type": "boolean" }
+      }
+    }
+  }
+}

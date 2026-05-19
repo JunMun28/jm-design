@@ -1,0 +1,47 @@
+{
+  "eval_id": 3,
+  "eval_name": "different-audience-and-tone",
+  "run_kind": "with_skill",
+  "files": [
+    "2026-05-16-ai-for-lesson-planning-deck.txt"
+  ],
+  "brainstorm_picked": "2026-05-16-ai-for-lesson-planning-deck.txt",
+  "expectations": [
+    {
+      "text": "DESIGN SYSTEM or per-slide copy reflects warm/approachable voice rather than 'periods are loud' restraint",
+      "passed": true,
+      "evidence": "warm cues=True, cold-restraint cues=True",
+      "name": "adapts_voice_to_warm"
+    },
+    {
+      "text": "Brainstorm file contains 6 slide sections",
+      "passed": true,
+      "evidence": "detected 6 SLIDE blocks (expected 6)",
+      "name": "produces_6_slide_brainstorm"
+    },
+    {
+      "text": "At least one slide includes examples that speak to teacher workflows",
+      "passed": true,
+      "evidence": "found teacher-workflow vocabulary",
+      "name": "uses_teacher_relevant_examples"
+    },
+    {
+      "text": "Brainstorm file contains a NARRATIVE ARC section",
+      "passed": true,
+      "evidence": "found 'NARRATIVE ARC' heading",
+      "name": "file_has_narrative_arc_section"
+    },
+    {
+      "text": "Brainstorm file contains at least 3 slide sections with ASCII frames",
+      "passed": true,
+      "evidence": "detected 6 SLIDE blocks; box chars present=True",
+      "name": "file_has_per_slide_ascii_frames"
+    },
+    {
+      "text": "Skill does NOT produce a .pptx, .html, or .pdf file",
+      "passed": true,
+      "evidence": "only .txt/.md outputs",
+      "name": "refuses_to_build_actual_deck"
+    }
+  ]
+}

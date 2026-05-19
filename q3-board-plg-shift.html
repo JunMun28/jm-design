@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Q3 Board Review · 2026</title>
+<style>
+/* =============================================================
+   MICRON TOKENS
+   ============================================================= */
+:root {
+    --micron-black: #000000;
+    --micron-white: #ffffff;
+    --micron-off-white: #f0f0ee;
+    --micron-accent: #bd03f7;
+    --micron-accent-display: color-mix(in srgb, var(--micron-accent) 100%, white 0%);
+
+    --gray-a: #262626;
+    --gray-b: #4d4d4d;
+    --gray-c: #8c8c8c;
+    --gray-d: #bfbfbf;
+    --gray-e: #e6e6e6;
+    --gray-f: #f2f2f2;
+
+    --font-display: "Plus Jakarta Sans", "Inter", "Micron Basis", Arial, Helvetica, sans-serif;
+    --font-body:    "Plus Jakarta Sans", "Inter", "Micron Basis", Arial, Helvetica, sans-serif;
+    --font-mono:    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --scale-ratio: 1.333;
+    --col-count: 12;
+
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-normal: 0.6s;
+
+    --ink: #0f172a;
+    --muted: #475569;
+    --hairline: #d0d7de;
+    --soft-purple: color-mix(in srgb, var(--micron-accent) 7%, white);
+
+    --bg-primary: var(--micron-white);
+    --text-primary: var(--ink);
+
+    --stage-width: 1600px;
+    --stage-height: 900px;
+    --stage-scale: 1;
+    --stage-scaled-width: 1600px;
+    --stage-scaled-height: 900px;
+    --letterbox: #eef0f4;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background: var(--letterbox);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+@font-face {
+    font-family: "Plus Jakarta Sans";
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    src: local("Plus Jakarta Sans"), local("Inter"), local("Arial");
+}
+
+/* =============================================================
+   SLIDE STAGE
+   ============================================================= */
+.deck { width: 100%; }
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    position: relative;
+    display: block;
+    overflow: hidden;
+    scroll-snap-align: start;
+    background: var(--letterbox) !important;
+}
+
+.slide-stage {
+    position: absolute;
+    left: calc((100vw - var(--stage-scaled-width)) / 2);
+    top: calc((100dvh - var(--stage-scaled-height)) / 2);
+    width: var(--stage-width);
+    height: var(--stage-height);
+    overflow: hidden;
+    background: var(--micron-white);
+    box-shadow: 0 18px 60px rgba(15, 23, 42, .14);
+    transform: scale(var(--stage-scale));
+    transform-origin: top left;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 56px 92px 88px 92px;
+    position: relative;
+    z-index: 1;
+}
+
+/* =============================================================
+   PROGRESS BAR + NAV DOTS
+   ============================================================= */
+.progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    z-index: 100;
+    width: 0;
+    height: 3px;
+    background: var(--micron-accent);
+    box-shadow: 0 0 18px rgba(189, 3, 247, .38);
+    transition: width .3s;
+}
+
+.nav-dots {
+    position: fixed;
+    right: 18px;
+    top: 50%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transform: translateY(-50%);
+}
+.nav-dots button {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 1px solid rgba(15, 23, 42, .22);
+    border-radius: 999px;
+    background: rgba(15, 23, 42, .12);
+    cursor: pointer;
+}
+.nav-dots button.active {
+    background: var(--micron-accent);
+    border-color: var(--micron-accent);
+}
+
+/* =============================================================
+   TYPE
+   ============================================================= */
+h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.03;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+}
+
+p { color: var(--muted); }
+em { font-style: italic; }
+
+.kicker {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--micron-accent);
+}
+.kicker::after {
+    display: block;
+    width: 60px;
+    height: 4px;
+    margin-top: 14px;
+    border-radius: 2px;
+    background: var(--micron-accent);
+    content: "";
+}
+
+.h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(40px, 4.5vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    margin-top: 18px;
+    max-width: 22ch;
+}
+
+.h2 em, .accent {
+    color: var(--micron-accent);
+    font-style: italic;
+    font-weight: 800;
+}
+
+.subtitle {
+    margin-top: 18px;
+    color: var(--muted);
+    font-size: 28px;
+    line-height: 1.32;
+    max-width: 50ch;
+}
+
+.callout {
+    margin-top: 28px;
+    color: var(--ink);
+    font-size: 24px;
+    font-style: italic;
+    line-height: 1.32;
+}
+
+.h-rule {
+    height: 1px;
+    background: var(--hairline);
+    border: 0;
+    width: 100%;
+}
+
+.spacer-md { height: 32px; }
+.spacer-lg { height: 56px; }
+.spacer-xl { height: 80px; }
+
+/* =============================================================
+   FOOTER + REVEAL
+   ============================================================= */
+.footer-text {
+    position: absolute;
+    left: 92px;
+    bottom: 32px;
+    color: rgba(15,23,42,.62);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.brand-mark {
+    position: absolute;
+    right: 92px;
+    bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: .76;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+.brand-mark .dot {
+    width: 10px; height: 10px;
+    border-radius: 999px;
+    background: var(--micron-accent);
+}
+
+.reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--duration-normal) var(--ease-out-expo),
+      transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.reveal:nth-child(1) { transition-delay: 0.05s; }
+.reveal:nth-child(2) { transition-delay: 0.13s; }
+.reveal:nth-child(3) { transition-delay: 0.21s; }
+.reveal:nth-child(4) { transition-delay: 0.29s; }
+.reveal:nth-child(5) { transition-delay: 0.37s; }
+.reveal:nth-child(6) { transition-delay: 0.45s; }
+.reveal:nth-child(7) { transition-delay: 0.53s; }
+.reveal:nth-child(8) { transition-delay: 0.61s; }
+.reveal:nth-child(9) { transition-delay: 0.69s; }
+
+/* =============================================================
+   SLIDE 01 · TITLE
+   ============================================================= */
+.title-slide .slide-stage {
+    background: var(--micron-white);
+    overflow: hidden;
+}
+
+.title-slide .slide-stage::before,
+.title-slide .slide-stage::after {
+    position: absolute;
+    z-index: 0;
+    content: "";
+    pointer-events: none;
+}
+
+.title-slide .slide-stage::before {
+    top: -36px;
+    right: -18px;
+    width: 420px;
+    height: 220px;
+    opacity: .42;
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--micron-accent) 18%, transparent) 0 2px, transparent 2.4px);
+    background-size: 17px 17px;
+    mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+}
+.title-slide .slide-stage::after {
+    left: -36px;
+    bottom: 0;
+    width: 270px;
+    height: 270px;
+    opacity: .38;
+    background-image: radial-gradient(circle, color-mix(in srgb, var(--micron-accent) 20%, transparent) 0 2px, transparent 2.5px);
+    background-size: 17px 17px;
+    mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+}
+
+.title-slide .slide-content {
+    padding: 88px 92px 96px 92px;
+    justify-content: center;
+}
+
+.title-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 430px;
+    gap: 76px;
+    align-items: center;
+    transform: translateY(-24px);
+}
+
+.title-slide h1 {
+    margin-top: 56px;
+    color: var(--ink);
+    font-size: clamp(72px, 6.4vw, 108px);
+    line-height: .94;
+    letter-spacing: -0.025em;
+    font-weight: 800;
+    max-width: 12ch;
+    text-shadow: 0 10px 26px rgba(15,23,42,.10);
+}
+
+.title-subtitle {
+    position: relative;
+    display: inline-block;
+    margin-top: 22px;
+    padding-bottom: 38px;
+    color: var(--micron-accent);
+    font-size: clamp(56px, 5vw, 84px);
+    font-style: italic;
+    line-height: .98;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    max-width: 14ch;
+}
+.title-subtitle::after {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: min(56vw, 880px);
+    height: 2px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--micron-accent) 72%, transparent), color-mix(in srgb, var(--micron-accent) 26%, transparent));
+    content: "";
+}
+.title-subtitle::before {
+    position: absolute;
+    left: min(56vw, 880px);
+    bottom: -4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--micron-accent);
+    content: "";
+}
+
+.title-tagline {
+    margin-top: 34px;
+    color: var(--ink);
+    font-size: 24px;
+    font-family: var(--font-mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.title-mark {
+    position: relative;
+    width: 390px;
+    height: 390px;
+    border: 2px solid color-mix(in srgb, var(--micron-accent) 82%, transparent);
+    border-radius: 999px;
+    background: rgba(255,255,255,.74);
+    box-shadow: 0 34px 96px color-mix(in srgb, var(--micron-accent) 17%, transparent);
+    display: grid;
+    place-items: center;
+    margin: 0 auto;
+}
+.title-mark::before,
+.title-mark::after {
+    position: absolute;
+    inset: -34px;
+    border: 1px solid color-mix(in srgb, var(--micron-accent) 18%, transparent);
+    border-radius: 999px;
+    content: "";
+}
+.title-mark::after {
+    inset: -70px;
+    border-color: color-mix(in srgb, var(--micron-accent) 14%, transparent);
+    border-style: dashed;
+}
+
+.arrow-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    text-align: center;
+}
+.arrow-mark .from {
+    color: var(--ink);
+    font-size: 38px;
+    letter-spacing: -0.02em;
+}
+.arrow-mark .to {
+    color: var(--micron-accent);
+    font-size: 38px;
+    font-style: italic;
+    letter-spacing: -0.02em;
+}
+.arrow-mark .glyph {
+    font-size: 72px;
+    line-height: 1;
+    color: var(--micron-accent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0;
+    transform: translateY(-4px);
+}
+
+.title-footer {
+    position: absolute;
+    left: 92px;
+    bottom: 36px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+.title-footer .footer-rule {
+    width: 1px;
+    height: 26px;
+    background: rgba(15,23,42,.22);
+}
+
+/* =============================================================
+   SLIDE 02 · LEDGER
+   ============================================================= */
+.ledger {
+    margin-top: 14px;
+}
+.ledger-row {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 56px;
+    padding: 14px 0;
+}
+.ledger-row:first-child { padding-top: 16px; }
+.ledger-row + .ledger-row {
+    border-top: 1px solid var(--hairline);
+}
+.ledger-stat {
+    color: var(--micron-accent);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-feature-settings: "tnum" 1;
+}
+.ledger-label {
+    color: var(--ink);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* =============================================================
+   SLIDE 03 · COMPARE
+   ============================================================= */
+.compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 40px;
+    padding: 28px 0;
+}
+.compare-col { padding-right: 12px; }
+.compare-col + .compare-col {
+    padding-left: 56px;
+    border-left: 1px solid var(--hairline);
+}
+.compare-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+}
+.compare-col.now .compare-eyebrow { color: var(--micron-accent); }
+
+.compare-headline {
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 56px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--ink);
+    font-feature-settings: "tnum" 1;
+}
+.compare-col.now .compare-headline { color: var(--micron-accent); }
+
+.compare-list {
+    margin-top: 22px;
+    list-style: none;
+    color: var(--ink);
+    font-size: 21px;
+    line-height: 1.55;
+}
+.compare-list li + li { margin-top: 6px; }
+
+/* =============================================================
+   SLIDE 04 + 06 · MANUSCRIPT ROWS
+   ============================================================= */
+.manuscript {
+    margin-top: 18px;
+    padding: 4px 0;
+}
+.manuscript-row {
+    display: grid;
+    grid-template-columns: 88px 200px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 44px;
+    padding: 24px 0;
+}
+.manuscript-row + .manuscript-row {
+    border-top: 1px solid var(--hairline);
+}
+.manuscript-num {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--micron-accent);
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+.manuscript-verb {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+.manuscript-body {
+    font-size: 22px;
+    color: var(--muted);
+    line-height: 1.4;
+    padding-top: 12px;
+}
+
+/* Slide 06 rule-stack variant */
+.rule-stack {
+    margin-top: 16px;
+    padding: 0;
+}
+.rule-row {
+    padding: 22px 0 22px 0;
+}
+.rule-row + .rule-row {
+    border-top: 1px solid var(--hairline);
+}
+.rule-tag {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--micron-accent);
+    font-weight: 600;
+}
+.rule-headline {
+    margin-top: 10px;
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+}
+.rule-body {
+    margin-top: 8px;
+    font-size: 20px;
+    color: var(--muted);
+    line-height: 1.4;
+}
+
+/* =============================================================
+   SLIDE 05 · PROOF WASH
+   ============================================================= */
+.proof-wash {
+    margin-top: 18px;
+    padding: 32px 56px 36px 56px;
+    border-radius: 16px;
+    background: var(--soft-purple);
+    position: relative;
+    overflow: hidden;
+}
+.proof-wash::before,
+.proof-wash::after {
+    position: absolute;
+    color: color-mix(in srgb, var(--micron-accent) 26%, transparent);
+    font-family: var(--font-display);
+    font-size: 160px;
+    line-height: 1;
+    font-weight: 800;
+    pointer-events: none;
+}
+.proof-wash::before {
+    content: "“";
+    top: -10px;
+    left: 22px;
+}
+.proof-wash::after {
+    content: "”";
+    right: 30px;
+    bottom: -90px;
+}
+
+.proof-context {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    opacity: .68;
+    font-weight: 500;
+}
+.proof-stack {
+    margin-top: 18px;
+    list-style: none;
+}
+.proof-stack li {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.18;
+}
+.proof-stack li + li { margin-top: 4px; }
+.proof-punch {
+    margin-top: 22px;
+    color: var(--micron-accent);
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+}
+.proof-punch .punch-num { font-style: italic; }
+
+.proof-compare {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    gap: 28px;
+}
+.proof-compare .num-now {
+    color: var(--micron-accent);
+    font-style: italic;
+    font-family: var(--font-display);
+    font-size: 76px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-align: right;
+    line-height: 1;
+}
+.proof-compare .num-then {
+    color: var(--muted);
+    font-family: var(--font-display);
+    font-size: 76px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    text-align: left;
+    line-height: 1;
+}
+.proof-compare .vs {
+    text-align: center;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 18px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    border-left: 1px solid var(--hairline);
+    border-right: 1px solid var(--hairline);
+    padding: 12px 0;
+}
+
+/* =============================================================
+   SLIDE 07 · POSTER
+   ============================================================= */
+.poster-line {
+    margin: 80px 0;
+    text-align: center;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+.poster-line .sep {
+    color: var(--micron-accent);
+    margin: 0 18px;
+    font-weight: 600;
+}
+
+/* =============================================================
+   OVERVIEW
+   ============================================================= */
+#overview {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    overflow-y: auto;
+    padding: clamp(1.5rem, 4vw, 3.75rem);
+    background: rgba(255,255,255,.97);
+    color: var(--ink);
+    backdrop-filter: blur(12px);
+}
+#overview[aria-hidden="false"] { display: block; }
+#overview .ov-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+#overview .ov-head b { color: var(--ink); font-weight: 700; }
+#overview .ov-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 1.4rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+#overview .ov-card {
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid rgba(15,23,42,.16);
+    border-radius: 8px;
+    background: rgba(246,248,250,.92);
+    padding: 0;
+    transition: border-color 0.2s, transform 0.2s;
+}
+#overview .ov-card:hover,
+#overview .ov-card.active {
+    border-color: var(--micron-accent);
+    transform: translateY(-2px);
+}
+#overview .ov-card.active { border-width: 2px; }
+#overview .ov-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    background: var(--micron-white);
+    pointer-events: none;
+}
+#overview .ov-thumb .clone {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1600px;
+    height: 900px;
+    transform-origin: top left;
+}
+#overview .ov-thumb .clone .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+}
+#overview .ov-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+#overview .ov-label b { color: var(--ink); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+    html { scroll-behavior: auto; }
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+
+<main class="deck" tabindex="-1">
+
+<!-- ────────────────────────── SLIDE 01 · TITLE ────────────────────────── -->
+<section class="slide title-slide" data-slide-kind="cover">
+  <div class="slide-content">
+    <div class="title-grid">
+      <div>
+        <p class="kicker reveal">Q3 Board Review</p>
+        <h1 class="reveal">Sales found our first&nbsp;hundred.</h1>
+        <p class="title-subtitle reveal">Product finds the next thousand.</p>
+        <p class="title-tagline reveal">Q3 Board Review · 2026</p>
+      </div>
+      <div class="title-mark reveal" aria-hidden="true">
+        <div class="arrow-mark">
+          <span class="from">outbound</span>
+          <span class="glyph">→</span>
+          <span class="to">product</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="title-footer">
+    <span>Presented by the CEO</span>
+    <span class="footer-rule" aria-hidden="true"></span>
+    <span>Confidential · Board only</span>
+  </div>
+</section>
+
+<!-- ────────────────────────── SLIDE 02 · WHERE WE ARE ────────────────────────── -->
+<section class="slide" data-slide-kind="ledger">
+  <div class="slide-content">
+    <p class="kicker reveal">02 — Where we are</p>
+    <h2 class="h2 reveal">Twelve quarters. <em>Honest</em> numbers.</h2>
+
+    <hr class="h-rule reveal" style="margin-top:30px" />
+
+    <div class="ledger reveal">
+      <div class="ledger-row">
+        <div class="ledger-stat">$42M</div>
+        <div class="ledger-label">ARR.</div>
+      </div>
+      <div class="ledger-row">
+        <div class="ledger-stat">520</div>
+        <div class="ledger-label">Customers.</div>
+      </div>
+      <div class="ledger-row">
+        <div class="ledger-stat">94</div>
+        <div class="ledger-label">Reps in seat.</div>
+      </div>
+      <div class="ledger-row">
+        <div class="ledger-stat">$14,200</div>
+        <div class="ledger-label">CAC, blended.</div>
+      </div>
+    </div>
+
+    <hr class="h-rule reveal" style="margin-top:14px" />
+
+    <p class="callout reveal">Outbound built this company.</p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+<!-- ────────────────────────── SLIDE 03 · THE STRAIN ────────────────────────── -->
+<section class="slide" data-slide-kind="compare">
+  <div class="slide-content">
+    <p class="kicker reveal">03 — The strain</p>
+    <h2 class="h2 reveal">We can't just sell <em>harder.</em></h2>
+
+    <hr class="h-rule reveal" style="margin-top:28px" />
+
+    <div class="compare-grid reveal">
+      <div class="compare-col then">
+        <p class="compare-eyebrow">2024 · Q3</p>
+        <p class="compare-headline">$8,900 CAC.</p>
+        <ul class="compare-list">
+          <li>4.8% reply rate.</li>
+          <li>11-month payback.</li>
+          <li>4 stakeholders per deal.</li>
+        </ul>
+      </div>
+      <div class="compare-col now">
+        <p class="compare-eyebrow">2026 · Q3</p>
+        <p class="compare-headline">$14,200 CAC.</p>
+        <ul class="compare-list">
+          <li>1.4% reply rate.</li>
+          <li>19-month payback.</li>
+          <li>9 stakeholders per deal.</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="h-rule reveal" style="margin-top:24px" />
+
+    <p class="callout reveal">Same playbook. Worse math.</p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+<!-- ────────────────────────── SLIDE 04 · THE SHIFT ────────────────────────── -->
+<section class="slide" data-slide-kind="shift">
+  <div class="slide-content">
+    <p class="kicker reveal">04 — The shift</p>
+    <h2 class="h2 reveal">Sales finds them.<br/>The product <em>brings them.</em></h2>
+
+    <hr class="h-rule reveal" style="margin-top:24px" />
+
+    <div class="manuscript reveal">
+      <div class="manuscript-row">
+        <div class="manuscript-num">01</div>
+        <div class="manuscript-verb">Try.</div>
+        <div class="manuscript-body">They sign up. No call.</div>
+      </div>
+      <div class="manuscript-row">
+        <div class="manuscript-num">02</div>
+        <div class="manuscript-verb">Use.</div>
+        <div class="manuscript-body">They get value in 10 minutes.</div>
+      </div>
+      <div class="manuscript-row">
+        <div class="manuscript-num">03</div>
+        <div class="manuscript-verb">Tell.</div>
+        <div class="manuscript-body">Their team joins. Their company buys.</div>
+      </div>
+    </div>
+
+    <hr class="h-rule reveal" style="margin-top:8px" />
+
+    <p class="callout reveal">Product-led growth, in three verbs.</p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+<!-- ────────────────────────── SLIDE 05 · EARLY SIGNAL ────────────────────────── -->
+<section class="slide" data-slide-kind="signal">
+  <div class="slide-content">
+    <p class="kicker reveal">05 — Early signal</p>
+    <h2 class="h2 reveal">The pilot is <em>already working.</em></h2>
+
+    <div class="proof-wash reveal">
+      <p class="proof-context">Free tier · 12-week pilot · launched April 2026</p>
+      <ul class="proof-stack">
+        <li>8,400 signups.</li>
+        <li>41% activated in week one.</li>
+        <li>19% paid — without ever speaking to sales.</li>
+      </ul>
+      <p class="proof-punch">CAC on the paid 19%: <span class="punch-num">$180.</span></p>
+    </div>
+
+    <div class="proof-compare reveal">
+      <div class="num-now">$180.</div>
+      <div class="vs">vs.</div>
+      <div class="num-then">$14,200.</div>
+    </div>
+
+    <p class="callout reveal" style="margin-top:20px">Seventy-nine times cheaper. On real customers.</p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+<!-- ────────────────────────── SLIDE 06 · Q4 PLAN ────────────────────────── -->
+<section class="slide" data-slide-kind="plan">
+  <div class="slide-content">
+    <p class="kicker reveal">06 — Q4 Plan</p>
+    <h2 class="h2 reveal">Three moves. <em>This quarter.</em></h2>
+
+    <hr class="h-rule reveal" style="margin-top:20px" />
+
+    <div class="rule-stack reveal">
+      <div class="rule-row">
+        <p class="rule-tag">One</p>
+        <p class="rule-headline">Free tier goes general.</p>
+        <p class="rule-body">Live by November 4. Owner: VP Product.</p>
+      </div>
+      <div class="rule-row">
+        <p class="rule-tag">Two</p>
+        <p class="rule-headline">Six new hires. Growth team.</p>
+        <p class="rule-body">Product, data, lifecycle. Backfill closes Dec 15.</p>
+      </div>
+      <div class="rule-row">
+        <p class="rule-tag">Three</p>
+        <p class="rule-headline">Outbound, halved.</p>
+        <p class="rule-body">94 reps → 46. Retained team owns renewals + enterprise.</p>
+      </div>
+    </div>
+
+    <hr class="h-rule reveal" style="margin-top:8px" />
+
+    <p class="callout reveal">Same revenue plan. Different engine.</p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+<!-- ────────────────────────── SLIDE 07 · THE ASK ────────────────────────── -->
+<section class="slide" data-slide-kind="ask">
+  <div class="slide-content">
+    <p class="kicker reveal">07 — The ask</p>
+    <h2 class="h2 reveal">Approve the <em>re-allocation.</em></h2>
+
+    <hr class="h-rule reveal" style="margin-top:60px" />
+
+    <p class="poster-line reveal">
+      $2.4M shift <span class="sep">·</span> 6 PLG hires <span class="sep">·</span> 90-day checkpoint.
+    </p>
+
+    <hr class="h-rule reveal" />
+
+    <p class="callout reveal" style="text-align:center; margin-top:48px">
+      We come back to this board in January with the answer.
+    </p>
+  </div>
+  <div class="footer-text">Q3 Board Review · 2026</div>
+  <div class="brand-mark"><span class="dot"></span><span>Confidential</span></div>
+</section>
+
+</main>
+
+<div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+
+<script>
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll(".slide"));
+    this.currentSlide = 0;
+    this.locked = false;
+    this.programmaticScroll = false;
+    this.overviewOpen = false;
+    this.lastFocus = null;
+    this.deck = document.querySelector(".deck");
+    this.navDotsContainer = document.querySelector(".nav-dots");
+    this.progressBar = document.querySelector(".progress-bar");
+    this.overview = document.getElementById("overview");
+
+    this.setupFixedStage();
+    this.setupNavDots();
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupWheelNav();
+    this.setupTouchNav();
+    const hashStart = parseInt(window.location.hash.slice(1), 10);
+    if (!Number.isNaN(hashStart) && hashStart >= 1 && hashStart <= this.slides.length) {
+      this.goTo(hashStart - 1, { immediate: true });
+      window.requestAnimationFrame(() => {
+        window.scrollTo(0, (hashStart - 1) * window.innerHeight);
+      });
+    } else {
+      this.applySlide(0);
+    }
+  }
+
+  clamp(i) { return Math.max(0, Math.min(this.slides.length - 1, i)); }
+
+  setupFixedStage() {
+    this.slides.forEach((slide) => {
+      if (slide.querySelector(":scope > .slide-stage")) return;
+      const stage = document.createElement("div");
+      stage.className = "slide-stage";
+      while (slide.firstChild) stage.appendChild(slide.firstChild);
+      slide.appendChild(stage);
+    });
+
+    const updateScale = () => {
+      const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+      document.documentElement.style.setProperty("--stage-scale", String(scale));
+      document.documentElement.style.setProperty("--stage-scaled-width", `${1600 * scale}px`);
+      document.documentElement.style.setProperty("--stage-scaled-height", `${900 * scale}px`);
+    };
+    updateScale();
+    window.addEventListener("resize", updateScale, { passive: true });
+  }
+
+  applySlide(i) {
+    this.currentSlide = i;
+    this.slides.forEach((s, idx) => {
+      s.classList.toggle("active", idx === i);
+      s.classList.toggle("visible", idx === i);
+    });
+    this.navDotsContainer.querySelectorAll("button").forEach((d, idx) => {
+      d.classList.toggle("active", idx === i);
+      d.setAttribute("aria-current", idx === i ? "true" : "false");
+    });
+    if (this.progressBar) {
+      this.progressBar.style.width = `${((i + 1) / this.slides.length) * 100}%`;
+    }
+  }
+
+  goTo(i, options = {}) {
+    const next = this.clamp(i);
+    if (this.locked && !options.immediate) return;
+    this.applySlide(next);
+    this.programmaticScroll = true;
+    this.slides[next].scrollIntoView({
+      behavior: options.immediate ? "auto" : "smooth",
+      block: "start",
+    });
+    if (!options.immediate) {
+      this.locked = true;
+      window.setTimeout(() => {
+        this.locked = false;
+        this.programmaticScroll = false;
+      }, 650);
+    } else {
+      requestAnimationFrame(() => { this.programmaticScroll = false; });
+    }
+  }
+
+  next() { this.goTo(this.currentSlide + 1); }
+  prev() { this.goTo(this.currentSlide - 1); }
+
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (this.programmaticScroll) return;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.applySlide(this.slides.indexOf(entry.target));
+          }
+        });
+      },
+      { threshold: 0.6 },
+    );
+    this.slides.forEach((s) => observer.observe(s));
+  }
+
+  setupNavDots() {
+    this.navDotsContainer.innerHTML = "";
+    this.slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => this.goTo(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+  }
+
+  setupKeyboardNav() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        this.toggleOverview();
+        return;
+      }
+      if (this.overviewOpen) {
+        if (e.key === "Tab") this.trapFocus(e);
+        return;
+      }
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
+        e.preventDefault(); this.next();
+      } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
+        e.preventDefault(); this.prev();
+      } else if (e.key === "Home") {
+        e.preventDefault(); this.goTo(0);
+      } else if (e.key === "End") {
+        e.preventDefault(); this.goTo(this.slides.length - 1);
+      }
+    });
+  }
+
+  setupWheelNav() {
+    let wheelAcc = 0;
+    let wheelTimer = null;
+    this.deck.addEventListener("wheel", (e) => {
+      if (this.overviewOpen) return;
+      wheelAcc += e.deltaY;
+      if (Math.abs(wheelAcc) > 80) {
+        wheelAcc > 0 ? this.next() : this.prev();
+        wheelAcc = 0;
+      }
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(() => { wheelAcc = 0; }, 180);
+    }, { passive: true });
+  }
+
+  setupTouchNav() {
+    let startX = 0, startY = 0;
+    window.addEventListener("touchstart", (e) => {
+      const t = e.changedTouches[0];
+      startX = t.clientX; startY = t.clientY;
+    }, { passive: true });
+    window.addEventListener("touchend", (e) => {
+      if (this.overviewOpen) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        dx < 0 ? this.next() : this.prev();
+      }
+    }, { passive: true });
+  }
+
+  buildOverview() {
+    this.overview.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "ov-head";
+    head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
+    this.overview.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "ov-grid";
+    this.slides.forEach((slide, i) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+      card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      const thumb = document.createElement("div");
+      thumb.className = "ov-thumb";
+      const cloneSource = slide.querySelector(":scope > .slide-stage") || slide;
+      const clone = cloneSource.cloneNode(true);
+      clone.classList.add("clone", "visible");
+      thumb.appendChild(clone);
+      const label = document.createElement("div");
+      label.className = "ov-label";
+      label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind || "slide"}</span>`;
+      card.appendChild(thumb);
+      card.appendChild(label);
+      card.addEventListener("click", () => {
+        this.toggleOverview(false);
+        this.goTo(i);
+      });
+      grid.appendChild(card);
+    });
+    this.overview.appendChild(grid);
+
+    requestAnimationFrame(() => {
+      this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+        const clone = thumb.querySelector(".clone");
+        const scale = Math.min(thumb.clientWidth / 1600, thumb.clientHeight / 900);
+        clone.style.transform = `scale(${scale})`;
+      });
+    });
+  }
+
+  toggleOverview(force) {
+    this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+    if (this.overviewOpen) {
+      this.lastFocus = document.activeElement;
+      this.buildOverview();
+      this.overview.setAttribute("aria-hidden", "false");
+      this.overview.focus({ preventScroll: true });
+    } else {
+      this.overview.setAttribute("aria-hidden", "true");
+      this.lastFocus?.focus?.({ preventScroll: true });
+    }
+  }
+
+  trapFocus(e) {
+    const focusable = this.overview.querySelectorAll("button, [tabindex]:not([tabindex='-1'])");
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }
+}
+
+window.presentation = new SlidePresentation();
+</script>
+</body>
+</html>

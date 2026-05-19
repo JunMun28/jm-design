@@ -1,0 +1,199 @@
+- generic [active] [ref=e1]:
+  - progressbar "Deck progress"
+  - navigation "Slide navigation" [ref=e2]:
+    - button "Go to slide 1" [ref=e3] [cursor=pointer]
+    - button "Go to slide 2" [ref=e4] [cursor=pointer]
+    - button "Go to slide 3" [ref=e5] [cursor=pointer]
+    - button "Go to slide 4" [ref=e6] [cursor=pointer]
+    - button "Go to slide 5" [ref=e7] [cursor=pointer]
+    - button "Go to slide 6" [ref=e8] [cursor=pointer]
+    - button "Go to slide 7" [ref=e9] [cursor=pointer]
+    - button "Go to slide 8" [ref=e10] [cursor=pointer]
+  - button "Enter presentation mode (full screen)" [ref=e11] [cursor=pointer]: Present
+  - main [ref=e12]:
+    - generic [ref=e14]:
+      - generic [ref=e16]:
+        - generic [ref=e17]:
+          - paragraph [ref=e18]: An introduction
+          - heading "GitHub Copilot." [level=1] [ref=e19]
+          - paragraph [ref=e20]: for everyone.
+          - paragraph [ref=e21]: Plain English in.
+          - paragraph [ref=e22]: Real work out.
+        - img [ref=e24]
+      - generic [ref=e27]:
+        - img "Micron" [ref=e28]
+        - generic [ref=e30]: Presented by Jun Mun
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - paragraph [ref=e34]: 02 — THE SHIFT
+        - heading "It used to help you code. Now it helps you work." [level=2] [ref=e35]:
+          - text: It used to help you code.
+          - text: Now it helps you work.
+        - separator [ref=e36]
+        - generic [ref=e37]:
+          - article "A coding assistant." [ref=e38]:
+            - generic [ref=e39]:
+              - generic [ref=e40]: THEN.
+              - heading "A coding assistant." [level=3] [ref=e41]
+            - generic [ref=e42]:
+              - img [ref=e44]:
+                - generic [ref=e46]: ">_"
+              - generic [ref=e48]:
+                - paragraph [ref=e49]: Lives in the IDE.
+                - paragraph [ref=e50]: Speaks code.
+                - paragraph [ref=e51]: Built for developers.
+          - img [ref=e53]
+          - article "General purpose assistant." [ref=e55]:
+            - generic [ref=e56]:
+              - generic [ref=e57]: NOW.
+              - heading "General purpose assistant." [level=3] [ref=e58]
+            - generic [ref=e62]:
+              - paragraph [ref=e63]: Works across your PC.
+              - paragraph [ref=e64]: Speaks plain English.
+              - paragraph [ref=e65]: Built for anyone.
+        - separator [ref=e66]
+        - paragraph [ref=e67]: Same name. Different software.
+      - generic [ref=e68]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e70]:
+      - generic [ref=e71]:
+        - paragraph [ref=e72]: 03 — How
+        - heading "Three steps. Forever." [level=2] [ref=e73]:
+          - text: Three steps.
+          - text: Forever.
+        - separator [ref=e74]
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - generic [ref=e77]: "01"
+            - paragraph [ref=e78]: Ask.
+            - paragraph [ref=e79]: In plain English.
+          - generic [ref=e80]:
+            - generic [ref=e81]: "02"
+            - paragraph [ref=e82]: Act.
+            - paragraph [ref=e83]: Copilot plans the steps.
+          - generic [ref=e84]:
+            - generic [ref=e85]: "03"
+            - paragraph [ref=e86]: Review.
+            - paragraph [ref=e87]: You stay in control.
+        - separator [ref=e88]
+        - paragraph [ref=e89]: That's the whole loop.
+      - generic [ref=e90]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e92]:
+      - generic [ref=e93]:
+        - paragraph [ref=e94]: 04 — Real prompts
+        - heading "What to type tomorrow morning." [level=2] [ref=e95]:
+          - text: What to type
+          - text: tomorrow morning.
+        - separator [ref=e96]
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]: "01"
+            - generic [ref=e100]: Sort these wafer yield reports by fab and quarter.
+          - generic [ref=e101]:
+            - generic [ref=e102]: "02"
+            - generic [ref=e103]: Merge these three supplier scorecards into one view.
+          - generic [ref=e104]:
+            - generic [ref=e105]: "03"
+            - generic [ref=e106]: Summarise this 60-page qualification report.
+          - generic [ref=e107]:
+            - generic [ref=e108]: "04"
+            - generic [ref=e109]: Draft a follow-up to a wafer supplier two weeks late.
+          - generic [ref=e110]:
+            - generic [ref=e111]: "05"
+            - generic [ref=e112]: Find every doc mentioning the next DRAM launch.
+          - generic [ref=e113]:
+            - generic [ref=e114]: "06"
+            - generic [ref=e115]: Turn these fab inspection photos into a site report.
+        - separator [ref=e116]
+        - paragraph [ref=e117]: None of these are code.
+      - generic [ref=e118]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e120]:
+      - generic [ref=e121]:
+        - paragraph [ref=e122]: 05 — In practice
+        - heading "One sentence. Four actions." [level=2] [ref=e123]:
+          - text: One sentence.
+          - text: Four actions.
+        - generic [ref=e124]:
+          - text: ❝
+          - paragraph [ref=e125]:
+            - generic [ref=e126]: Rename my 80 photos by date.
+            - generic [ref=e127]: Pick the best twelve.
+            - generic [ref=e128]: Lay them out two-per-page.
+            - generic [ref=e129]: Save it to my desktop.
+          - text: ❞
+        - generic [ref=e130]:
+          - generic [ref=e131]:
+            - generic [ref=e132]: "01"
+            - text: Rename by date.
+          - generic [ref=e133]:
+            - generic [ref=e134]: "02"
+            - text: Pick the best twelve.
+          - generic [ref=e135]:
+            - generic [ref=e136]: "03"
+            - text: Lay out two-per-page.
+          - generic [ref=e137]:
+            - generic [ref=e138]: "04"
+            - text: Save to your desktop.
+        - paragraph [ref=e139]: One ask. The rest is automatic.
+      - generic [ref=e140]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e142]:
+      - generic [ref=e143]:
+        - paragraph [ref=e144]: 06 — Let's try it
+        - heading "Your turn." [level=2] [ref=e145]
+        - separator [ref=e146]
+        - paragraph [ref=e147]: Open Visual Studio Code·Type a prompt·Watch.
+        - separator [ref=e148]
+        - paragraph [ref=e149]: I'll walk the room.
+      - generic [ref=e150]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e152]:
+      - generic [ref=e153]:
+        - paragraph [ref=e154]: 07 — Agent skills
+        - heading "Repeatable expertise." [level=2] [ref=e155]
+        - separator [ref=e156]
+        - generic [ref=e157]:
+          - generic [ref=e158]: What they are
+          - paragraph [ref=e159]: Folders of instructions · scripts · resources. Copilot loads when the task fits.
+          - separator [ref=e160]
+          - generic [ref=e161]: What they fix
+          - paragraph [ref=e162]: The same briefing · typed again · every chat.
+          - paragraph [ref=e163]: Tribal knowledge · trapped · in one person's head.
+          - paragraph [ref=e164]: Different agents · needing · the same ritual · rewritten.
+          - separator [ref=e165]
+          - paragraph [ref=e166]: DEFINE ONCE · SAVE AS A SKILL · USE AUTOMATICALLY
+        - paragraph [ref=e167]: Portable across VS Code · CLI · cloud agent.
+        - paragraph [ref=e168]:
+          - text: "Ref:"
+          - link "VS Code — Agent Skills" [ref=e169] [cursor=pointer]:
+            - /url: https://code.visualstudio.com/docs/copilot/customization/agent-skills
+          - text: ·
+          - link "agentskills.io" [ref=e170] [cursor=pointer]:
+            - /url: https://agentskills.io/
+      - generic [ref=e171]: GitHub Copilot for everyone
+      - text: MICRON™
+    - generic [ref=e173]:
+      - generic [ref=e174]:
+        - paragraph [ref=e175]: 08 — How they load
+        - heading "Layers · not lumps." [level=2] [ref=e176]
+        - separator [ref=e177]
+        - generic [ref=e178]:
+          - generic [ref=e179]:
+            - generic [ref=e180]: "01"
+            - paragraph [ref=e181]: Match.
+            - paragraph [ref=e182]: Name + description only · Copilot decides relevance.
+          - generic [ref=e183]:
+            - generic [ref=e184]: "02"
+            - paragraph [ref=e185]: Load.
+            - paragraph [ref=e186]: SKILL.md body · when the skill activates.
+          - generic [ref=e187]:
+            - generic [ref=e188]: "03"
+            - paragraph [ref=e189]: Reach.
+            - paragraph [ref=e190]: Scripts · templates · refs · only when referenced.
+        - separator [ref=e191]
+        - paragraph [ref=e192]: Many skills installed · minimal context wasted.
+        - paragraph [ref=e193]: "Ref: VS Code docs · “How Copilot uses skills” — progressive loading (discovery · instructions · resources)."
+      - generic [ref=e194]: GitHub Copilot for everyone
+      - text: MICRON™

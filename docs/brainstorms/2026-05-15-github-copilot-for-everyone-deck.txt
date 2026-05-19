@@ -1,0 +1,578 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  BRAINSTORM: GitHub Copilot for Everyone                                    ║
+║  Audience  : Non-technical managers (semiconductor company)                 ║
+║  Goal      : Training — teach the habit, then run a hands-on demo           ║
+║  Style     : Micron light · Apple / Cursor restraint · editorial layout     ║
+║  Format    : 8 slides · ~10 min talk + demo + ~3 min Agent Skills wrap-up      ║
+║  Date      : 2026-05-15                                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+
+─────────────────────────────────────────────────────────────────────────────
+  NARRATIVE ARC
+─────────────────────────────────────────────────────────────────────────────
+
+  Core thesis:
+    Copilot used to be a tool for coders.
+    Now it's a coworker for everyone.
+    The new skill isn't typing — it's asking.
+
+  Story spine — one question per slide:
+
+    01  TITLE          —  Why are we here?
+    02  THE SHIFT      —  What changed?
+    03  HOW            —  How do I use it?
+    04  REAL PROMPTS   —  Like what, exactly?
+    05  IN PRACTICE    —  Show me one end-to-end.
+    06  LET'S TRY IT   —  [transition to live demo — audience follows along]
+    07  AGENT SKILLS   —  What are they · what problem do they solve?
+    08  HOW THEY LOAD  —  Progressive disclosure (why this matters to the org)
+
+
+  Run order:
+    Slides 01–05 → slide 06 → live demo → slides 07–08.
+    If time is tight, present 07–08 as a single "teaser" before Q&A or
+    send them as follow-up reading.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  DESIGN PRINCIPLES
+─────────────────────────────────────────────────────────────────────────────
+
+  Say less, mean more.
+    • One idea per slide. Nothing else.
+    • Sentences are short. Periods are loud.
+    • One italic purple accent word per H2. Never more.
+    • Word budget per slide: 25–40 words. Title < 15.
+
+  Hairlines, not boxes.
+    • Card grids look spreadsheety. We avoid them.
+    • Use vertical and horizontal hairline rules to divide space.
+    • Let whitespace do the column work.
+    • Allow ONE soft purple wash per deck — used as a focal point, not a frame.
+    • Every slide should feel visually distinct from its neighbours.
+
+  Card budget for the entire deck: 1.   (was 20+)
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SHARED MICRON GRAMMAR
+─────────────────────────────────────────────────────────────────────────────
+
+  Light theme hides .module-rail (`display:none`). Slide progress is shown
+  by the top progress-bar + right-edge nav-dots.
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress-bar (3px purple)
+  │                                                                        │
+  │   02 — THE SHIFT                                                       │  ← .section-label · mono purple · 60×4px underbar
+  │   ───                                                                  │
+  │   Headline.                                                            │  ← H2 · 56–96px ink · max 2–3 lines
+  │   Two lines, max.                                                      │     one accent word italic purple
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────  ●   │  ← horizontal hairline opens the canvas
+  │                                                                  ●     │
+  │     [ editorial typography fills the canvas — no card borders ]  ◉     │  ← right-edge .nav-dots
+  │                                                                  ●     │
+  │   ──────────────────────────────────────────────────────────────  ●   │  ← horizontal hairline closes the canvas
+  │                                                                        │
+  │   One italic closer.                                                   │  ← .callout / .center-line / .closing
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 01 — TITLE  (Micron light · title-slide layout)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ░░░░░░░░░░░░░                                          (dot grid, TR)  │
+  │ ░░░░░░░░░░                                                             │
+  │ ░░░░░░░                                                                │
+  │                                                                        │
+  │   ┌────────────────────────────────────┐    ┌──────────────────────┐  │
+  │   │                                    │    │     · · · · · · ·    │  │
+  │   │  AN INTRODUCTION                   │    │   ·              ·   │  │
+  │   │  ───                               │    │  ·  ┌──────────┐  ·  │  │
+  │   │                                    │    │  ·  │          │  ·  │  │
+  │   │  GitHub Copilot.                   │    │  ·  │  [icon]  │  ·  │  │  ← copilot mark, 164px
+  │   │                                    │    │  ·  │          │  ·  │  │
+  │   │  for everyone.                     │    │  ·  └──────────┘  ·  │  │
+  │   │  (italic purple)                   │    │   ·              ·   │  │
+  │   │  ═══════════════════════════════●  │    │     · · · · · · ·    │  │
+  │   │                                    │    │                      │  │
+  │   │  Plain English in.                 │    └──────────────────────┘  │
+  │   │  Real work out.                    │                              │
+  │   │                                    │                              │
+  │   └────────────────────────────────────┘                              │
+  │                                                                        │
+  │ ░░░░░░ (dot grid, BL)                                                  │
+  │ [logo] │ Presented by Jun Mun                                          │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  COPY     (3 lines · 8 words)
+    KICKER   AN INTRODUCTION
+    H1       GitHub Copilot.
+    SUB      for everyone.            (italic purple · gradient underline)
+    TAG      Plain English in. / Real work out.
+
+  The icon mark is a focal anchor, not a "card" — keep it.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 02 — THE SHIFT       (zero cards · vertical hairline split)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 2/8 (25%)
+  │                                                                        │
+  │   02 — THE SHIFT                                                       │
+  │   ───                                                                  │
+  │                                                                        │
+  │   It used to write code.                                               │  ← H2 · "work" italic purple
+  │   Now it does work.                                                    │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │  ← top hairline rule
+  │                                                                        │
+  │       THEN.                       │                       NOW.         │  ← labels · 18px mono uppercase
+  │                                   │                                    │     left = muted · right = purple
+  │       A coding assistant.         │    General purpose assistant       │  ← h3 · 56px · ink · period
+  │       (56px ink)                  │                  (56px purple)     │
+  │                                   │                                    │
+  │       Lives in the IDE.           │           Works across your PC.    │  ← body · 22px · ink
+  │       Speaks code.                │           Speaks plain English.    │     (no bullets, no cards)
+  │       Built for developers.       │           Built for anyone.        │
+  │                                   │                                    │
+  │   ──────────────────────────────────────────────────────────────────   │  ← bottom hairline rule
+  │                                                                        │
+  │   Same name. Different software.                                       │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  TECHNIQUE
+    – Two columns divided by ONE vertical hairline (1px #d0d7de).
+    – Top + bottom horizontal rules bracket the canvas.
+    – No card borders, no shadows. Type weight does the contrast.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 03 — HOW             (zero cards · numbered manuscript rows)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 3/8 (38%)
+  │                                                                        │
+  │   03 — HOW                                                             │
+  │   ───                                                                  │
+  │                                                                        │
+  │   Three steps.                                                         │  ← H2 · "Forever" italic purple
+  │   Forever.                                                             │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     01    Ask.            In plain English.                            │  ← row · baseline-aligned typography
+  │     ─────────────────────────────────────────────────────────────      │  ← hairline between rows
+  │     02    Act.            Copilot plans the steps.                     │
+  │     ─────────────────────────────────────────────────────────────      │
+  │     03    Review.         You stay in control.                         │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │   That's the whole loop.                                               │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  TECHNIQUE
+    – Number: 36px mono purple · gutter-aligned.
+    – Verb:   64px ink bold · with period.
+    – Body:   22px gray · sits inline at baseline of the verb.
+    – Hairline between each row · think "movie credits".
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 04 — REAL PROMPTS    (zero cards · borderless 2×3 prompt grid)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 4/8 (50%)
+  │                                                                        │
+  │   04 — REAL PROMPTS                                                    │
+  │   ───                                                                  │
+  │                                                                        │
+  │   What to type                                                         │  ← "tomorrow morning" italic purple
+  │   tomorrow morning.                                                    │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     01                       02                       03               │  ← 12px mono purple indices
+  │     "Sort these wafer        "Merge these three       "Summarise this  │
+  │      yield reports by         supplier scorecards      60-page         │  ← 28px ink quotes, no cards
+  │      fab and quarter."        into one view."          qualification   │     no borders, whitespace gridding
+  │                                                        report."        │
+  │                                                                        │
+  │     04                       05                       06               │
+  │     "Draft a follow-up       "Find every doc          "Turn these fab  │
+  │      to a wafer supplier      mentioning the           inspection      │
+  │      two weeks late."         next DRAM launch."       photos into a   │
+  │                                                        site report."   │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │   None of these are code.                                              │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  TECHNIQUE
+    – Three columns by whitespace only · no card outlines · no dividers.
+    – Each prompt is a large ink quote — the quote IS the design.
+    – Indices floated above each prompt in mono purple, not numbered chips.
+
+  AUDIENCE FRAMING
+    – Prompts are tailored to semiconductor-industry workflows:
+      ops (yield reports, fab inspections), supply chain (supplier
+      scorecards, wafer suppliers), quality (qualification reports),
+      and product (DRAM launches).
+    – Plain-English work requests, not engineering jargon. A finance,
+      ops, or HR person at a chipmaker should recognise every one.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 05 — IN PRACTICE     (one purple wash · borderless action row)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 5/8 (62%)
+  │                                                                        │
+  │   05 — IN PRACTICE                                                     │
+  │   ───                                                                  │
+  │                                                                        │
+  │   One sentence.                                                        │  ← "Four actions." italic purple
+  │   Four actions.                                                        │
+  │                                                                        │
+  │   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   │  ← THE ONE soft-purple wash
+  │   ░                                                                ░   │     (the deck's single panel)
+  │   ░  ❝                                                             ░   │  ← purple open-quote, 92px, top-left
+  │   ░    Rename my 80 photos by date.                                ░   │
+  │   ░    Pick the best twelve.                                       ░   │  ← .say · 42px bold ink
+  │   ░    Lay them out two-per-page.                                  ░   │     hangs inside the wash with margin
+  │   ░    Save it to my desktop.                                      ░   │
+  │   ░                                                              ❞ ░   │  ← purple close-quote, bottom-right
+  │   ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░   │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │   01            │   02            │   03            │   04             │  ← 4 columns split by vertical hairlines
+  │   Rename by     │   Pick the      │   Lay out       │   Save to your   │     no card outlines
+  │   date.         │   best twelve.  │   two-per-page. │   desktop.       │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │   One ask. The rest is automatic.                                      │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  TECHNIQUE
+    – ONE soft purple wash (no border) holds the prompt — the deck's one
+      and only panel · 8% purple · radius 14px.
+    – Giant decorative open/close quote marks in solid purple at corners.
+    – Below: 4 actions in baseline-aligned columns separated only by
+      vertical 1px hairlines.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 06 — LET'S TRY IT      (transition · normal slide · one inline action)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 6/8 (75%)
+  │                                                                        │
+  │   06 — LET'S TRY IT                                                    │
+  │   ───                                                                  │
+  │                                                                        │
+  │   Your turn.                                                           │  ← H2 · 96px ink
+  │                                                                        │     "turn." italic purple
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │  ← top hairline
+  │                                                                        │
+  │                                                                        │
+  │                                                                        │
+  │       Open Visual Studio Code  ·  Type a prompt  ·  Watch.             │  ← ONE inline action line
+  │                                                                        │     ~32px ink · mono dots purple
+  │                                                                        │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │  ← bottom hairline
+  │                                                                        │
+  │   I'll walk the room.                                                  │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  COPY     (~17 words)
+    KICKER   06 — LET'S TRY IT
+    H2       Your turn.                (italic purple)
+    ACTION   Open Visual Studio Code  ·  Type a prompt  ·  Watch.
+    CLOSER   I'll walk the room.
+
+  TECHNIQUE
+    – Normal editorial slide grammar (matches slides 02–05).
+    – ONE inline action line replaces a numbered list — reads like a
+      newspaper deck-line, not a checklist.
+    – Mono bullet dots (·) between actions in solid purple.
+    – Massive vertical whitespace above and below the action line.
+      The slide is mostly silence — it's the pause between teach & demo.
+    – Distinct from slide 03's manuscript rows (numbered, hairline-split):
+      here the steps live on a single horizontal line.
+    – Progress bar at 75% — slides 07–08 follow after the live demo.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 07 — AGENT SKILLS      (pain · packaged capability · manager framing)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │  ← progress 7/8 (88%)
+  │                                                                        │
+  │   07 — AGENT SKILLS                                                    │
+  │   ───                                                                  │
+  │                                                                        │
+  │   Repeatable expertise.                                                │  ← H2 · "expertise." italic purple
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     WHAT THEY ARE                                                      │  ← 14px mono uppercase · muted
+  │                                                                        │
+  │     Folders of instructions · scripts · resources                     │  ← ~28px ink
+  │     Copilot loads when the task fits.                                  │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     WHAT THEY FIX                                                      │
+  │                                                                        │
+  │     The same briefing · typed again · every chat.                     │  ← three plain statements · 22px ink
+  │     Tribal knowledge · trapped · in one person's head.               │
+  │     Different agents · needing · the same ritual · rewritten.           │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     DEFINE ONCE · SAVE AS A SKILL · USE AUTOMATICALLY                  │  ← mono purple caps · deck-line feel
+  │                                                                        │
+  │   Portable across VS Code · CLI · cloud agent.                         │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  COPY     (~55 words spoken · reads shorter than it counts)
+    KICKER   07 — AGENT SKILLS
+    H2       Repeatable expertise.
+    WHAT     Folders of instructions · scripts · resources · Copilot loads
+             when the task fits.
+    PAINS    Same briefing every chat · tribal knowledge · rewritten rituals.
+    LINE     DEFINE ONCE · SAVE AS A SKILL · USE AUTOMATICALLY
+    CLOSER   Portable across VS Code · CLI · cloud agent.
+
+  TECHNIQUE
+    – Stack of horizontal rules · zero cards · manager-readable vocabulary.
+    – Middle section states pains without bullets · rhythm through line breaks.
+    – Closing italic ties to organizational reality (multi-surface Copilot).
+
+  SOURCES (verified against GitHub / Microsoft docs · May 2026)
+    Agent Skills defined as folders of instructions · scripts · resources
+    loaded when relevant · open standard portable across VS Code · Copilot
+    CLI · Copilot cloud agent — VS Code docs § Key benefits includes specialize
+    without repeating context · reduce repetition · compose workflows —
+    https://code.visualstudio.com/docs/copilot/customization/agent-skills
+    Standard site — https://agentskills.io/
+
+
+─────────────────────────────────────────────────────────────────────────────
+  SLIDE 08 — PROGRESSIVE DISCLOSURE   (three-layer loading · why scale works)
+─────────────────────────────────────────────────────────────────────────────
+
+  ┌────────────────────────────────────────────────────────────────────────┐
+  │ ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬ │  ← progress 8/8 (full)
+  │                                                                        │
+  │   08 — HOW THEY LOAD                                                   │
+  │   ───                                                                  │
+  │                                                                        │
+  │   Layers · not lumps.                                                  │  ← H2 · "lumps." italic purple
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │     01    MATCH.                                                       │  ← manuscript rows · rhyme slide 03
+  │     ─────────────────────────────────────────────────────────────      │     but verbs describe SYSTEM behavior
+  │     Name + description only · Copilot decides relevance.               │
+  │                                                                        │
+  │     02    LOAD.                                                        │
+  │     ─────────────────────────────────────────────────────────────      │
+  │     SKILL.md body · when the skill activates.                          │
+  │                                                                        │
+  │     03    REACH.                                                       │
+  │     ─────────────────────────────────────────────────────────────      │
+  │     Scripts · templates · refs · only when referenced.               │
+  │                                                                        │
+  │   ──────────────────────────────────────────────────────────────────   │
+  │                                                                        │
+  │   Many skills installed · minimal context wasted.                      │  ← .callout · italic 26px
+  │                                                                        │
+  │   GitHub Copilot for everyone                                  [logo]  │
+  └────────────────────────────────────────────────────────────────────────┘
+
+  COPY     (~42 words)
+    KICKER   08 — HOW THEY LOAD
+    H2       Layers · not lumps.
+    STEP 1   MATCH. / Name + description only · Copilot decides relevance.
+    STEP 2   LOAD. / SKILL.md body · when the skill activates.
+    STEP 3   REACH. / Scripts · templates · refs · only when referenced.
+    CLOSER   Many skills installed · minimal context wasted.
+
+  TECHNIQUE
+    – Same manuscript-row motif as slide 03 · deliberately rhymes —
+      slide 03 = human loop · slide 08 = system mechanism — teaches without
+      feeling like a second checklist deck.
+    – Verb labels MATCH · LOAD · REACH map to Microsoft's documented sequence:
+      Discovery → Instructions loading → Resource access — VS Code docs §
+      "How Copilot uses skills".
+
+  SOURCES
+    Three-level loading quoted from VS Code documentation —
+    https://code.visualstudio.com/docs/copilot/customization/agent-skills
+    (#how-copilot-uses-skills)
+
+
+  STAGE NOTES (slides 07–08 · post-demo · managers)
+    – Position as "how teams scale what we just typed" · not an engineering deep dive.
+    – Name-drop agentskills.io once · invite IT / digital workplace to evaluate.
+    – Bridge line for semiconductor context: qualification reports · supplier scorecards · fab readiness —
+      same pains · skills encode YOUR company's vocabulary once.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  STAGE NOTES (slide 06 · live demo handoff)
+─────────────────────────────────────────────────────────────────────────────
+
+    – Pause 5+ seconds. Let laptops open.
+    – Walk the room: open VS Code · click Copilot Chat · check sign-in.
+    – Drive the demo from prompts on slide 04 — start with the one that
+      matches the room's role mix (ops · supply chain · quality).
+    – Invite a manager to dictate their own prompt mid-demo.
+    – Reserve the last 2 minutes to point back at slide 04 so managers
+      leave with a ready-made list of starter prompts.
+    – Then slides 07–08 · post-demo wrap · Agent Skills + progressive loading.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  VISUAL VARIETY MAP (no two slides feel the same)
+─────────────────────────────────────────────────────────────────────────────
+
+    Slide  Layout signature                            Card count
+    ───────────────────────────────────────────────────────────────
+    01     Two-col title · circular icon mark (right)   0  (mark)
+    02     Vertical hairline split · "Then | Now"       0
+    03     Three numbered manuscript rows               0
+    04     Borderless 2×3 quote grid                    0
+    05     ONE soft-purple wash + horizontal hairlines  1
+    06     Poster · ONE inline action line · whitespace   0
+    07     Rule-stack · WHAT / FIX · mono deck-line       0
+    08     Three manuscript rows · MATCH · LOAD · REACH 0
+    ───────────────────────────────────────────────────────────────
+    Cards across the deck                              1
+
+  Slide 01 is the only title-card. Slides 02–08 share the editorial
+  grammar (kicker · H2 · signature block · italic closer). Slides 07–08
+  run after the live demo unless shortened to follow-up reading.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  DESIGN SYSTEM
+─────────────────────────────────────────────────────────────────────────────
+
+  Palette — Micron light (restrained, one accent)
+    Background     #ffffff
+    Ink            #0f172a
+    Muted          #475569
+    Accent purple  #bd03f7
+    Soft purple    purple @ 8%        (only used on slide 05 wash)
+    Hairline       #d0d7de            (1px · the deck's main divider)
+
+  Typography
+    Display     Micron Basis · Plus Jakarta Sans · Arial
+    Mono        JetBrains Mono — kickers, indices
+    Scale       h1 122px · h2 56–96px · stat 120px ·
+                verb 64px · prompt 28–42px · body 20–22px
+    Tracking    Eyebrow .18em · headlines -.025em · mono .12em
+    Discipline  Period after every declarative line.
+
+  Layout grammar
+    – progress-bar 3px purple along the top
+    – nav-dots vertical, right edge, active = purple
+    – section-label kicker with 60×4px purple underbar
+    – H2 max 2–3 short lines · one italic purple accent word
+    – Canvas opens/closes with a horizontal hairline (1px #d0d7de)
+    – Internal divisions use 1px vertical hairlines, NOT card borders
+    – ONE italic closer line below the block
+    – .footer-text bottom-left · micron logo bottom-right (.76 opacity)
+
+  Voice
+    – Declarative. Short. Period at the end.
+    – Verbs > adjectives.
+    – Italic = the emotional beat.
+    – No IT vocabulary (install, configure, endpoint).
+
+  Motion
+    – .reveal items fade up 24px → 0, stagger .05 / .13 / .21 / .29 / .37s
+    – Hairlines draw in from one edge on slide enter (transform: scaleX)
+
+  Stage
+    – Fixed 1600×900 · letterbox bg #eef0f4
+    – Slide-stage drop shadow 0 18px 60px rgba(15,23,42,.14)
+
+
+─────────────────────────────────────────────────────────────────────────────
+  CHANGES FROM PREVIOUS DRAFT
+─────────────────────────────────────────────────────────────────────────────
+
+  Layout (the big change)
+    Before:  every slide was a card grid (split-card, steps, use-grid,
+             stat-row, tips) — 20+ rectangles across the deck.
+    After:   ONE card across the entire deck (the slide 05 prompt wash).
+             Everything else is editorial typography divided by hairlines.
+
+  Per-slide moves
+    02  Killed two comparison cards → vertical hairline split with bigger type.
+    03  Killed three step cards    → manuscript rows: 01 / Verb. / supporting.
+    04  Killed six use-cards       → borderless 2×3 grid · whitespace gutters.
+    05  Killed say-box card frame  → soft purple wash only · big quote marks.
+        Killed behind panel         → 4 actions in hairline-split columns.
+
+  Cut slides
+    06  THE IDEA  — removed.  (was the curiosity > skill thesis · 3 stats)
+    07  START     — removed.  (was the "one task this week" manifesto · 4 tips)
+
+  New slides (post-demo · managers · sourced online May 2026)
+    07  AGENT SKILLS — definition · pains · packaged capability · cites
+        VS Code Agent Skills docs + agentskills.io open standard.
+    08  PROGRESSIVE DISCLOSURE — three-layer loading (discovery ·
+        instructions · resources-on-demand) per VS Code § How Copilot uses skills.
+
+  Effect
+    Deck is now 8 slides · ~10 min talk + demo + ~3 min Agent Skills wrap-up.
+    Run order — 01–05 · 06 · demo · 07–08.
+
+  REFERENCES (build-time · presenter crib)
+    https://code.visualstudio.com/docs/copilot/customization/agent-skills
+    https://agentskills.io/
+
+  Net result
+    – Every slide now looks visually distinct from its neighbours.
+    – Whitespace is the design.
+    – Type sizes increased to fill space cards used to occupy.
+
+
+─────────────────────────────────────────────────────────────────────────────
+  END OF BRAINSTORM
+─────────────────────────────────────────────────────────────────────────────
