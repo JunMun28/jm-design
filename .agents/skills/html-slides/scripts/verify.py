@@ -20,6 +20,7 @@ from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = SKILL_ROOT / "themes" / "themes.json"
+REAL_SLIDE_SELECTOR = ".deck > .slide, body > .slide"
 
 # Fallback used only when --theme is given but the theme has no `verify` block,
 # or when --skip-brand is passed. Pure universal lints — no palette/logo checks.
@@ -27,11 +28,36 @@ UNIVERSAL_VERIFY = {
     "required_tokens": [],
     "accent_rgb": None,
     "accent_max_per_slide": None,
+    "forbid_visible_accent_rgb": None,
+    "forbid_visible_accent_name": None,
     "logo_pattern": None,
     "require_logo_on_content_slides": False,
     "forbid_chart_on_gradient": False,
     "headline_contrast_min": 4.5,
     "palette_lock": False,
+    "premium_corporate_checks": False,
+    "require_logo_image": False,
+    "title_image_pattern": None,
+    "title_logo_pattern": None,
+    "forbid_accent_text_selectors": [],
+    "enforce_sentence_case_headlines": False,
+    "forbid_headline_end_punctuation": False,
+    "min_label_body_gap_px": None,
+    "forbid_selectors": [],
+    "micron_light_title_checks": False,
+    "require_title_animated_icon": False,
+    "title_icon_pattern": None,
+    "title_visual_selector": None,
+    "require_title_template_selector": None,
+    "require_title_shader_ready": False,
+    "min_title_copy_gap_px": None,
+    "min_title_icon_width_px": None,
+    "min_title_icon_right_margin_px": None,
+    "require_fixed_stage": False,
+    "stage_width": None,
+    "stage_height": None,
+    "enforce_stage_overflow": False,
+    "min_touch_target_px": None,
 }
 
 
@@ -94,6 +120,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
     console_issues = []
     page_errors = []
     notes = []
+    notes_seen = set()
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not show)
@@ -101,23 +128,27 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
         for viewport in viewports:
             context = browser.new_context(viewport=viewport, device_scale_factor=2)
             page = context.new_page()
-            page.on(
-                "console",
-                lambda msg: console_issues.append(f"[{msg.type}] {msg.text}")
-                if msg.type in ("error", "warning")
-                else None,
-            )
+            def handle_console(msg):
+                if msg.type not in ("error", "warning"):
+                    return
+                if "GPU stall due to ReadPixels" in msg.text:
+                    return
+                console_issues.append(f"[{msg.type}] {msg.text}")
+
+            page.on("console", handle_console)
             page.on("pageerror", lambda err: page_errors.append(str(err)))
 
             page.goto(html_path.as_uri(), wait_until="networkidle")
             page.wait_for_timeout(wait)
             page.evaluate("() => document.fonts && document.fonts.ready")
 
-            slide_count = page.locator(".slide").count()
+            slide_count = page.locator(REAL_SLIDE_SELECTOR).count()
             if slide_count == 0:
                 page_errors.append("No .slide elements found.")
 
             if slide_count:
+                eval_config = dict(verify_config)
+                eval_config["viewport_width"] = viewport["width"]
                 brand_issues = page.evaluate(
                     """(cfg) => {
                         const out = [];
@@ -141,7 +172,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 }
                             }
                         }
-                        const slides = Array.from(document.querySelectorAll('.slide'));
+                        const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
                         if (slides.length && !slides[0].classList.contains('title-slide') && slides[0].dataset.slideKind !== 'cover') {
                             out.push('first slide is not a title slide (.title-slide or data-slide-kind="cover")');
                         }
@@ -167,8 +198,286 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 const hasLogoImage = new RegExp(cfg.logo_pattern, 'i').test(bg);
                                 const hasTextMark = content.includes(cfg.logo_pattern.toLowerCase()) ||
                                     (brandWord.length >= 3 && content.includes(brandWord));
-                                if (!hasLogoImage && !hasTextMark) {
+                                if (cfg.require_logo_image && !hasLogoImage) {
+                                    out.push(`slide ${i + 1}: missing official logo image — content slide brand mark must use an asset URL matching /${cfg.logo_pattern}/i`);
+                                } else if (!hasLogoImage && !hasTextMark) {
                                     out.push(`slide ${i + 1}: missing brand mark — slide/stage pseudo-element must set background-image matching /${cfg.logo_pattern}/i or content containing "${brandWord}"`);
+                                }
+                            }
+                            // Premium corporate Micron dark executive checks:
+                            // enforce the approved photo cover, logo asset,
+                            // no accent-coloured prose/headline text, sentence
+                            // case, and basic vertical rhythm around labels.
+                            if (cfg.premium_corporate_checks) {
+                                const hasAccent = (v) => cfg.accent_rgb && v && v.toLowerCase().includes(cfg.accent_rgb);
+                                const imgs = Array.from(s.querySelectorAll('img'));
+                                const stage = s.querySelector(':scope > .slide-stage') || s;
+                                if (isTitle) {
+                                    if (cfg.title_image_pattern) {
+                                        const hasTitleImage = imgs.some((img) => new RegExp(cfg.title_image_pattern, 'i').test(img.getAttribute('src') || ''));
+                                        if (!hasTitleImage) {
+                                            out.push(`slide ${i + 1}: micron-dark-executive cover must use approved photo asset matching /${cfg.title_image_pattern}/i`);
+                                        }
+                                    }
+                                    if (cfg.title_logo_pattern) {
+                                        const hasTitleLogo = imgs.some((img) => new RegExp(cfg.title_logo_pattern, 'i').test(img.getAttribute('src') || ''));
+                                        if (!hasTitleLogo) {
+                                            out.push(`slide ${i + 1}: cover must use official white Micron logo asset matching /${cfg.title_logo_pattern}/i`);
+                                        }
+                                    }
+                                    const bg = getComputedStyle(stage).backgroundColor;
+                                    const parts = (bg.match(/\\d+(\\.\\d+)?/g) || []).map(Number);
+                                    if (parts.length >= 3 && Math.max(parts[0], parts[1], parts[2]) > 16) {
+                                        out.push(`slide ${i + 1}: cover stage must be true black or near-black, not ${bg}`);
+                                    }
+                                }
+                                const forbiddenSelectors = (cfg.forbid_accent_text_selectors || []).join(',');
+                                if (forbiddenSelectors) {
+                                    s.querySelectorAll(forbiddenSelectors).forEach((el) => {
+                                        const cs = getComputedStyle(el);
+                                        const parentColor = el.parentElement ? getComputedStyle(el.parentElement).color : '';
+                                        if (hasAccent(cs.color) && cs.color !== parentColor) {
+                                            const txt = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
+                                            out.push(`slide ${i + 1}: accent color used on forbidden text selector "${el.tagName.toLowerCase()}${el.className ? '.' + String(el.className).trim().replace(/\\s+/g, '.') : ''}" — "${txt}"`);
+                                        }
+                                    });
+                                }
+                                if (cfg.enforce_sentence_case_headlines || cfg.forbid_headline_end_punctuation) {
+                                    s.querySelectorAll('h1, h2').forEach((h) => {
+                                        const text = (h.textContent || '').replace(/\\s+/g, ' ').trim();
+                                        if (!text) return;
+                                        if (cfg.forbid_headline_end_punctuation && /[.!]$/.test(text)) {
+                                            out.push(`slide ${i + 1}: headline has forbidden end punctuation — "${text.slice(0, 64)}"`);
+                                        }
+                                        if (cfg.enforce_sentence_case_headlines) {
+                                            const words = text.split(/\\s+/).map((w) => w.replace(/^[^A-Za-z]+|[^A-Za-z]+$/g, '')).filter(Boolean);
+                                            const meaningful = words.filter((w) => w.length > 3 && !/^[A-Z0-9]+$/.test(w));
+                                            const titleCased = meaningful.filter((w, idx) => idx > 0 && /^[A-Z][a-z]/.test(w));
+                                            if (titleCased.length >= 2) {
+                                                out.push(`slide ${i + 1}: headline looks title-cased, use Micron sentence case — "${text.slice(0, 64)}"`);
+                                            }
+                                        }
+                                    });
+                                }
+                                if (typeof cfg.min_label_body_gap_px === 'number') {
+                                    s.querySelectorAll('.label, .chart-label').forEach((label) => {
+                                        const next = label.nextElementSibling;
+                                        if (!next) return;
+                                        const lr = label.getBoundingClientRect();
+                                        const nr = next.getBoundingClientRect();
+                                        const lcs = getComputedStyle(label);
+                                        const ncs = getComputedStyle(next);
+                                        if (lcs.display === 'none' || ncs.display === 'none' || lr.width <= 0 || nr.width <= 0) return;
+                                        const stage = label.closest('.slide-stage');
+                                        const stageScale = stage ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-scale') || '1') : 1;
+                                        const gap = stage && stageScale > 0 && stageScale < 1 ? (nr.top - lr.bottom) / stageScale : nr.top - lr.bottom;
+                                        if (gap + 0.5 < cfg.min_label_body_gap_px) {
+                                            const txt = (label.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
+                                            out.push(`slide ${i + 1}: label/body vertical gap too tight (${gap.toFixed(1)}px < ${cfg.min_label_body_gap_px}px) after "${txt}"`);
+                                        }
+                                    });
+                                }
+                                s.querySelectorAll('*').forEach((el) => {
+                                    const cs = getComputedStyle(el);
+                                    if ((cs.webkitBackgroundClip === 'text' || cs.backgroundClip === 'text') && cs.backgroundImage && cs.backgroundImage !== 'none') {
+                                        const txt = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
+                                        out.push(`slide ${i + 1}: gradient-filled text is not allowed in premium corporate decks — "${txt}"`);
+                                    }
+                                });
+                            }
+                            // Theme-specific forbidden selectors. Used for
+                            // visual chrome that should not appear at all in a
+                            // theme, even if it is small and readable.
+                            (cfg.forbid_selectors || []).forEach((selector) => {
+                                s.querySelectorAll(selector).forEach((el) => {
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity || 1) <= 0.05 || r.width <= 1 || r.height <= 1) return;
+                                    const txt = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
+                                    out.push(`slide ${i + 1}: forbidden theme element "${selector}" is visible${txt ? ` — "${txt}"` : ''}`);
+                                });
+                            });
+                            // Micron light title-slide checks. These target the
+                            // accepted two-section title treatment: left copy,
+                            // right official animated Micron icon, no divider,
+                            // no circular/square frame, and readable vertical
+                            // rhythm in the title copy.
+                            if (cfg.micron_light_title_checks && isTitle) {
+                                const shown = (el) => {
+                                    if (!el) return false;
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 1 && r.height > 1;
+                                };
+                                const alpha = (color) => {
+                                    if (!color || color === 'transparent') return 0;
+                                    const nums = (color.match(/\\d+(\\.\\d+)?/g) || []).map(Number);
+                                    if (color.startsWith('rgba') && nums.length >= 4) return nums[3];
+                                    return nums.length >= 3 ? 1 : 0;
+                                };
+                                const stage = s.querySelector(':scope > .slide-stage') || s;
+                                const stageScaleRaw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-scale') || '1');
+                                const toStagePx = (v) => stageScaleRaw > 0 && stageScaleRaw < 1 ? v / stageScaleRaw : v;
+                                if (cfg.require_title_mesh_background) {
+                                    const bgImage = getComputedStyle(stage).backgroundImage || '';
+                                    const radialCount = (bgImage.match(/radial-gradient/gi) || []).length;
+                                    if (radialCount < 4) {
+                                        out.push(`slide ${i + 1}: micron-light cover needs a layered mesh-gradient background (${radialCount} radial gradients found, expected at least 4)`);
+                                    }
+                                }
+                                const titleCopy = s.querySelector('.title-copy');
+                                const titleVisual = s.querySelector('.title-visual');
+                                const titleIcon = s.querySelector('.title-hero-icon, .title-visual video');
+                                const titlePatternUsed = titleCopy || titleVisual || titleIcon;
+
+                                if (titlePatternUsed) {
+                                    if (!titleCopy || !titleVisual) {
+                                        out.push(`slide ${i + 1}: micron-light cover two-section pattern needs both .title-copy and .title-visual`);
+                                    } else if (shown(titleCopy) && shown(titleVisual)) {
+                                        const copyNodes = Array.from(titleCopy.children).filter(shown);
+                                        const visualNodes = Array.from(titleVisual.children).filter(shown);
+                                        const copyRight = Math.max(...(copyNodes.length ? copyNodes : [titleCopy]).map((el) => el.getBoundingClientRect().right));
+                                        const visualLeft = Math.min(...(visualNodes.length ? visualNodes : [titleVisual]).map((el) => el.getBoundingClientRect().left));
+                                        if (copyRight + 8 > visualLeft) {
+                                            out.push(`slide ${i + 1}: micron-light cover title copy overlaps or crosses the visual section`);
+                                        }
+                                    }
+                                }
+
+                                if (titleCopy && shown(titleCopy)) {
+                                    const parts = [
+                                        titleCopy.querySelector('.eyebrow, .kicker'),
+                                        titleCopy.querySelector('h1'),
+                                        titleCopy.querySelector('.subtitle'),
+                                        titleCopy.querySelector('.title-meta')
+                                    ].filter(shown);
+                                    const minGap = typeof cfg.min_title_copy_gap_px === 'number' ? cfg.min_title_copy_gap_px : 24;
+                                    for (let idx = 1; idx < parts.length; idx += 1) {
+                                        const prev = parts[idx - 1].getBoundingClientRect();
+                                        const next = parts[idx].getBoundingClientRect();
+                                        const gap = toStagePx(next.top - prev.bottom);
+                                        if (gap + 0.5 < minGap) {
+                                            out.push(`slide ${i + 1}: micron-light cover title copy is vertically cramped (${gap.toFixed(1)}px < ${minGap}px)`);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                const visibleNonLogoImages = Array.from(s.querySelectorAll('img')).filter((img) => {
+                                    const src = img.getAttribute('src') || '';
+                                    return shown(img) && !/micron-logo/i.test(src);
+                                });
+                                if ((titleVisual || titleIcon) && !shown(titleIcon) && visibleNonLogoImages.length === 0) {
+                                    out.push(`slide ${i + 1}: micron-light cover visual section needs a specific image or official animated Micron icon`);
+                                }
+
+                                const checkDivider = (el, label) => {
+                                    if (!el || !shown(el)) return;
+                                    const cs = getComputedStyle(el);
+                                    const sides = [
+                                        ['left', cs.borderLeftWidth, cs.borderLeftColor],
+                                        ['right', cs.borderRightWidth, cs.borderRightColor]
+                                    ];
+                                    sides.forEach(([side, width, color]) => {
+                                        if (parseFloat(width || '0') > 0.5 && alpha(color) > 0.05) {
+                                            out.push(`slide ${i + 1}: micron-light cover must not draw a divider between title and icon (${label} border-${side})`);
+                                        }
+                                    });
+                                };
+                                checkDivider(titleCopy, '.title-copy');
+                                checkDivider(titleVisual, '.title-visual');
+
+                                if (shown(titleIcon)) {
+                                    const tag = titleIcon.tagName.toLowerCase();
+                                    const src = titleIcon.getAttribute('src') || '';
+                                    const videoPattern = cfg.title_icon_pattern ? new RegExp(cfg.title_icon_pattern, 'i') : null;
+                                    const fallbackPattern = cfg.title_icon_fallback_pattern ? new RegExp(cfg.title_icon_fallback_pattern, 'i') : null;
+                                    if (tag === 'video') {
+                                        if (!/\\.mp4(\\?|#|$)/i.test(src)) {
+                                            out.push(`slide ${i + 1}: micron-light cover title icon must use an MP4 source`);
+                                        }
+                                        if (videoPattern && !videoPattern.test(src)) {
+                                            out.push(`slide ${i + 1}: micron-light cover title icon must come from Micron animated icon assets matching /${cfg.title_icon_pattern}/i`);
+                                        }
+                                    } else if (tag === 'img' && fallbackPattern) {
+                                        if (!/\\.png(\\?|#|$)/i.test(src)) {
+                                            out.push(`slide ${i + 1}: micron-light cover title fallback must use a transparent PNG source`);
+                                        }
+                                        if (!fallbackPattern.test(src)) {
+                                            out.push(`slide ${i + 1}: micron-light cover title fallback must come from Micron transparent icon assets matching /${cfg.title_icon_fallback_pattern}/i`);
+                                        }
+                                    } else {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon should be an animated MP4 video or official transparent PNG fallback, not ${tag}`);
+                                    }
+                                    const iconRect = titleIcon.getBoundingClientRect();
+                                    const minIcon = typeof cfg.min_title_icon_width_px === 'number' ? cfg.min_title_icon_width_px : 300;
+                                    if (toStagePx(iconRect.width) + 0.5 < minIcon) {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon is too small (${toStagePx(iconRect.width).toFixed(1)}px < ${minIcon}px)`);
+                                    }
+                                    const stageRect = stage.getBoundingClientRect();
+                                    const minRight = typeof cfg.min_title_icon_right_margin_px === 'number' ? cfg.min_title_icon_right_margin_px : 72;
+                                    const rightMargin = toStagePx(stageRect.right - iconRect.right);
+                                    if (rightMargin + 0.5 < minRight) {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon is too close to the right edge (${rightMargin.toFixed(1)}px < ${minRight}px)`);
+                                    }
+
+                                    const iconCs = getComputedStyle(titleIcon);
+                                    const borderWidths = [iconCs.borderTopWidth, iconCs.borderRightWidth, iconCs.borderBottomWidth, iconCs.borderLeftWidth].some((w) => parseFloat(w || '0') > 0.5);
+                                    const maxRadius = Math.max(...[iconCs.borderTopLeftRadius, iconCs.borderTopRightRadius, iconCs.borderBottomRightRadius, iconCs.borderBottomLeftRadius].map((v) => parseFloat(v || '0') || 0));
+                                    if (maxRadius > 1) {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon must not use circular/rounded border treatment`);
+                                    }
+                                    if (borderWidths) {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon must not have a visible border`);
+                                    }
+                                    if (alpha(iconCs.backgroundColor) > 0.05) {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon must not sit in a square background`);
+                                    }
+                                    if (iconCs.boxShadow && iconCs.boxShadow !== 'none') {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon must not use a box shadow`);
+                                    }
+                                    if (iconCs.filter && iconCs.filter !== 'none') {
+                                        out.push(`slide ${i + 1}: micron-light cover title icon must not use filter/drop-shadow effects`);
+                                    }
+                                    if (tag === 'video' && iconCs.mixBlendMode === 'normal') {
+                                        out.push(`slide ${i + 1}: micron-light cover title MP4 should use mix-blend-mode:multiply so no square box appears`);
+                                    }
+
+                                    const wrapper = titleVisual || titleIcon.parentElement;
+                                    if (wrapper && shown(wrapper)) {
+                                        const wcs = getComputedStyle(wrapper);
+                                        const wrapperBorder = [wcs.borderTopWidth, wcs.borderRightWidth, wcs.borderBottomWidth, wcs.borderLeftWidth].some((w) => parseFloat(w || '0') > 0.5);
+                                        if (wrapperBorder || alpha(wcs.backgroundColor) > 0.05 || (wcs.boxShadow && wcs.boxShadow !== 'none')) {
+                                            out.push(`slide ${i + 1}: micron-light cover title visual must not be framed as a card, circle, or square box`);
+                                        }
+                                    }
+                                }
+                            }
+                            if (cfg.require_title_animated_icon && isTitle) {
+                                const shown = (el) => {
+                                    if (!el) return false;
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 1 && r.height > 1;
+                                };
+                                if (cfg.require_title_template_selector) {
+                                    const requiredTemplate = s.querySelector(cfg.require_title_template_selector);
+                                    if (!shown(requiredTemplate)) {
+                                        out.push(`slide ${i + 1}: title slide must use required template selector ${cfg.require_title_template_selector}`);
+                                    } else if (cfg.require_title_shader_ready && requiredTemplate.dataset.silkShaderReady !== 'true') {
+                                        out.push(`slide ${i + 1}: title slide must initialize the real silk-wave-purple Three.js shader, not just a static fallback`);
+                                    }
+                                }
+                                const pattern = cfg.title_icon_pattern ? new RegExp(cfg.title_icon_pattern, 'i') : null;
+                                const visual = cfg.title_visual_selector ? s.querySelector(cfg.title_visual_selector) : null;
+                                const hasTemplateVisual = shown(visual);
+                                const videos = Array.from(s.querySelectorAll('video')).filter(shown);
+                                if (videos.length === 0 && !hasTemplateVisual) {
+                                    out.push(`slide ${i + 1}: title slide needs one visible official animated Micron icon or approved title template visual`);
+                                } else if (pattern && !videos.some((video) => pattern.test(video.getAttribute('src') || ''))) {
+                                    if (!hasTemplateVisual) {
+                                        out.push(`slide ${i + 1}: title animated icon must match /${cfg.title_icon_pattern}/i`);
+                                    }
                                 }
                             }
                             // Accent overuse check (theme-driven RGB).
@@ -197,6 +506,30 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 accentCount += accentedSvgs.size;
                                 if (accentCount > cfg.accent_max_per_slide) {
                                     out.push(`slide ${i + 1}: accent overused (${accentCount} elements > max ${cfg.accent_max_per_slide}).`);
+                                }
+                            }
+                            if (cfg.forbid_visible_accent_rgb) {
+                                const forbidden = cfg.forbid_visible_accent_rgb;
+                                const forbiddenName = cfg.forbid_visible_accent_name || forbidden;
+                                const hasForbidden = (v) => v && v.toLowerCase().includes(forbidden);
+                                const shown = (el) => {
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 1 && r.height > 1;
+                                };
+                                const offenders = [];
+                                s.querySelectorAll('*').forEach((el) => {
+                                    if (!shown(el)) return;
+                                    if (el.closest('.title-slide')) return;
+                                    const cs = getComputedStyle(el);
+                                    const parentColor = el.parentElement ? getComputedStyle(el.parentElement).color : '';
+                                    const colorHit = hasForbidden(cs.color) && cs.color !== parentColor;
+                                    const surfaceHit = [cs.backgroundColor, cs.borderTopColor, cs.borderRightColor, cs.borderBottomColor, cs.borderLeftColor, cs.outlineColor, cs.fill, cs.stroke]
+                                        .some(hasForbidden);
+                                    if (colorHit || surfaceHit) offenders.push(el);
+                                });
+                                if (offenders.length) {
+                                    out.push(`slide ${i + 1}: ${forbiddenName} used as visible accent (${offenders.length} elements); use Micron purple for active/highlight states`);
                                 }
                             }
                             // Chart-on-gradient
@@ -262,6 +595,16 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             if (cs.cursor !== 'pointer') {
                                 out.push(`interactive element <${el.tagName.toLowerCase()}> missing cursor:pointer`);
                             }
+                            if (cfg.min_touch_target_px) {
+                                const r = el.getBoundingClientRect();
+                                const stage = el.closest('.slide-stage');
+                                const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
+                                const width = stage && stageScale > 0 && stageScale < 1 ? r.width / stageScale : r.width;
+                                const height = stage && stageScale > 0 && stageScale < 1 ? r.height / stageScale : r.height;
+                                if (width > 0 && height > 0 && (width < cfg.min_touch_target_px || height < cfg.min_touch_target_px)) {
+                                    out.push(`interactive element <${el.tagName.toLowerCase()}> touch target too small (${Math.round(width)}x${Math.round(height)}px < ${cfg.min_touch_target_px}x${cfg.min_touch_target_px}px)`);
+                                }
+                            }
                         });
                         // 2. prefers-reduced-motion respected: at least one media query block referencing it.
                         const hasReducedMotion = Array.from(document.styleSheets).some(sheet => {
@@ -271,9 +614,92 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         if (!hasReducedMotion) {
                             out.push('no @media (prefers-reduced-motion) rule found — motion accessibility lint');
                         }
+                        // 3. Fixed-stage themes must use the fixed wrapper
+                        // and keep the declared design size.
+                        if (cfg.require_fixed_stage) {
+                            slides.forEach((s, i) => {
+                                const stage = s.querySelector(':scope > .slide-stage');
+                                if (!stage) {
+                                    out.push(`slide ${i + 1}: missing .slide-stage wrapper`);
+                                    return;
+                                }
+                                const cs = getComputedStyle(stage);
+                                const rawW = Math.round(parseFloat(cs.width || '0'));
+                                const rawH = Math.round(parseFloat(cs.height || '0'));
+                                if (cfg.stage_width && rawW !== cfg.stage_width) {
+                                    out.push(`slide ${i + 1}: .slide-stage width ${rawW}px does not match configured ${cfg.stage_width}px`);
+                                }
+                                if (cfg.stage_height && rawH !== cfg.stage_height) {
+                                    out.push(`slide ${i + 1}: .slide-stage height ${rawH}px does not match configured ${cfg.stage_height}px`);
+                                }
+                            });
+                        }
+                        // 4. Readability floor for audience-facing text.
+                        // Small chrome is allowed; meaningful slide copy is not.
+                        // Skip narrow/mobile viewport lints: mobile is checked
+                        // for overflow and overlap, while presentation-room
+                        // readability is judged at desktop/stage sizes.
+                        if (!cfg.viewport_width || cfg.viewport_width >= 900) {
+                        const chromeSelector = [
+                            '.nav-dots', '.progress-bar', '.present-toggle', '#overview',
+                            '.footer', '.work-footer', '.slide-coord', '.section-label', '.sidebar',
+                            '.kicker', '.eyebrow', '.num',
+                            '.md-title-note', '.md-title-number', '.md-title-brand',
+                            '.screen-topbar', '.screen-dots', '.screen-kpi span',
+                            '.screen-node', '.screen-table', '[aria-hidden="true"]'
+                        ].join(',');
+                        const textOf = (node) => (node.textContent || '').replace(/\\s+/g, ' ').trim();
+                        const isVisible = (el) => {
+                            const cs = getComputedStyle(el);
+                            const r = el.getBoundingClientRect();
+                            return cs.display !== 'none' && cs.visibility !== 'hidden' &&
+                                parseFloat(cs.opacity || '1') > 0.05 && r.width > 0 && r.height > 0;
+                        };
+                        slides.forEach((s, i) => {
+                            const small = [];
+                            const walker = document.createTreeWalker(s, NodeFilter.SHOW_TEXT, {
+                                acceptNode(node) {
+                                    const text = textOf(node);
+                                    if (text.length < 2) return NodeFilter.FILTER_REJECT;
+                                    const el = node.parentElement;
+                                    if (!el || el.closest(chromeSelector) || !isVisible(el)) return NodeFilter.FILTER_REJECT;
+                                    if (el.children && Array.from(el.children).some((child) => textOf(child).length > 1 && isVisible(child))) {
+                                        return NodeFilter.FILTER_REJECT;
+                                    }
+                                    return NodeFilter.FILTER_ACCEPT;
+                                }
+                            });
+                            const seenTextHosts = new Set();
+                            while (walker.nextNode()) {
+                                const el = walker.currentNode.parentElement;
+                                if (!el || seenTextHosts.has(el)) continue;
+                                seenTextHosts.add(el);
+                                const cs = getComputedStyle(el);
+                                let fontSize = parseFloat(cs.fontSize || '0');
+                                const stage = el.closest('.slide-stage');
+                                const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
+                                if (stage && stageScale > 0 && stageScale < 1) {
+                                    fontSize = fontSize / stageScale;
+                                }
+                                const text = textOf(el);
+                                const min = el.matches('h1, h2') ? 60 :
+                                    el.matches('h3') ? ((text.length <= 18 || text === text.toUpperCase()) ? 20 : 24) :
+                                    el.matches('p, li, td, th, blockquote, code, pre') ? 24 :
+                                    20;
+                                if (fontSize > 0 && fontSize < min) {
+                                    small.push(`${text.slice(0, 48)} (${fontSize.toFixed(1)}px < ${min}px)`);
+                                }
+                            }
+                            if (small.length) {
+                                const shown = small.slice(0, 6).join('; ');
+                                const more = small.length > 6 ? `; +${small.length - 6} more` : '';
+                                out.push(`slide ${i + 1}: text below readability floor — ${shown}${more}`);
+                            }
+                        });
+                        }
                         return out;
                     }""",
-                    verify_config,
+                    eval_config,
                 )
                 # Dedupe universal lints across viewports
                 seen = set()
@@ -283,7 +709,10 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         continue
                     seen.add(key)
                     if issue.startswith("NOTE:"):
-                        notes.append(issue[len("NOTE:"):].strip())
+                        note = issue[len("NOTE:"):].strip()
+                        if note not in notes_seen:
+                            notes_seen.add(note)
+                            notes.append(note)
                     else:
                         page_errors.append(f"Lint: {issue}.")
 
@@ -300,20 +729,27 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
             for index in range(max_slides):
                 page.evaluate(
                     """index => {
+                        const hashTarget = '#/' + (index + 1);
+                        if (location.hash !== hashTarget) {
+                            history.replaceState(null, '', hashTarget);
+                            window.dispatchEvent(new HashChangeEvent('hashchange'));
+                        }
                         if (window.presentation?.goTo) {
                             window.presentation.goTo(index, { immediate: true });
                         } else {
-                            document.querySelectorAll('.slide')[index]?.scrollIntoView({ behavior: 'instant', block: 'start' });
+                            document.querySelectorAll('.deck > .slide, body > .slide')[index]?.scrollIntoView({ behavior: 'instant', block: 'start' });
                         }
                     }""",
                     index,
                 )
                 page.wait_for_timeout(1500)
                 issues = page.evaluate(
-                    """index => {
-                        const slide = document.querySelectorAll('.slide')[index];
+                    """({ index, cfg }) => {
+                        const allSlides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
+                        const slide = allSlides[index];
                         if (!slide) return ['missing slide'];
-                        const content = slide.querySelector('.slide-content') || slide;
+                        const stage = slide.querySelector(':scope > .slide-stage');
+                        const content = stage || slide.querySelector('.slide-content') || slide;
                         const out = [];
                         const rect = slide.getBoundingClientRect();
                         const contentRect = content.getBoundingClientRect();
@@ -331,9 +767,39 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             if (content.scrollWidth > content.clientWidth + 2) out.push('horizontal overflow');
                         }
                         if (rect.width < 1 || rect.height < 1) out.push('blank slide geometry');
+                        if (cfg.enforce_stage_overflow && stage) {
+                            const stageRect = stage.getBoundingClientRect();
+                            const stageStyle = getComputedStyle(stage);
+                            // scrollHeight can include internal margins even
+                            // when no rendered child escapes the fixed stage.
+                            // Keep it as a coarse guard, and rely on the
+                            // child-rect check below for exact visual overflow.
+                            if (stage.scrollWidth > stage.clientWidth + 24) out.push(`stage horizontal scroll overflow (${stage.scrollWidth}px > ${stage.clientWidth}px)`);
+                            if (stage.scrollHeight > stage.clientHeight + 24) out.push(`stage vertical scroll overflow (${stage.scrollHeight}px > ${stage.clientHeight}px)`);
+                            if (stageStyle.overflow !== 'hidden') out.push(`stage overflow must be hidden, got ${stageStyle.overflow}`);
+                            const ignore = '.nav-dots, .progress-bar, .presentation-hotspot, .present-toggle, .overview, [aria-hidden="true"]';
+                            const nodes = Array.from(stage.querySelectorAll('*')).filter((el) => {
+                                if (el.closest(ignore)) return false;
+                                const cs = getComputedStyle(el);
+                                const r = el.getBoundingClientRect();
+                                return cs.display !== 'none' && cs.visibility !== 'hidden' &&
+                                    parseFloat(cs.opacity || '1') > 0.05 && r.width > 0 && r.height > 0;
+                            });
+                            const offenders = [];
+                            for (const el of nodes) {
+                                const r = el.getBoundingClientRect();
+                                if (r.left < stageRect.left - 2 || r.right > stageRect.right + 2 ||
+                                    r.top < stageRect.top - 2 || r.bottom > stageRect.bottom + 2) {
+                                    const label = (el.textContent || el.className || el.tagName).toString().replace(/\\s+/g, ' ').trim().slice(0, 42);
+                                    offenders.push(`${el.tagName.toLowerCase()} "${label}"`);
+                                }
+                                if (offenders.length >= 6) break;
+                            }
+                            if (offenders.length) out.push(`stage child visual overflow: ${offenders.join('; ')}`);
+                        }
                         return out;
                     }""",
-                    index,
+                    {"index": index, "cfg": verify_config},
                 )
                 for issue in issues:
                     page_errors.append(f"Slide {index + 1} at {viewport['width']}x{viewport['height']}: {issue}.")
@@ -352,10 +818,13 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         getComputedStyle(el).display !== 'none'"""
                     )
                     card_count = page.locator("#overview .ov-card").count()
+                    thumb_count = page.locator("#overview .ov-thumb").count()
                     if not is_visible:
                         page_errors.append("ESC did not open #overview.")
                     if slide_count and card_count != slide_count:
                         page_errors.append(f"Overview card count mismatch: {card_count} for {slide_count} slides.")
+                    if slide_count and thumb_count != slide_count:
+                        page_errors.append(f"Overview thumbnail count mismatch: {thumb_count} for {slide_count} slides.")
                     out = output_dir / f"{stem}-overview-{viewport['width']}x{viewport['height']}.png"
                     page.screenshot(path=str(out), full_page=False)
                     page.keyboard.press("Escape")

@@ -12,44 +12,16 @@
   },
   "themes": [
     {
-      "id": "micron-dark",
-      "name": "Micron dark",
+      "id": "micron-dark-executive",
+      "name": "Micron dark executive",
       "status": "stable",
-      "tone": "brand",
-      "when": "Brand-led storytelling on a black canvas. Default Micron dark for marketing, vision, or chapter decks.",
-      "design": "themes/micron-dark/design.md",
-      "example": "themes/micron-dark/example.html",
-      "preview": "themes/micron-dark/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--micron-black",
-          "--micron-white",
-          "--micron-accent",
-          "--font-display",
-          "--scale-ratio",
-          "--col-count"
-        ],
-        "accent_rgb": "189, 3, 247",
-        "accent_max_per_slide": 4,
-        "logo_pattern": "micron-logo",
-        "require_logo_on_content_slides": true,
-        "forbid_chart_on_gradient": true,
-        "headline_contrast_min": 4.5,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "micron-dark-engineering",
-      "name": "Micron dark engineering",
-      "status": "stable",
-      "tone": "engineering",
-      "when": "Technical or engineering reviews. Default for internal reviews, roadmaps, postmortems, and architecture readouts.",
-      "design": "themes/micron-dark-engineering/design.md",
-      "example": "themes/micron-dark-engineering/example.html",
-      "preview": "themes/micron-dark-engineering/screenshots/example-overview-1280x720.png",
+      "role": "executive-cover",
+      "when": "Premium Micron executive style with cinematic dark surfaces, restrained chrome, and polished pacing.",
+      "design": "themes/micron-dark-executive/design.md",
+      "example": "themes/micron-dark-executive/example.html",
+      "preview": "themes/micron-dark-executive/screenshots/example-overview-1280x720.png",
       "extras": [
-        "themes/micron-dark-engineering/title-templates.md"
+        "themes/micron-dark-executive/title-templates.md"
       ],
       "verify": {
         "required_tokens": [
@@ -66,15 +38,74 @@
         "require_logo_on_content_slides": true,
         "forbid_chart_on_gradient": true,
         "headline_contrast_min": 4.5,
-        "palette_lock": true
+        "palette_lock": true,
+        "premium_corporate_checks": true,
+        "require_logo_image": true,
+        "title_image_pattern": "micron-dark-title-image|title-image",
+        "title_logo_pattern": "micron-logo-white",
+        "forbid_accent_text_selectors": [
+          "h1",
+          "h2",
+          "h3",
+          ".kicker",
+          ".eyebrow",
+          ".label",
+          ".chart-label",
+          "th"
+        ],
+        "enforce_sentence_case_headlines": true,
+        "forbid_headline_end_punctuation": true,
+        "min_label_body_gap_px": 10
+      }
+    },
+    {
+      "id": "micron-dark",
+      "name": "Micron dark",
+      "status": "stable",
+      "role": "engineering-review",
+      "recommended": true,
+      "when": "Dark technical interface with dense layouts, sharp grids, Micron purple accents, and strong data surfaces.",
+      "design": "themes/micron-dark/design.md",
+      "example": "themes/micron-dark/example.html",
+      "preview": "themes/micron-dark/screenshots/example-overview-1280x720.png",
+      "extras": [
+        "themes/micron-dark/title-templates.md"
+      ],
+      "verify": {
+        "required_tokens": [
+          "--micron-black",
+          "--micron-white",
+          "--micron-accent",
+          "--font-display",
+          "--scale-ratio",
+          "--col-count"
+        ],
+        "accent_rgb": "189, 3, 247",
+        "accent_max_per_slide": 4,
+        "forbid_visible_accent_rgb": "50, 200, 255",
+        "forbid_visible_accent_name": "cyan",
+        "logo_pattern": "micron-logo",
+        "require_logo_on_content_slides": true,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "require_fixed_stage": true,
+        "stage_width": 1600,
+        "stage_height": 900,
+        "enforce_stage_overflow": true,
+        "require_title_animated_icon": true,
+        "title_icon_pattern": "assets/primary/mp4/rev/.+\\.mp4",
+        "title_visual_selector": ".title-silk-purple .md-silk-wave, .title-silk-purple .md-silk-canvas-purple",
+        "require_title_template_selector": ".title-slide.title-silk-purple .md-silk-canvas-purple",
+        "require_title_shader_ready": true
       }
     },
     {
       "id": "micron-light",
       "name": "Micron light",
       "status": "stable",
-      "tone": "editorial-data",
-      "when": "Light/white decks with editorial restraint. Use for training, board reviews, financial readouts, agendas, comparisons, customer-facing explainers, vision-with-numbers, and any deck where the audience is non-technical or the content will be printed/PDF-circulated. Apple/Cursor cadence: hairlines not cards, one italic-purple accent word per H2, one soft-purple wash for the whole deck.",
+      "role": "editorial-data",
+      "when": "Bright editorial system with clean white panels, crisp tables, quiet grid lines, and print-ready spacing.",
       "design": "themes/micron-light/design.md",
       "example": "themes/micron-light/example.html",
       "preview": "themes/micron-light/screenshots/example-overview-1280x720.png",
@@ -94,185 +125,58 @@
         "require_logo_on_content_slides": true,
         "forbid_chart_on_gradient": true,
         "headline_contrast_min": 4.5,
-        "palette_lock": true
+        "palette_lock": true,
+        "forbid_selectors": [
+          ".slide-coord"
+        ],
+        "require_title_mesh_background": true,
+        "micron_light_title_checks": true,
+        "title_icon_pattern": "(micron-icons/.+primary/mp4/pos/.+\\.mp4|assets/primary/mp4/pos/.+\\.mp4)",
+        "title_icon_fallback_pattern": "(micron-icons/.+primary/png/pos/.+\\.png|assets/primary/png/pos/.+\\.png)",
+        "min_title_copy_gap_px": 24,
+        "min_title_icon_width_px": 300,
+        "min_title_icon_right_margin_px": 72
       }
     },
     {
-      "id": "course-module",
-      "name": "Course module",
+      "id": "guided-learning",
+      "name": "Guided learning",
       "status": "stable",
-      "tone": "learning",
-      "when": "Lessons, training modules, onboarding, workshops. Learn \u2192 recall \u2192 apply cadence.",
-      "design": "themes/course-module/design.md",
-      "example": "themes/course-module/example.html",
-      "preview": "themes/course-module/screenshots/example-overview-1280x720.png",
+      "role": "training",
+      "when": "Polished guided-learning modules with lavender-gray app-shell surfaces, soft rounded panels, restrained graphite type, and Micron-purple session accents.",
+      "design": "themes/guided-learning/design.md",
+      "example": "themes/guided-learning/example.html",
+      "preview": "themes/guided-learning/screenshots/example-overview-1280x720.png",
       "extras": [],
       "verify": {
         "required_tokens": [
-          "--micron-black",
-          "--micron-white",
-          "--micron-accent",
-          "--font-display",
-          "--scale-ratio",
-          "--col-count"
+          "--bg",
+          "--surface",
+          "--text-1",
+          "--text-2",
+          "--accent",
+          "--font-display"
         ],
         "accent_rgb": "189, 3, 247",
-        "accent_max_per_slide": 4,
-        "logo_pattern": "micron-logo",
-        "require_logo_on_content_slides": true,
-        "forbid_chart_on_gradient": true,
-        "headline_contrast_min": 4.5,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "weekly-update",
-      "name": "Weekly update",
-      "status": "stable",
-      "tone": "operations",
-      "when": "Squad weekly, ops review, release readout. Shipped / in-flight / blocked / metrics / asks.",
-      "design": "themes/weekly-update/design.md",
-      "example": "themes/weekly-update/example.html",
-      "preview": "themes/weekly-update/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--bg",
-          "--ink",
-          "--accent",
-          "--line",
-          "--muted"
-        ],
-        "accent_rgb": "255, 204, 77",
-        "accent_max_per_slide": 8,
-        "logo_pattern": null,
-        "require_logo_on_content_slides": false,
-        "forbid_chart_on_gradient": false,
-        "headline_contrast_min": 4.5,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "swiss-light",
-      "name": "Swiss minimal (light)",
-      "status": "stable",
-      "tone": "minimal",
-      "when": "Editorial-feeling decks: research summaries, technical talks, dense agendas, plain reports. White canvas, single accent.",
-      "design": "themes/swiss-light/design.md",
-      "example": "themes/swiss-light/example.html",
-      "preview": "themes/swiss-light/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--bg",
-          "--ink",
-          "--ink-muted",
-          "--accent",
-          "--rule",
-          "--font-display",
-          "--font-body",
-          "--scale-ratio"
-        ],
-        "accent_rgb": "229, 57, 53",
-        "accent_max_per_slide": 6,
-        "logo_pattern": null,
-        "require_logo_on_content_slides": false,
-        "forbid_chart_on_gradient": false,
-        "headline_contrast_min": 7.0,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "editorial-dark",
-      "name": "Editorial (dark)",
-      "status": "stable",
-      "tone": "editorial",
-      "when": "Long-form narrative on dark. Pitch decks, essays-as-slides, magazine-style reading flow. Serif headlines, generous gutters.",
-      "design": "themes/editorial-dark/design.md",
-      "example": "themes/editorial-dark/example.html",
-      "preview": "themes/editorial-dark/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--bg",
-          "--ink",
-          "--ink-muted",
-          "--accent",
-          "--rule",
-          "--font-display",
-          "--font-body",
-          "--scale-ratio"
-        ],
-        "accent_rgb": "212, 175, 55",
-        "accent_max_per_slide": 6,
-        "logo_pattern": null,
-        "require_logo_on_content_slides": false,
-        "forbid_chart_on_gradient": false,
-        "headline_contrast_min": 4.5,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "brutalist",
-      "name": "Brutalist",
-      "status": "stable",
-      "tone": "raw",
-      "when": "Counter-culture, editorial, art-school, hot-take decks. Stark, raw, intentional. Default fonts, zero radius, visible borders.",
-      "design": "themes/brutalist/design.md",
-      "example": "themes/brutalist/example.html",
-      "preview": "themes/brutalist/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--bg",
-          "--ink",
-          "--accent",
-          "--rule",
-          "--font-display",
-          "--font-body"
-        ],
-        "accent_rgb": "255, 0, 0",
         "accent_max_per_slide": 10,
         "logo_pattern": null,
         "require_logo_on_content_slides": false,
         "forbid_chart_on_gradient": true,
-        "headline_contrast_min": 7.0,
-        "palette_lock": true
-      }
-    },
-    {
-      "id": "glassmorphism",
-      "name": "Glassmorphism",
-      "status": "stable",
-      "tone": "atmosphere",
-      "when": "Modern SaaS, fintech, lifestyle pitch decks. Frosted-glass panels over a vibrant gradient.",
-      "design": "themes/glassmorphism/design.md",
-      "example": "themes/glassmorphism/example.html",
-      "preview": "themes/glassmorphism/screenshots/example-overview-1280x720.png",
-      "extras": [],
-      "verify": {
-        "required_tokens": [
-          "--bg-gradient",
-          "--glass-bg",
-          "--glass-border",
-          "--ink",
-          "--accent"
-        ],
-        "accent_rgb": "32, 178, 170",
-        "accent_max_per_slide": 6,
-        "logo_pattern": null,
-        "require_logo_on_content_slides": false,
-        "forbid_chart_on_gradient": false,
         "headline_contrast_min": 4.5,
-        "palette_lock": true
+        "palette_lock": true,
+        "require_fixed_stage": true,
+        "stage_width": 1280,
+        "stage_height": 720,
+        "enforce_stage_overflow": true,
+        "min_touch_target_px": 44
       }
     },
     {
       "id": "playful",
       "name": "Playful",
       "status": "stable",
-      "tone": "warm",
-      "when": "Workshops, kickoffs, onboarding, internal team morale decks. Bright primaries, chunky type, sticker accents.",
+      "role": "workshop",
+      "when": "Warm workshop style with playful blocks, bold outlines, soft paper tones, and high-energy accent colors.",
       "design": "themes/playful/design.md",
       "example": "themes/playful/example.html",
       "preview": "themes/playful/screenshots/example-overview-1280x720.png",

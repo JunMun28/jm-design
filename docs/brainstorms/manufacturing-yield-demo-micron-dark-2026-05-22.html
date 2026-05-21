@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Manufacturing Yield Demo - Micron dark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+<style>
+:root {
+  --micron-black: #000000;
+  --micron-white: #ffffff;
+  --micron-off-white: #f0f0ee;
+  --micron-accent: #bd03f7;
+  --micron-cyan: #32c8ff;
+  --gray-a: #262626;
+  --gray-b: #4d4d4d;
+  --gray-c: #8c8c8c;
+  --gray-d: #bfbfbf;
+  --gray-e: #e6e6e6;
+  --gray-f: #f2f2f2;
+  --dv-purple-a: #bd03f7;
+  --dv-blue-a: #2044ff;
+  --dv-green-a: #01ab01;
+  --dv-purple-b: #ff8cff;
+  --dv-blue-b: #32c8ff;
+  --dv-green-b: #78f05a;
+  --dv-gold-b: #ffbe1e;
+  --dv-purple-c: #fccafa;
+  --dv-blue-c: #96fafc;
+  --dv-green-c: #b6fcb4;
+  --dv-gold-c: #ffec32;
+  --semiotic-green: #00891c;
+  --semiotic-yellow: #ffde00;
+  --semiotic-red: #ec0b00;
+  --grad-hero: linear-gradient(135deg, #434c5c 0%, #2c013b 55%, #9601c5 100%);
+  --grad-blue-dark: linear-gradient(135deg, #0156d5 0%, #012152 50%, #14151a 100%);
+  --grad-bright-1: linear-gradient(135deg, #fac30b 0%, #f58c29 50%, #e8156b 100%);
+  --grad-bright-2: linear-gradient(135deg, #a60cf6 0%, #6027f5 50%, #0b5efe 100%);
+  --grad-bright-3: linear-gradient(135deg, #e70470 0%, #e70c55 50%, #c605d3 100%);
+  --grad-bright-4: linear-gradient(135deg, #01a02b 0%, #017dae 50%, #2b42f7 100%);
+  --font-display: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+  --font-body: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --scale-ratio: 1.333;
+  --type-base: clamp(0.75rem, 1.05vw, 1rem);
+  --type-sm: clamp(0.625rem, 0.9vw, 0.8125rem);
+  --type-xs: clamp(0.5625rem, 0.75vw, 0.6875rem);
+  --type-h3: clamp(1.125rem, 2.4vw, 1.75rem);
+  --type-h2: clamp(1.5rem, 3.5vw, 2.75rem);
+  --type-h1: clamp(2.25rem, 6vw, 4.5rem);
+  --track-eyebrow: 0.18em;
+  --track-headline: -0.025em;
+  --track-mono: 0.12em;
+  --leading-tight: 1.05;
+  --leading-snug: 1.2;
+  --leading-body: 1.45;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --col-count: 12;
+  --col-gutter: clamp(1rem, 1.5vw, 1.5rem);
+  --col-margin: clamp(1.5rem, 4vw, 4rem);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --hairline: 1px solid rgba(255, 255, 255, 0.08);
+  --hairline-dark: 1px solid rgba(0, 0, 0, 0.12);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 0.25s;
+  --duration-normal: 0.6s;
+  --duration-slow: 1.1s;
+}
+[data-theme="dark"], .theme-dark {
+  --bg-primary: var(--micron-black);
+  --bg-secondary: var(--gray-a);
+  --text-primary: var(--micron-white);
+  --text-secondary: var(--micron-off-white);
+  --line: rgba(255, 255, 255, 0.12);
+  --panel: #0e0e10;
+  --panel-2: #14151a;
+}
+@font-face {
+  font-family: "Micron Basis";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Micron Basis");
+}
+@font-face {
+  font-family: "Micron Basis";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local("Micron Basis Bold"), local("Micron Basis");
+}
+@font-face {
+  font-family: "Micron Basis Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Helvetica");
+  size-adjust: 98%;
+  ascent-override: 92%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+html, body, #overview { scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, #overview::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.slide-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--element-gap);
+  max-height: 100%;
+  overflow: hidden;
+  padding: var(--slide-padding);
+  padding-bottom: calc(var(--slide-padding) + clamp(1rem, 8vh, 4rem));
+}
+.slide.title-slide .slide-content, .slide[data-slide-kind="cover"] .slide-content { padding-bottom: var(--slide-padding); }
+:root {
+  --title-size: clamp(1.5rem, 5vw, 4rem);
+  --h2-size: clamp(1.25rem, 3.5vw, 2.5rem);
+  --h3-size: clamp(1rem, 2.5vw, 1.75rem);
+  --body-size: clamp(0.75rem, 1.5vw, 1.125rem);
+  --small-size: clamp(0.65rem, 1vw, 0.875rem);
+  --slide-padding: clamp(1rem, 4vw, 4rem);
+  --content-gap: clamp(0.5rem, 2vw, 2rem);
+  --element-gap: clamp(0.25rem, 1vw, 1rem);
+}
+.card, .container, .content-box { max-width: min(90vw, 1000px); max-height: min(80vh, 700px); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+#overview {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 4vw, 3.75rem);
+  background: var(--overview-bg, var(--bg-primary, #0b0b0d));
+  color: var(--overview-text, var(--text-primary, #f4f0e6));
+  backdrop-filter: blur(12px);
+}
+#overview[aria-hidden="false"] { display: block; }
+#overview .ov-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  font-family: var(--font-display, system-ui, sans-serif);
+  font-size: var(--small-size);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--overview-muted, var(--text-secondary, #666));
+}
+#overview .ov-head b { color: var(--overview-text, var(--text-primary, #111)); font-weight: 700; }
+#overview .ov-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: clamp(1rem, 2vw, 1.4rem);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+#overview .ov-card {
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid var(--overview-line, rgba(255, 255, 255, 0.16));
+  border-radius: 8px;
+  background: var(--overview-card, rgba(255, 255, 255, 0.08));
+  transition: border-color 0.2s, transform 0.2s;
+}
+#overview .ov-card:hover, #overview .ov-card:focus-visible { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+#overview .ov-card.active { border-color: var(--accent); border-width: 2px; }
+#overview .ov-thumb { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; position: relative; pointer-events: none; background: var(--bg-primary, #000); }
+#overview .ov-thumb .clone { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; transform-origin: top left; }
+#overview .ov-thumb .clone > .slide-stage {
+  left: 0 !important;
+  top: 0 !important;
+  width: 1600px !important;
+  height: 900px !important;
+  transform: none !important;
+  filter: none !important;
+}
+#overview .ov-thumb .clone .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+#overview .ov-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(var(--col-count, 12), minmax(0, 1fr));
+  column-gap: var(--col-gutter);
+  row-gap: var(--space-5);
+  width: 100%;
+}
+.span-1 { grid-column: span 1; }
+.span-2 { grid-column: span 2; }
+.span-3 { grid-column: span 3; }
+.span-4 { grid-column: span 4; }
+.span-5 { grid-column: span 5; }
+.span-6 { grid-column: span 6; }
+.span-7 { grid-column: span 7; }
+.span-8 { grid-column: span 8; }
+.span-9 { grid-column: span 9; }
+.span-10 { grid-column: span 10; }
+.span-11 { grid-column: span 11; }
+.span-12 { grid-column: span 12; }
+.start-1 { grid-column-start: 1; }
+.start-2 { grid-column-start: 2; }
+.start-3 { grid-column-start: 3; }
+.start-4 { grid-column-start: 4; }
+.start-5 { grid-column-start: 5; }
+.start-6 { grid-column-start: 6; }
+.start-7 { grid-column-start: 7; }
+.start-8 { grid-column-start: 8; }
+.start-9 { grid-column-start: 9; }
+.start-10 { grid-column-start: 10; }
+.start-11 { grid-column-start: 11; }
+.start-12 { grid-column-start: 12; }
+.row-1 { grid-row: span 1; }
+.row-2 { grid-row: span 2; }
+.row-3 { grid-row: span 3; }
+.stack > * + * { margin-top: var(--space-3); }
+.stack-tight > * + * { margin-top: var(--space-2); }
+.stack-loose > * + * { margin-top: var(--space-5); }
+.inline-flow { display: flex; align-items: baseline; gap: var(--space-4); flex-wrap: wrap; }
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.slide-coord {
+  position: absolute;
+  top: var(--space-5);
+  left: var(--space-5);
+  font-family: var(--font-mono);
+  font-size: var(--type-xs);
+  letter-spacing: var(--track-mono);
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+.slide-coord::before { content: "// "; opacity: 0.5; }
+.rule { border: 0; border-top: var(--hairline); margin: var(--space-4) 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.reveal:nth-child(1) { transition-delay: 0.05s; }
+.reveal:nth-child(2) { transition-delay: 0.15s; }
+.reveal:nth-child(3) { transition-delay: 0.25s; }
+.reveal:nth-child(4) { transition-delay: 0.35s; }
+.reveal:nth-child(5) { transition-delay: 0.45s; }
+body { background: var(--bg-primary, #000); }
+.progress-bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 60;
+  background: var(--accent, var(--micron-accent, currentColor));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-fast, 0.25s) var(--ease-out-expo, ease-out);
+}
+html, body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body), "Micron Basis Fallback", sans-serif;
+  font-size: var(--type-base);
+  line-height: var(--leading-body);
+}
+h1, h2, h3 {
+  font-family: var(--font-display), "Micron Basis Fallback", sans-serif;
+  letter-spacing: var(--track-headline);
+  line-height: var(--leading-tight);
+  font-weight: 700;
+}
+h1 { font-size: var(--type-h1); }
+h2 { font-size: var(--type-h2); }
+h3 { font-size: var(--type-h3); }
+.slide:not(.title-slide)::after {
+  content: "";
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  width: clamp(60px, 8vw, 96px);
+  height: clamp(18px, 2.4vw, 28px);
+  background: url("../../assets/micron-logo-white-tm-rgb.png") right bottom / contain no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+:root {
+  --accent: var(--micron-accent);
+  --stage-width: 1600px;
+  --stage-height: 900px;
+  --stage-scale: 1;
+  --stage-scaled-width: 1600px;
+  --stage-scaled-height: 900px;
+}
+body { background: #000; }
+.deck { position: relative; }
+.slide { display: block; background: #000; }
+.slide-stage {
+  position: absolute;
+  left: calc((100vw - var(--stage-scaled-width)) / 2);
+  top: calc((100dvh - var(--stage-scaled-height)) / 2);
+  width: var(--stage-width);
+  height: var(--stage-height);
+  transform: scale(var(--stage-scale));
+  transform-origin: top left;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: #030406;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
+}
+.slide-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: .2;
+  pointer-events: none;
+}
+.slide-content {
+  position: relative;
+  z-index: 2;
+  padding: 60px 78px 64px;
+  gap: 18px;
+}
+.title-slide .slide-content { padding: 72px 78px 56px; justify-content: flex-start; }
+.brand {
+  position: absolute;
+  top: 42px;
+  left: 64px;
+  width: 124px;
+  z-index: 5;
+}
+.title-grid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 36px;
+  height: 100%;
+  padding-top: 84px;
+}
+.title-block {
+  border: 1px solid rgba(255,255,255,.16);
+  background: #080b10;
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.title-block h1 {
+  font-size: 84px;
+  max-width: 780px;
+  line-height: .96;
+}
+.subtitle {
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--gray-d);
+  max-width: 700px;
+}
+.title-note {
+  margin-top: 24px;
+  padding-left: 18px;
+  border-left: 5px solid var(--micron-accent);
+  font-size: 26px;
+  color: var(--gray-d);
+}
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  border-top: 1px solid rgba(255,255,255,.2);
+  padding-top: 16px;
+}
+.kpi-strip div { min-width: 0; }
+.kpi-strip span, .label, .table th, .axis-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.kpi-strip b {
+  display: block;
+  margin-top: 7px;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+.mock-caveat {
+  border: 1px solid rgba(255,255,255,.14);
+  background: #080b10;
+  padding: 20px 22px;
+  font-size: 24px;
+  color: var(--gray-d);
+}
+.accent { color: var(--micron-accent); }
+.cyan { color: var(--micron-cyan); }
+.slide-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 12px;
+}
+.slide-header h2 {
+  font-size: 60px;
+  max-width: 980px;
+}
+.header-metric {
+  min-width: 210px;
+  border-top: 1px solid rgba(255,255,255,.24);
+  padding-top: 12px;
+  text-align: right;
+}
+.header-metric b {
+  display: block;
+  font-size: 54px;
+  line-height: .95;
+  letter-spacing: -.05em;
+}
+.header-metric span {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.panel {
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px;
+  background: #0d1015;
+  padding: 24px;
+}
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: .92fr 1.08fr;
+  gap: 24px;
+  min-height: 610px;
+}
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.kpi-card {
+  min-height: 136px;
+  border-top: 1px solid rgba(255,255,255,.22);
+  padding-top: 14px;
+}
+.kpi-card b {
+  display: block;
+  font-size: 50px;
+  line-height: 1;
+  letter-spacing: -.04em;
+}
+.kpi-card span {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+  color: var(--gray-d);
+}
+.chart-box {
+  width: 100%;
+  height: 330px;
+}
+.chart-box.tall { height: 452px; }
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.closer {
+  margin-top: 14px;
+  font-size: 26px;
+  line-height: 1.3;
+  color: var(--gray-d);
+  max-width: 1120px;
+}
+.waterfall-layout {
+  display: grid;
+  grid-template-columns: .78fr 1.22fr;
+  gap: 26px;
+  align-items: stretch;
+}
+.hero-number {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 520px;
+}
+.hero-number strong {
+  display: block;
+  font-size: 162px;
+  line-height: .85;
+  letter-spacing: -.08em;
+}
+.hero-number p {
+  font-size: 29px;
+  line-height: 1.25;
+  color: var(--gray-d);
+}
+.loss-split {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid rgba(255,255,255,.14);
+  border-left: 0;
+  margin-top: 20px;
+}
+.loss-cell {
+  border-left: 1px solid rgba(255,255,255,.14);
+  padding: 18px 14px;
+}
+.loss-cell b {
+  display: block;
+  margin: 8px 0;
+  font-size: 32px;
+}
+.loss-cell span {
+  display: block;
+  font-size: 23px;
+  color: var(--gray-d);
+}
+.pareto-layout {
+  display: grid;
+  grid-template-columns: .92fr 1.08fr;
+  gap: 24px;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  text-align: left;
+  padding: 13px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.table th { font-size: 20px; }
+.table td {
+  font-size: 24px;
+  color: var(--gray-e);
+}
+.table .num {
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.table .flag {
+  color: var(--micron-accent);
+  font-weight: 800;
+}
+.hypothesis {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border-left: 5px solid var(--micron-accent);
+  background: #080b10;
+  font-size: 26px;
+  color: var(--gray-d);
+}
+.risk-layout {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 24px;
+}
+.risk-matrix {
+  display: grid;
+  grid-template-columns: 112px repeat(3, 1fr);
+  grid-template-rows: 52px repeat(3, 142px);
+  gap: 1px;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.16);
+  align-self: start;
+}
+.risk-matrix > div {
+  background: #090c10;
+  padding: 15px;
+  font-size: 24px;
+  color: var(--gray-d);
+}
+.risk-matrix .head, .risk-matrix .axis {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.risk-matrix .axis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.risk-matrix b {
+  display: block;
+  color: var(--micron-white);
+  font-size: 26px;
+  line-height: 1.08;
+}
+.risk-matrix .hot {
+  box-shadow: inset 0 0 0 2px var(--micron-accent);
+  background: #130916;
+}
+.lot-queue {
+  display: grid;
+  gap: 12px;
+}
+.lot-card {
+  display: grid;
+  grid-template-columns: 94px 1fr 92px;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px;
+  background: #0d1015;
+  padding: 18px;
+}
+.lot-card.hot { border-color: rgba(255,140,255,.54); background: #140c17; }
+.lot-card .status {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.lot-card b { display: block; font-size: 29px; line-height: 1; }
+.lot-card span { display: block; margin-top: 6px; font-size: 21px; color: var(--gray-d); }
+.lot-card strong {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  color: var(--gray-e);
+  text-align: right;
+}
+.action-layout {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 24px;
+  align-items: stretch;
+}
+.action-table {
+  display: grid;
+  grid-template-columns: .9fr 1fr 1fr;
+  border-top: 1px solid rgba(255,255,255,.18);
+  border-left: 1px solid rgba(255,255,255,.12);
+}
+.action-table > div {
+  padding: 16px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  font-size: 24px;
+  color: var(--gray-e);
+}
+.action-table .head {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.timeline {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  row-gap: 12px;
+  column-gap: 22px;
+  align-items: center;
+}
+.timeline-label {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--gray-c);
+}
+.timeline-line {
+  padding: 11px 0 11px 22px;
+  border-left: 4px solid var(--gray-b);
+  font-size: 24px;
+  color: var(--gray-e);
+}
+.timeline-line.active { border-left-color: var(--micron-accent); }
+.forecast {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.forecast div {
+  border-top: 1px solid rgba(255,255,255,.18);
+  padding-top: 14px;
+}
+.forecast b {
+  display: block;
+  font-size: 38px;
+  line-height: 1;
+}
+.forecast span {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.ask-card {
+  margin-top: 18px;
+  border: 1px solid rgba(255,140,255,.46);
+  background: #140c17;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 28px;
+  color: var(--gray-e);
+}
+
+/* Creative pass: Micron dark should feel editorial, not boxed dashboard. */
+.slide-stage {
+  background:
+    radial-gradient(circle at 92% 12%, rgba(189,3,247,.10), transparent 28%),
+    linear-gradient(115deg, rgba(50,200,255,.045), transparent 34%),
+    #020304;
+}
+.slide-stage::before {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 120px 120px;
+  opacity: .14;
+}
+.title-slide .slide-stage {
+  background:
+    radial-gradient(circle at 76% 40%, rgba(189,3,247,.34), transparent 24%),
+    radial-gradient(circle at 86% 18%, rgba(50,200,255,.18), transparent 22%),
+    linear-gradient(112deg, #000 0%, #020407 52%, #0a0010 100%);
+}
+.title-slide .slide-stage::before {
+  opacity: .08;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 160px 160px;
+}
+.title-slide .slide-stage::after {
+  content: "";
+  position: absolute;
+  right: 52px;
+  top: 96px;
+  width: 540px;
+  height: 540px;
+  border: 2px solid rgba(189,3,247,.54);
+  border-radius: 50%;
+  box-shadow:
+    -90px 80px 0 -78px rgba(50,200,255,.60),
+    0 0 90px rgba(189,3,247,.26);
+  transform: rotate(-18deg);
+  pointer-events: none;
+}
+.title-grid {
+  grid-template-columns: 1.04fr .74fr;
+  gap: 56px;
+  padding-top: 118px;
+}
+.title-block {
+  border: 0;
+  background: transparent;
+  padding: 0 0 0 34px;
+  position: relative;
+  justify-content: center;
+}
+.title-block::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 7px;
+  background: var(--micron-accent);
+}
+.title-block h1 {
+  font-size: 100px;
+  max-width: 960px;
+  letter-spacing: -.065em;
+}
+.title-block .subtitle {
+  margin-top: 24px;
+  font-size: 34px;
+  max-width: 740px;
+}
+.title-note {
+  max-width: 620px;
+  border-left: 0;
+  padding-left: 0;
+  color: var(--gray-c);
+}
+.title-slide .kpi-strip {
+  border-top-color: rgba(255,255,255,.28);
+  max-width: 930px;
+}
+.mock-caveat {
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,.20);
+  background: transparent;
+  padding: 18px 0 0;
+}
+.title-silk .slide-stage {
+  background: #000;
+  isolation: isolate;
+}
+.title-silk .slide-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 78% 48%, rgba(189,3,247,.80), transparent 28%),
+    radial-gradient(ellipse at 92% 34%, rgba(189,3,247,.55), transparent 36%),
+    repeating-linear-gradient(124deg, rgba(255,255,255,.09) 0 1px, transparent 1px 24px);
+  filter: saturate(1.15);
+}
+.title-silk .slide-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.54) 42%, rgba(0,0,0,.04) 100%),
+    radial-gradient(circle at 76% 52%, transparent 0 44%, rgba(0,0,0,.18) 88%);
+}
+.md-silk-wave {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  transform: none;
+  transform-origin: center;
+}
+.md-silk-canvas-purple {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.title-silk .brand,
+.title-silk .md-title-content,
+.title-silk .md-title-note,
+.title-silk .md-title-number {
+  position: absolute;
+  z-index: 4;
+}
+.title-silk .brand {
+  top: 72px;
+  left: 86px;
+  width: 126px;
+  height: auto;
+}
+.md-title-content {
+  left: 110px;
+  top: 278px;
+  max-width: 760px;
+}
+.md-title-content .eyebrow {
+  color: var(--micron-accent);
+}
+.md-title-content h1 {
+  margin-top: 34px;
+  font-size: 112px;
+  line-height: .94;
+  letter-spacing: -.06em;
+  max-width: 720px;
+}
+.md-title-content .subtitle {
+  margin-top: 28px;
+  font-size: 34px;
+  line-height: 1.22;
+  color: var(--gray-e);
+  max-width: 700px;
+}
+.md-accent-line {
+  width: 88px;
+  height: 8px;
+  margin-top: 44px;
+  border-radius: 999px;
+  background: var(--micron-accent);
+  box-shadow: 0 0 22px rgba(168,85,247,.42);
+}
+.md-title-note {
+  left: 110px;
+  bottom: 66px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gray-d);
+}
+.md-title-number {
+  right: 72px;
+  top: 72px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gray-c);
+}
+.snapshot-grid,
+.waterfall-layout,
+.pareto-layout,
+.risk-layout,
+.action-layout {
+  gap: 34px;
+}
+.panel {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+.kpi-grid {
+  border-top: 1px solid rgba(255,255,255,.20);
+  border-bottom: 1px solid rgba(255,255,255,.20);
+  padding: 24px 0;
+}
+.kpi-card {
+  border-top: 0;
+  border-left: 1px solid rgba(255,255,255,.16);
+  padding: 0 0 0 20px;
+}
+.kpi-card:nth-child(odd) { border-left: 0; padding-left: 0; }
+.chart-grid {
+  gap: 30px;
+}
+.chart-grid .panel,
+.pareto-layout .panel:first-child,
+.waterfall-layout .panel:last-child {
+  padding: 24px 0 0;
+  border-top: 1px solid rgba(255,255,255,.18);
+}
+.hero-number {
+  border-left: 7px solid var(--micron-accent);
+  padding-left: 34px;
+  min-height: 520px;
+}
+.hero-number strong {
+  font-size: 182px;
+  text-shadow: 0 0 54px rgba(189,3,247,.28);
+}
+.loss-split {
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+}
+.pareto-layout .panel:last-child {
+  border-left: 1px solid rgba(255,255,255,.18);
+  padding-left: 34px;
+}
+.hypothesis {
+  background: transparent;
+  border-top: 1px solid rgba(255,255,255,.16);
+  border-left: 5px solid var(--micron-accent);
+}
+.risk-matrix {
+  background: transparent;
+  border: 0;
+  gap: 0;
+}
+.risk-matrix > div {
+  background: transparent;
+  border-top: 1px solid rgba(255,255,255,.16);
+  border-left: 1px solid rgba(255,255,255,.12);
+}
+.risk-matrix .hot {
+  background: rgba(189,3,247,.08);
+  box-shadow: inset 0 0 0 2px var(--micron-accent);
+}
+.risk-layout .panel,
+.action-layout .panel {
+  border-left: 1px solid rgba(255,255,255,.18);
+  padding-left: 34px;
+}
+.lot-card {
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid rgba(255,255,255,.16);
+  background: transparent;
+  padding: 18px 0;
+}
+.lot-card.hot {
+  border-color: rgba(255,140,255,.54);
+  background: linear-gradient(90deg, rgba(189,3,247,.12), transparent 55%);
+  padding-left: 18px;
+}
+.action-table {
+  border-left: 0;
+}
+.action-table > div {
+  border-right: 0;
+  border-bottom-color: rgba(255,255,255,.14);
+}
+.timeline-line {
+  border-left-width: 6px;
+}
+.ask-card {
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(189,3,247,.14), transparent 72%);
+  border-color: rgba(255,140,255,.38);
+}
+.nav-dots {
+  position: fixed;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+}
+.nav-dots button {
+  width: 32px;
+  height: 18px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+.nav-dots button::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.28);
+}
+.nav-dots button.active::before { background: var(--micron-accent); }
+.presentation-hotspot {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 180px;
+  height: 120px;
+  z-index: 120;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 18px;
+}
+.present-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(0,0,0,.72);
+  color: var(--micron-white);
+  padding: 0 14px 0 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.presentation-hotspot:hover .present-toggle, .present-toggle:focus-visible { opacity: 1; transform: none; }
+.present-icon { width: 16px; height: 16px; fill: currentColor; }
+.present-toggle:focus-visible, .nav-dots button:focus-visible, .ov-card:focus-visible { outline: 2px solid var(--micron-accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+@media print {
+  body { background: #fff; }
+  .slide { width: var(--stage-width); height: var(--stage-height); page-break-after: always; }
+  .slide-stage { position: relative; left: 0; top: 0; transform: none; }
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+<div class="presentation-hotspot" aria-hidden="false">
+  <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+    <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+    <span>Present</span>
+  </button>
+</div>
+<main class="deck" tabindex="-1">
+  <section class="slide title-slide title-silk title-silk-purple" data-slide-kind="cover">
+    <div class="slide-stage">
+      <div class="md-silk-wave" aria-hidden="true">
+        <canvas class="md-silk-canvas-purple"></canvas>
+      </div>
+      <img class="brand" src="../../assets/micron-logo-white-tm-rgb.png" alt="Micron" />
+      <div class="md-title-content">
+        <p class="eyebrow reveal">Manufacturing ops review · mock data</p>
+        <h1 class="reveal">Manufacturing Yield Demo</h1>
+        <p class="subtitle reveal">Yield recovered this week, but Test remains the constraint.</p>
+        <div class="md-accent-line reveal"></div>
+      </div>
+      <div class="md-title-note">20 May 2026 · demo values only</div>
+      <div class="md-title-number">01 / Cover</div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide-kind="data">
+    <div class="slide-stage">
+      <span class="slide-coord">01 Yield health snapshot</span>
+      <div class="slide-content">
+        <div class="slide-header reveal">
+          <h2>Yield recovered this week, but Test remains the constraint.</h2>
+          <div class="header-metric"><b class="accent">94.8%</b><span>Final yield</span></div>
+        </div>
+        <div class="snapshot-grid">
+          <div class="panel reveal">
+            <div class="kpi-grid">
+              <div class="kpi-card"><b class="accent">94.8%</b><span>Final yield · target 96.0%</span></div>
+              <div class="kpi-card"><b>+1.6</b><span>WoW points · last 93.2%</span></div>
+              <div class="kpi-card"><b>42%</b><span>Top loss · Test fails</span></div>
+              <div class="kpi-card"><b>7 / 126</b><span>At-risk lots · action open</span></div>
+            </div>
+            <p class="closer">Action: prioritize Test bin 12 analysis; hold 7 lots for retest decision.</p>
+          </div>
+          <div class="chart-grid reveal">
+            <div class="panel">
+              <p class="label">Process yield by stage</p>
+              <div id="stage-yield-chart" class="chart-box" role="img" aria-label="Process yield by stage"></div>
+            </div>
+            <div class="panel">
+              <p class="label">Defect loss Pareto</p>
+              <div id="loss-pareto-chart" class="chart-box" role="img" aria-label="Defect loss Pareto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide-kind="data">
+    <div class="slide-stage">
+      <span class="slide-coord">02 Stage loss waterfall</span>
+      <div class="slide-content">
+        <div class="slide-header reveal">
+          <h2>Most yield loss accumulates after Probe, not at wafer start.</h2>
+          <div class="header-metric"><b>-2.0</b><span>Test loss pts</span></div>
+        </div>
+        <div class="waterfall-layout reveal">
+          <div class="panel hero-number">
+            <div>
+              <p class="label">Largest controllable loss</p>
+              <strong>Test</strong>
+            </div>
+            <p>Do not spread effort evenly. Start where loss is concentrated.</p>
+          </div>
+          <div class="panel">
+            <p class="label">Yield bridge · lot family A17-A22</p>
+            <div id="waterfall-chart" class="chart-box tall" role="img" aria-label="Yield loss waterfall"></div>
+            <div class="loss-split">
+              <div class="loss-cell"><span>Front-end</span><b>2.4 pts</b><span>stable</span></div>
+              <div class="loss-cell"><span>Mid-process</span><b>2.1 pts</b><span>slight drift</span></div>
+              <div class="loss-cell"><span>Probe</span><b>1.3 pts</b><span>monitored</span></div>
+              <div class="loss-cell"><span>Final Test</span><b>2.0 pts</b><span>urgent</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide-kind="data">
+    <div class="slide-stage">
+      <span class="slide-coord">03 Test failure Pareto</span>
+      <div class="slide-content">
+        <div class="slide-header reveal">
+          <h2>Bin 12 explains half of the Test loss spike.</h2>
+          <div class="header-metric"><b>51%</b><span>of Test loss</span></div>
+        </div>
+        <div class="pareto-layout reveal">
+          <div class="panel">
+            <p class="label">Failure mode share</p>
+            <div id="test-loss-chart" class="chart-box tall" role="img" aria-label="Test failure Pareto"></div>
+          </div>
+          <div class="panel">
+            <p class="label">Tester view</p>
+            <table class="table">
+              <thead><tr><th>Tester</th><th>Lots</th><th>Yield</th><th>Bin 12</th><th>Note</th></tr></thead>
+              <tbody>
+                <tr><td>TST-04</td><td class="num">31</td><td class="num">93.1%</td><td class="num flag">7.8%</td><td class="flag">outlier</td></tr>
+                <tr><td>TST-11</td><td class="num">28</td><td class="num">94.5%</td><td class="num">5.1%</td><td>watch</td></tr>
+                <tr><td>TST-16</td><td class="num">34</td><td class="num">96.0%</td><td class="num">2.7%</td><td>baseline</td></tr>
+                <tr><td>TST-19</td><td class="num">33</td><td class="num">95.4%</td><td class="num">3.2%</td><td>baseline</td></tr>
+              </tbody>
+            </table>
+            <div class="hypothesis">Hypothesis: timing guardband or handler setup drift on TST-04.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide-kind="decision">
+    <div class="slide-stage">
+      <span class="slide-coord">04 Lot risk board</span>
+      <div class="slide-content">
+        <div class="slide-header reveal">
+          <h2>Seven lots need a decision before release.</h2>
+          <div class="header-metric"><b class="accent">7</b><span>decision lots</span></div>
+        </div>
+        <div class="risk-layout reveal">
+          <div class="risk-matrix" aria-label="Risk matrix">
+            <div></div><div class="head">Low impact</div><div class="head">Medium impact</div><div class="head">High impact</div>
+            <div class="axis">High urgency</div><div></div><div><b>A19-044</b>retest ready</div><div class="hot"><b>A21-017</b>hold</div>
+            <div class="axis">Medium urgency</div><div><b>A18-033</b>monitor</div><div><b>A20-012</b>split sample</div><div><b>A22-006</b>engineering</div>
+            <div class="axis">Low urgency</div><div><b>A17-028</b>release</div><div><b>A19-052</b>retest window</div><div></div>
+          </div>
+          <div class="panel">
+            <p class="label">Lot queue</p>
+            <div class="lot-queue">
+              <div class="lot-card hot"><div class="status">Hold</div><div><b>A21-017</b><span>bin 12 10.2% · owner Test Eng</span></div><strong>91.4%</strong></div>
+              <div class="lot-card"><div class="status">Eng</div><div><b>A22-006</b><span>bin 12 8.9% · owner Process Eng</span></div><strong>92.0%</strong></div>
+              <div class="lot-card"><div class="status">Retest</div><div><b>A19-044</b><span>bin 12 7.1% · owner Ops</span></div><strong>93.2%</strong></div>
+              <div class="lot-card"><div class="status">Release</div><div><b>A17-028</b><span>bin 12 2.8% · owner QA</span></div><strong>95.9%</strong></div>
+            </div>
+            <p class="closer">Decision needed: hold A21-017, retest A19-044, split A20-012.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide-kind="close">
+    <div class="slide-stage">
+      <span class="slide-coord">05 48 hour action plan</span>
+      <div class="slide-content">
+        <div class="slide-header reveal">
+          <h2>Focus the next two shifts on Test recovery, not broad troubleshooting.</h2>
+          <div class="header-metric"><b class="accent">48h</b><span>recovery sprint</span></div>
+        </div>
+        <div class="action-layout reveal">
+          <div class="panel">
+            <p class="label">Workstream / next action / success signal</p>
+            <div class="action-table">
+              <div class="head">Workstream</div><div class="head">Next action</div><div class="head">Success signal</div>
+              <div>TST-04 setup check</div><div>Recalibrate handler</div><div>Bin 12 below 4.0%</div>
+              <div>Guardband review</div><div>Compare recipes</div><div>No timing drift</div>
+              <div>Lot disposition</div><div>Decide 7 lots</div><div>0 aging holds &gt; 24h</div>
+              <div>Process correlation</div><div>Check chamber logs</div><div>No common upstream lot</div>
+            </div>
+            <div class="forecast">
+              <div><span>Current</span><b>94.8%</b></div>
+              <div><span>Test fix</span><b class="accent">+0.7 pts</b></div>
+              <div><span>Retest</span><b>95.8%</b></div>
+            </div>
+          </div>
+          <div class="panel">
+            <p class="label">Timeline</p>
+            <div class="timeline">
+              <div class="timeline-label">Now</div><div class="timeline-line active">Isolate TST-04 and freeze recipe changes</div>
+              <div class="timeline-label">Shift 1</div><div class="timeline-line">Run golden lot and compare tester correlation</div>
+              <div class="timeline-label">Shift 2</div><div class="timeline-line">Retest A19-044 and decide A21-017 hold</div>
+              <div class="timeline-label">Tomorrow</div><div class="timeline-line">Update yield forecast and reopen release gate</div>
+            </div>
+            <div class="ask-card"><strong>Ask:</strong> approve TST-04 downtime and retest queue priority.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js";
+
+function initSilkWavesPurple() {
+  const canvas = document.querySelector(".title-silk .md-silk-canvas-purple");
+  if (!canvas) return;
+  const colorStops = [
+    "#05020b", "#12071f", "#281044", "#4c1d95",
+    "#6d28d9", "#BD03F7", "#C084FC", "#E9D5FF"
+  ];
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: "high-performance"
+  });
+  renderer.setClearColor(0x000000, 0);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  const colors = colorStops.map((color) => new THREE.Color(color));
+  const uniforms = {
+    uTime: { value: 0 },
+    uResolution: { value: new THREE.Vector2(1600, 900) },
+    uSpeed: { value: 0.78 },
+    uScale: { value: 2.35 },
+    uDistortion: { value: 1.12 },
+    uCurve: { value: 0.82 },
+    uContrast: { value: 1.0 },
+    uRotation: { value: THREE.MathUtils.degToRad(-10) },
+    uOffsetX: { value: -0.72 },
+    uOffsetY: { value: -0.36 },
+    uBrightness: { value: 1.24 },
+    uOpacity: { value: 0.98 },
+    uComplexity: { value: 1.42 },
+    uFrequency: { value: 1.0 },
+    uC1: { value: colors[0] },
+    uC2: { value: colors[1] },
+    uC3: { value: colors[2] },
+    uC4: { value: colors[3] },
+    uC5: { value: colors[4] },
+    uC6: { value: colors[5] },
+    uC7: { value: colors[6] },
+    uC8: { value: colors[7] }
+  };
+  const material = new THREE.ShaderMaterial({
+    uniforms,
+    transparent: true,
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = vec4(position.xy, 0.0, 1.0);
+      }
+    `,
+    fragmentShader: `
+      precision highp float;
+      uniform float uTime;
+      uniform vec2 uResolution;
+      uniform float uSpeed;
+      uniform float uScale;
+      uniform float uDistortion;
+      uniform float uCurve;
+      uniform float uContrast;
+      uniform float uRotation;
+      uniform float uOffsetX;
+      uniform float uOffsetY;
+      uniform float uBrightness;
+      uniform float uOpacity;
+      uniform float uComplexity;
+      uniform float uFrequency;
+      uniform vec3 uC1;
+      uniform vec3 uC2;
+      uniform vec3 uC3;
+      uniform vec3 uC4;
+      uniform vec3 uC5;
+      uniform vec3 uC6;
+      uniform vec3 uC7;
+      uniform vec3 uC8;
+      varying vec2 vUv;
+      vec2 rotate2D(vec2 p, float angle) {
+        float s = sin(angle);
+        float c = cos(angle);
+        return vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+      }
+      void main() {
+        vec2 pos = vUv * uScale;
+        float aspect = uResolution.x / uResolution.y;
+        pos.x *= aspect;
+        pos.x += uOffsetX;
+        pos.y += uOffsetY;
+        vec2 center = vec2(aspect * 0.5 * uScale, 0.5 * uScale);
+        pos = rotate2D(pos - center, uRotation) + center;
+        float iterations = 10.0 + uComplexity * 10.0;
+        for (float i = 1.0; i < 30.0; i++) {
+          if (i > iterations) break;
+          float timeOffset = uTime * uSpeed * 0.1 * i;
+          float amp = 0.8 * uDistortion;
+          float shift = 0.3 * uCurve;
+          pos.x += amp / i * sin(i * pos.y + timeOffset + shift * i) + 1.6;
+          pos.y += (amp * 2.0) / i * sin(pos.x + timeOffset + shift * i + 1.6) - 0.8;
+        }
+        float wave = cos((pos.x + pos.y) * uFrequency) * 0.5 + 0.5;
+        vec3 finalColor = vec3(0.0);
+        if (wave < 0.15) finalColor = mix(uC1, uC2, wave * 6.667);
+        else if (wave < 0.35) finalColor = mix(uC2, uC3, (wave - 0.15) * 5.0);
+        else if (wave < 0.55) finalColor = mix(uC3, uC4, (wave - 0.35) * 5.0);
+        else if (wave < 0.7) finalColor = mix(uC4, uC5, (wave - 0.55) * 6.667);
+        else if (wave < 0.82) finalColor = mix(uC5, uC6, (wave - 0.7) * 8.333);
+        else if (wave < 0.92) finalColor = mix(uC6, uC7, (wave - 0.82) * 10.0);
+        else finalColor = mix(uC7, uC8, (wave - 0.92) * 12.5);
+        finalColor *= uBrightness;
+        float alpha = smoothstep(0.01, 1.0, pow(wave, 2.5 * uContrast)) * uOpacity;
+        gl_FragColor = vec4(finalColor, alpha);
+      }
+    `
+  });
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+  function resize() {
+    const width = Math.max(1, canvas.clientWidth || 1600);
+    const height = Math.max(1, canvas.clientHeight || 900);
+    renderer.setSize(width, height, false);
+    uniforms.uResolution.value.set(width, height);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  new ResizeObserver(resize).observe(canvas);
+  const start = performance.now();
+  renderer.setAnimationLoop(() => {
+    uniforms.uTime.value = (performance.now() - start) / 1000;
+    renderer.render(scene, camera);
+    canvas.dataset.silkShaderReady = "true";
+    window.__silkWavePurpleReady = true;
+  });
+}
+
+if (document.readyState === "loading") {
+  window.addEventListener("DOMContentLoaded", initSilkWavesPurple);
+} else {
+  initSilkWavesPurple();
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script>
+function updateStageScale() {
+  const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+  document.documentElement.style.setProperty("--stage-scale", scale);
+  document.documentElement.style.setProperty("--stage-scaled-width", `${1600 * scale}px`);
+  document.documentElement.style.setProperty("--stage-scaled-height", `${900 * scale}px`);
+}
+updateStageScale();
+window.addEventListener("resize", updateStageScale);
+
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll(".slide"));
+    this.currentSlide = 0;
+    this.locked = false;
+    this.programmaticScroll = false;
+    this.overviewOpen = false;
+    this.lastFocus = null;
+    this.deck = document.querySelector(".deck");
+    this.navDotsContainer = document.querySelector(".nav-dots");
+    this.progressBar = document.querySelector(".progress-bar");
+    this.presentToggle = document.querySelector(".present-toggle");
+    this.overview = document.getElementById("overview");
+    this.setupNavDots();
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupWheelNav();
+    this.setupTouchNav();
+    this.setupPresentationMode();
+    this.applySlide(0);
+  }
+  clamp(i) { return Math.max(0, Math.min(this.slides.length - 1, i)); }
+  applySlide(i) {
+    this.currentSlide = i;
+    this.slides.forEach((s, idx) => {
+      s.classList.toggle("active", idx === i);
+      s.classList.toggle("visible", idx === i);
+    });
+    this.navDotsContainer.querySelectorAll("button").forEach((d, idx) => {
+      d.classList.toggle("active", idx === i);
+      d.setAttribute("aria-current", idx === i ? "true" : "false");
+    });
+    if (this.progressBar) this.progressBar.style.transform = `scaleX(${(i + 1) / this.slides.length})`;
+  }
+  goTo(i, options = {}) {
+    const next = this.clamp(i);
+    if (this.locked && !options.immediate) return;
+    this.applySlide(next);
+    this.programmaticScroll = true;
+    this.slides[next].scrollIntoView({ behavior: options.immediate ? "auto" : "smooth", block: "start" });
+    if (!options.immediate) {
+      this.locked = true;
+      window.setTimeout(() => { this.locked = false; this.programmaticScroll = false; }, 650);
+    } else {
+      requestAnimationFrame(() => { this.programmaticScroll = false; });
+    }
+  }
+  next() { this.goTo(this.currentSlide + 1); }
+  prev() { this.goTo(this.currentSlide - 1); }
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+      if (this.programmaticScroll) return;
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) this.applySlide(this.slides.indexOf(entry.target));
+      });
+    }, { threshold: 0.6 });
+    this.slides.forEach((s) => observer.observe(s));
+  }
+  setupNavDots() {
+    this.navDotsContainer.innerHTML = "";
+    this.slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => this.goTo(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+  }
+  setupKeyboardNav() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.preventDefault(); this.toggleOverview(); return; }
+      if (this.overviewOpen) { if (e.key === "Tab") this.trapFocus(e); return; }
+      if (e.key.toLowerCase() === "p") { e.preventDefault(); this.requestPresent(); return; }
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); this.next(); }
+      else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); this.prev(); }
+      else if (e.key === "Home") { e.preventDefault(); this.goTo(0); }
+      else if (e.key === "End") { e.preventDefault(); this.goTo(this.slides.length - 1); }
+    });
+  }
+  setupWheelNav() {
+    let wheelAcc = 0;
+    let wheelTimer = null;
+    this.deck.addEventListener("wheel", (e) => {
+      if (this.overviewOpen) return;
+      wheelAcc += e.deltaY;
+      if (Math.abs(wheelAcc) > 80) {
+        wheelAcc > 0 ? this.next() : this.prev();
+        wheelAcc = 0;
+      }
+      window.clearTimeout(wheelTimer);
+      wheelTimer = window.setTimeout(() => { wheelAcc = 0; }, 180);
+    }, { passive: true });
+  }
+  setupTouchNav() {
+    let startX = 0, startY = 0;
+    window.addEventListener("touchstart", (e) => {
+      const t = e.changedTouches[0];
+      startX = t.clientX; startY = t.clientY;
+    }, { passive: true });
+    window.addEventListener("touchend", (e) => {
+      if (this.overviewOpen) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - startX, dy = t.clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) dx < 0 ? this.next() : this.prev();
+    }, { passive: true });
+  }
+  setupPresentationMode() { this.presentToggle?.addEventListener("click", () => this.requestPresent()); }
+  requestPresent() { document.documentElement.requestFullscreen?.().catch(() => {}); }
+  buildOverview() {
+    this.overview.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "ov-head";
+    head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
+    this.overview.appendChild(head);
+    const grid = document.createElement("div");
+    grid.className = "ov-grid";
+    this.slides.forEach((slide, i) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+      card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      const thumb = document.createElement("div");
+      thumb.className = "ov-thumb";
+      const clone = slide.cloneNode(true);
+      clone.classList.add("clone", "visible");
+      clone.setAttribute("aria-hidden", "true");
+      clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+      clone.querySelectorAll("button, a, input, select, textarea, [tabindex]").forEach((el) => el.setAttribute("tabindex", "-1"));
+      thumb.appendChild(clone);
+      const label = document.createElement("div");
+      label.className = "ov-label";
+      label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind || "slide"}</span>`;
+      card.appendChild(thumb);
+      card.appendChild(label);
+      card.addEventListener("click", () => { this.toggleOverview(false); this.goTo(i); });
+      grid.appendChild(card);
+    });
+    this.overview.appendChild(grid);
+    requestAnimationFrame(() => {
+      this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+        const clone = thumb.querySelector(".clone");
+        clone.style.width = "1600px";
+        clone.style.height = "900px";
+        clone.style.transform = `scale(${thumb.clientWidth / 1600})`;
+      });
+    });
+  }
+  toggleOverview(force) {
+    this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+    if (this.overviewOpen) {
+      this.lastFocus = document.activeElement;
+      this.buildOverview();
+      this.overview.setAttribute("aria-hidden", "false");
+      this.overview.focus({ preventScroll: true });
+    } else {
+      this.overview.setAttribute("aria-hidden", "true");
+      this.lastFocus?.focus?.({ preventScroll: true });
+    }
+  }
+  trapFocus(e) {
+    const focusable = this.overview.querySelectorAll("button, [tabindex]:not([tabindex='-1'])");
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+}
+
+function chartText() {
+  return {
+    color: "#bfbfbf",
+    fontFamily: "JetBrains Mono, Menlo, monospace",
+    fontSize: 18
+  };
+}
+function renderCharts() {
+  if (!window.echarts) return;
+  const commonGrid = { left: 88, right: 60, top: 36, bottom: 36 };
+  const axisLabel = chartText();
+  const mk = (id, option) => {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const chart = echarts.init(el, null, { renderer: "svg" });
+    chart.setOption(option);
+    window.addEventListener("resize", () => chart.resize());
+    return chart;
+  };
+  mk("stage-yield-chart", {
+    animation: false,
+    grid: commonGrid,
+    xAxis: { type: "value", min: 94, max: 100, interval: 2, axisLabel, splitLine: { lineStyle: { color: "rgba(255,255,255,.08)" } } },
+    yAxis: { type: "category", inverse: true, data: ["Wafer", "Litho", "Etch", "Dep", "Probe", "Test"], axisLabel, axisLine: { show: false }, axisTick: { show: false } },
+    series: [{ type: "bar", data: [99.8, 98.9, 97.6, 96.8, 95.5, 94.8], barWidth: 18, itemStyle: { color: (p) => p.dataIndex === 5 ? "#bd03f7" : "#bfbfbf" }, label: { show: true, position: "right", color: "#e6e6e6", fontSize: 18, formatter: "{c}%" } }]
+  });
+  mk("loss-pareto-chart", {
+    animation: false,
+    grid: { left: 130, right: 60, top: 36, bottom: 36 },
+    xAxis: { type: "value", max: 45, axisLabel, splitLine: { lineStyle: { color: "rgba(255,255,255,.08)" } } },
+    yAxis: { type: "category", inverse: true, data: ["Test", "Align", "Particles", "Handling", "Other"], axisLabel, axisLine: { show: false }, axisTick: { show: false } },
+    series: [{ type: "bar", data: [42, 24, 18, 9, 7], barWidth: 20, itemStyle: { color: (p) => p.dataIndex === 0 ? "#bd03f7" : "#bfbfbf" }, label: { show: true, position: "right", color: "#e6e6e6", fontSize: 18, formatter: "{c}%" } }]
+  });
+  mk("waterfall-chart", {
+    animation: false,
+    grid: { left: 76, right: 32, top: 38, bottom: 42 },
+    xAxis: { type: "category", data: ["Start", "Wafer", "Litho", "Etch", "Dep", "Probe", "Test", "Final"], axisLabel, axisLine: { lineStyle: { color: "rgba(255,255,255,.2)" } }, axisTick: { show: false } },
+    yAxis: { type: "value", min: 94, max: 100.5, axisLabel: { ...axisLabel, formatter: "{value}%" }, splitLine: { lineStyle: { color: "rgba(255,255,255,.08)" } } },
+    series: [
+      { type: "bar", stack: "total", silent: true, itemStyle: { borderColor: "transparent", color: "transparent" }, emphasis: { itemStyle: { borderColor: "transparent", color: "transparent" } }, data: [0, 99.8, 98.9, 97.6, 96.8, 95.5, 94.8, 0] },
+      { type: "bar", stack: "total", barWidth: 36, data: [100, .2, .9, 1.3, .8, 1.3, 2.0, 94.8], itemStyle: { color: (p) => p.dataIndex === 6 ? "#bd03f7" : "#bfbfbf" }, label: { show: true, position: "top", color: "#e6e6e6", fontSize: 18, formatter: (p) => p.dataIndex === 0 || p.dataIndex === 7 ? `${p.value}%` : `-${p.value}%` } }
+    ]
+  });
+  mk("test-loss-chart", {
+    animation: false,
+    grid: { left: 150, right: 36, top: 42, bottom: 42 },
+    xAxis: { type: "value", max: 55, axisLabel, splitLine: { lineStyle: { color: "rgba(255,255,255,.08)" } } },
+    yAxis: { type: "category", inverse: true, data: ["Bin 12", "Bin 07", "Bin 03", "Retest", "Other"], axisLabel, axisLine: { show: false }, axisTick: { show: false } },
+    series: [{ type: "bar", data: [51, 19, 14, 9, 7], barWidth: 28, itemStyle: { color: (p) => p.dataIndex === 0 ? "#bd03f7" : "#bfbfbf" }, label: { show: true, position: "right", color: "#e6e6e6", fontSize: 20, formatter: "{c}%" } }]
+  });
+}
+window.addEventListener("load", () => {
+  window.presentation = new SlidePresentation();
+  renderCharts();
+});
+</script>
+</body>
+</html>

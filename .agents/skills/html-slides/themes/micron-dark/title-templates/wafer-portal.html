@@ -1,0 +1,162 @@
+<!--
+  TITLE TEMPLATE: wafer-portal   (demo source: .cover-slide + initCoverThree)
+  Use for: brand-led, visionary, intro/keynote talks.
+  Runtime: Three.js (pinned). CSS radial-glow fallback if the module fails.
+  Read ./README.md for the shared cover contract.
+-->
+
+<!-- 1. SECTION (slide 1). Canvas is a direct child so it lands inside .slide-stage. -->
+<section class="slide title-slide title-wafer" data-slide-kind="cover">
+  <canvas class="md-wafer-canvas" aria-hidden="true"></canvas>
+  <img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" />
+  <div class="md-title-content">
+    <p class="kicker reveal">[EYEBROW]</p>
+    <h1 class="reveal">[TITLE]</h1>
+    <p class="subtitle reveal">[SUBTITLE]</p>
+    <div class="md-accent-line reveal"></div>
+  </div>
+  <div class="md-title-note">[CONTEXT — audience · date · source]</div>
+  <div class="md-title-number">01 / Cover</div>
+</section>
+
+<!-- 2. STYLE (paste once into deck <style>). -->
+<style>
+  .title-wafer .slide-stage{
+    background:
+      radial-gradient(circle at 72% 45%, rgba(189,3,247,.24), transparent 34%),
+      radial-gradient(circle at 92% 12%, rgba(255,140,255,.15), transparent 26%),
+      #000;
+    isolation:isolate;
+  }
+  /* CSS-only fallback portal: visible even if Three.js never loads. */
+  .title-wafer .slide-stage::before{
+    content:"";position:absolute;right:-210px;top:-90px;width:760px;height:760px;
+    border-radius:50%;z-index:1;
+    background:
+      radial-gradient(circle at 28% 22%, rgba(255,255,255,.85), transparent 12%),
+      linear-gradient(135deg, rgba(255,140,255,.96), rgba(189,3,247,.9) 42%, rgba(32,68,255,.95));
+    box-shadow:inset 18px 0 0 rgba(0,0,0,.34), 0 0 0 1px rgba(255,255,255,.08);
+  }
+  .title-wafer .md-wafer-canvas{
+    position:absolute;inset:0;width:100%;height:100%;display:block;
+    z-index:2;pointer-events:none;
+  }
+  .title-wafer .md-title-brand,
+  .title-wafer .md-title-content,
+  .title-wafer .md-title-note,
+  .title-wafer .md-title-number{z-index:4;}
+</style>
+
+<!-- 3. SCRIPT (paste once, before window.presentation = new SlidePresentation()). -->
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+  function initWaferPortal() {
+    const canvas = document.querySelector('.title-wafer .md-wafer-canvas');
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(36, 16 / 9, 0.1, 80);
+    camera.position.set(0, 0, 9);
+
+    const planet = new THREE.Group();
+    planet.position.set(4.55, 0.02, 0);
+    planet.rotation.set(-0.18, -0.58, 0.18);
+    scene.add(planet);
+
+    const waferMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      uniforms: {
+        uTime: { value: 0 },
+        uPurple: { value: new THREE.Color('#bd03f7') },
+        uBlue: { value: new THREE.Color('#2044ff') },
+        uCyan: { value: new THREE.Color('#32c8ff') }
+      },
+      vertexShader: `
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          vNormal = normalize(normalMatrix * normal);
+          vPosition = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        uniform vec3 uPurple;
+        uniform vec3 uBlue;
+        uniform vec3 uCyan;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        void main() {
+          float sweep = smoothstep(-1.4, 1.25, vPosition.y + vPosition.x * 0.42);
+          vec3 base = mix(uBlue, uPurple, sweep);
+          base = mix(base, uCyan, smoothstep(0.58, 1.0, vUv.x) * 0.5);
+
+          float rim = pow(1.0 - max(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0)), 0.0), 2.15);
+          float globeA = smoothstep(0.9992, 1.0, sin((vUv.x * 1.2 + vUv.y * 0.34 + uTime * 0.006) * 96.0) * 0.5 + 0.5);
+          float globeB = smoothstep(0.9992, 1.0, sin((vUv.x * -0.36 + vUv.y * 1.08 - uTime * 0.004) * 88.0) * 0.5 + 0.5);
+          float globeC = smoothstep(0.9994, 1.0, sin((vUv.x * 0.72 + vUv.y * 0.92 + uTime * 0.003) * 118.0) * 0.5 + 0.5);
+          float globeD = smoothstep(0.9994, 1.0, sin((vUv.x * -0.82 + vUv.y * 0.54 - uTime * 0.003) * 112.0) * 0.5 + 0.5);
+          float edgeGlow = smoothstep(0.45, 1.0, vUv.y) * 0.18;
+
+          vec3 color = base + rim * vec3(0.9, 0.28, 1.0) + (globeA + globeB + globeC + globeD) * vec3(0.04, 0.1, 0.22) + edgeGlow;
+          float alpha = 0.84 + rim * 0.16;
+          gl_FragColor = vec4(color, alpha);
+        }
+      `
+    });
+
+    const wafer = new THREE.Mesh(new THREE.SphereGeometry(2.86, 128, 72), waferMaterial);
+    planet.add(wafer);
+
+    const rim = new THREE.Mesh(
+      new THREE.SphereGeometry(2.92, 96, 48),
+      new THREE.MeshBasicMaterial({
+        color: '#ff8cff',
+        transparent: true,
+        opacity: 0.16,
+        side: THREE.BackSide,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      })
+    );
+    planet.add(rim);
+
+    function resize() {
+      const width = Math.max(1, canvas.clientWidth || 1600);
+      const height = Math.max(1, canvas.clientHeight || 900);
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    new ResizeObserver(resize).observe(canvas);
+
+    const start = performance.now();
+    renderer.setAnimationLoop(() => {
+      const elapsed = (performance.now() - start) / 1000;
+      waferMaterial.uniforms.uTime.value = elapsed;
+      planet.rotation.y = -0.58 + Math.sin(elapsed * 0.22) * 0.045;
+      planet.rotation.z = 0.18 + Math.sin(elapsed * 0.16) * 0.025;
+      renderer.render(scene, camera);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initWaferPortal);
+  } else {
+    initWaferPortal();
+  }
+</script>

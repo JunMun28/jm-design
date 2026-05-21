@@ -1,0 +1,232 @@
+==============================================================================
+ASCII SLIDE DRAFT: Manufacturing Yield Demo
+==============================================================================
+
+Audience : Manufacturing ops / process engineering review
+Goal     : Show yield-performance slide design with mock data
+Data     : Mock fab yield data, not real production numbers
+Format   : 5 slides
+Date     : 2026-05-20
+
+ASSUMPTION: This is a compact ops-review deck, not a keynote.
+ASSUMPTION: Main story is "yield improving, but Test remains the constraint."
+
+Story spine:
+  01  Yield health snapshot
+  02  Where yield is lost
+  03  What is driving Test loss
+  04  Which lots need attention
+  05  What action happens next
+
+------------------------------------------------------------------------------
+SLIDE 01 - YIELD HEALTH SNAPSHOT
+------------------------------------------------------------------------------
+
++----------------------------------------------------------------------------+
+|  01 - MANUFACTURING YIELD                                                  |
+|  ---                                                                       |
+|                                                                            |
+|  Yield recovered this week, but Test remains the constraint.                |
+|                                                                            |
+|  +--------------+  +--------------+  +--------------+  +----------------+   |
+|  | Final Yield  |  | WoW Change   |  | Top Loss     |  | At-Risk Lots   |   |
+|  | 94.8%        |  | +1.6 pts     |  | Test fails   |  | 7 of 126       |   |
+|  | target 96.0% |  | last 93.2%   |  | 42% of loss  |  | action open    |   |
+|  +--------------+  +--------------+  +--------------+  +----------------+   |
+|                                                                            |
+|  Process yield by stage                  Defect loss Pareto                 |
+|  ----------------------                  ------------------                 |
+|                                                                            |
+|  Wafer Start   99.8%  ################   Test fail   42%  ########         |
+|  Lithography   98.9%  ###############    Alignment   24%  #####            |
+|  Etch          97.6%  ##############     Particles   18%  ####             |
+|  Deposition    96.8%  #############      Handling     9%  ##               |
+|  Probe         95.5%  ############       Other        7%  #                |
+|  Final Test    94.8%  ###########                                           |
+|                                                                            |
+|  Action: prioritize Test bin 12 analysis; hold 7 lots for retest decision. |
+|                                                                            |
+|  Manufacturing Yield Demo                                      [logo]      |
++----------------------------------------------------------------------------+
+
+------------------------------------------------------------------------------
+SLIDE 02 - WHERE YIELD IS LOST
+------------------------------------------------------------------------------
+
++----------------------------------------------------------------------------+
+|  02 - STAGE LOSS WATERFALL                                                 |
+|  ---                                                                       |
+|                                                                            |
+|  Most yield loss accumulates after Probe, not at wafer start.               |
+|                                                                            |
+|  Yield bridge, lot family A17-A22                                          |
+|                                                                            |
+|  Start      100.0%  ################################################        |
+|  Wafer loss  -0.2%  #                                                       |
+|  Litho loss  -0.9%  ###                                                     |
+|  Etch loss   -1.3%  ####                                                    |
+|  Dep loss    -0.8%  ##                                                      |
+|  Probe loss  -1.3%  ####                                                    |
+|  Test loss   -2.0%  #######   < largest controllable loss                   |
+|  ----------------------------------------------------------------------    |
+|  Final       94.8%  ############################################            |
+|                                                                            |
+|  Loss split                                                                 |
+|  +------------------+------------------+------------------+---------------+ |
+|  | Front-end        | Mid-process      | Probe            | Final Test    | |
+|  | 2.4 pts          | 2.1 pts          | 1.3 pts          | 2.0 pts       | |
+|  | stable           | slight drift     | monitored        | urgent        | |
+|  +------------------+------------------+------------------+---------------+ |
+|                                                                            |
+|  Read: do not spread effort evenly. Start where the loss is concentrated.   |
+|                                                                            |
+|  Manufacturing Yield Demo                                      [logo]      |
++----------------------------------------------------------------------------+
+
+COPY
+  H2       Most yield loss accumulates after Probe, not at wafer start.
+  CLOSER   Do not spread effort evenly. Start where loss is concentrated.
+
+------------------------------------------------------------------------------
+SLIDE 03 - WHAT IS DRIVING TEST LOSS
+------------------------------------------------------------------------------
+
++----------------------------------------------------------------------------+
+|  03 - TEST FAILURE PARETO                                                  |
+|  ---                                                                       |
+|                                                                            |
+|  Bin 12 explains half of the Test loss spike.                               |
+|                                                                            |
+|  Failure mode             Share of Test loss        WoW                     |
+|  ----------------------------------------------------------------------    |
+|  Bin 12 timing margin     51%  ################     +18 pts                 |
+|  Bin 07 leakage           19%  ######               -3 pts                  |
+|  Bin 03 open/short        14%  ####                 +2 pts                  |
+|  Retest mismatch           9%  ###                  +1 pt                   |
+|  Other                     7%  ##                   flat                    |
+|                                                                            |
+|  Tester view                                                                |
+|  +----------------+-----------+-----------+-----------+------------------+  |
+|  | Tester         | Lots run  | Yield     | Bin 12    | Note             |  |
+|  | TST-04         | 31        | 93.1%     | 7.8%      | outlier          |  |
+|  | TST-11         | 28        | 94.5%     | 5.1%      | watch            |  |
+|  | TST-16         | 34        | 96.0%     | 2.7%      | baseline         |  |
+|  | TST-19         | 33        | 95.4%     | 3.2%      | baseline         |  |
+|  +----------------+-----------+-----------+-----------+------------------+  |
+|                                                                            |
+|  Hypothesis: timing guardband or handler setup drift on TST-04.             |
+|                                                                            |
+|  Manufacturing Yield Demo                                      [logo]      |
++----------------------------------------------------------------------------+
+
+COPY
+  H2       Bin 12 explains half of the Test loss spike.
+  CLOSER   Hypothesis: timing guardband or handler setup drift on TST-04.
+
+------------------------------------------------------------------------------
+SLIDE 04 - WHICH LOTS NEED ATTENTION
+------------------------------------------------------------------------------
+
++----------------------------------------------------------------------------+
+|  04 - LOT RISK BOARD                                                       |
+|  ---                                                                       |
+|                                                                            |
+|  Seven lots need a decision before release.                                 |
+|                                                                            |
+|  Risk matrix                                                                |
+|                                                                            |
+|                  Yield impact                                               |
+|             low              medium             high                        |
+|  Urgency  +---------------+----------------+----------------+              |
+|  high     |               | A19-044        | A21-017        |              |
+|           |               | retest ready   | hold           |              |
+|           +---------------+----------------+----------------+              |
+|  medium   | A18-033       | A20-012        | A22-006        |              |
+|           | monitor       | split sample   | engineering    |              |
+|           +---------------+----------------+----------------+              |
+|  low      | A17-028       | A19-052        |                |              |
+|           | release       | retest window  |                |              |
+|           +---------------+----------------+----------------+              |
+|                                                                            |
+|  Lot queue                                                                  |
+|  ----------------------------------------------------------------------    |
+|  HOLD      A21-017  yield 91.4%  bin 12 10.2%  owner Test Eng              |
+|  ENG       A22-006  yield 92.0%  bin 12  8.9%  owner Process Eng           |
+|  RETEST    A19-044  yield 93.2%  bin 12  7.1%  owner Ops                  |
+|  RELEASE   A17-028  yield 95.9%  bin 12  2.8%  owner QA                   |
+|                                                                            |
+|  Decision needed: hold A21-017, retest A19-044, split A20-012.             |
+|                                                                            |
+|  Manufacturing Yield Demo                                      [logo]      |
++----------------------------------------------------------------------------+
+
+COPY
+  H2       Seven lots need a decision before release.
+  CLOSER   Hold A21-017, retest A19-044, split A20-012.
+
+------------------------------------------------------------------------------
+SLIDE 05 - WHAT ACTION HAPPENS NEXT
+------------------------------------------------------------------------------
+
++----------------------------------------------------------------------------+
+|  05 - 48 HOUR ACTION PLAN                                                  |
+|  ---                                                                       |
+|                                                                            |
+|  Focus the next two shifts on Test recovery, not broad troubleshooting.     |
+|                                                                            |
+|  +----------------------+----------------------+-------------------------+  |
+|  | Workstream           | Next action          | Success signal          |  |
+|  +----------------------+----------------------+-------------------------+  |
+|  | TST-04 setup check   | Recalibrate handler  | Bin 12 below 4.0%       |  |
+|  | Guardband review     | Compare recipes      | No timing drift         |  |
+|  | Lot disposition      | Decide 7 lots        | 0 aging holds > 24h     |  |
+|  | Process correlation  | Check chamber logs   | No common upstream lot  |  |
+|  +----------------------+----------------------+-------------------------+  |
+|                                                                            |
+|  Timeline                                                                   |
+|                                                                            |
+|  Now       +-- isolate TST-04 + freeze recipe changes                       |
+|  Shift 1   +-- run golden lot + compare tester correlation                  |
+|  Shift 2   +-- retest A19-044 + decide A21-017 hold                         |
+|  Tomorrow  +-- update yield forecast + reopen release gate                  |
+|                                                                            |
+|  Expected recovery                                                          |
+|  Current 94.8%  ->  Test fix +0.7 pts  ->  Retest +0.3 pts  ->  95.8%      |
+|                                                                            |
+|  Ask: approve TST-04 downtime and retest queue priority.                    |
+|                                                                            |
+|  Manufacturing Yield Demo                                      [logo]      |
++----------------------------------------------------------------------------+
+
+COPY
+  H2       Focus the next two shifts on Test recovery, not broad troubleshooting.
+  ASK      Approve TST-04 downtime and retest queue priority.
+
+------------------------------------------------------------------------------
+DESIGN INTENT
+------------------------------------------------------------------------------
+
+- Compact ops-review density. Not marketing.
+- Every slide has one decision-oriented headline.
+- Slide 01 gives scan-level status.
+- Slide 02 explains where loss accumulates.
+- Slide 03 narrows to the failure mode and tester outlier.
+- Slide 04 converts analysis into lot decisions.
+- Slide 05 closes with owner actions, timing, and ask.
+
+------------------------------------------------------------------------------
+VISUAL NOTES FOR HTML VERSION
+------------------------------------------------------------------------------
+
+- Restrained light manufacturing-control-room feel.
+- KPI cards compact, max 8px radius.
+- Use monospaced numerals for yield values.
+- Use one accent for risk / target gap.
+- Avoid rainbow charts.
+- Animate only if presenting live: bars first, then callout/ask.
+
+------------------------------------------------------------------------------
+MOCK DATA CAVEAT
+------------------------------------------------------------------------------
+
+All values invented for visual/demo purposes.
