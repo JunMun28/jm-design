@@ -49,6 +49,7 @@ body{background:#000;color:var(--ink);font-family:var(--font-body)}
 .md-title-hero-image{position:absolute;inset:0 0 0 auto;width:68%;height:100%;object-fit:cover;object-position:84% center;z-index:1;opacity:.82;filter:saturate(1.08) contrast(1.08);pointer-events:none}
 .title-photo .slide-content::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.98) 30%,rgba(0,0,0,.74) 48%,rgba(0,0,0,.18) 72%,rgba(0,0,0,.05))}
 .title-photo .md-title-brand,.title-photo .md-title-content,.title-photo .md-title-note,.title-photo .md-title-number{z-index:4}
+.exec-primary-icon{position:absolute;right:96px;top:126px;width:220px;height:220px;object-fit:contain;opacity:.9;mix-blend-mode:screen;pointer-events:none}
 """,
     "micron-dark": """
 :root{--micron-black:#000;--micron-white:#fff;--micron-accent:#bd03f7;--micron-cyan:#32c8ff;--micron-blue:#2044ff;--micron-warm:#ff9f1a;--micron-rose:#f43163;--font-display:"Micron Basis",Arial,sans-serif;--font-body:var(--font-display);--font-mono:ui-monospace,Menlo,monospace;--scale-ratio:1.333;--col-count:12;--bg:#000;--ink:#fff;--muted:#bfbfbf;--accent:var(--micron-accent);--panel:#101010;--line:rgba(255,255,255,.14);--stage:#050505}
@@ -561,6 +562,7 @@ def build_sections(title: str, theme: str, slides: int, title_template: str | No
                 """
 <p class="kicker reveal">02 - executive summary</p>
 <h2 class="reveal">Three bets shape the next cycle</h2>
+<video class="exec-primary-icon reveal" src="assets/primary/mp4/rev/ai.mp4" muted autoplay loop playsinline aria-hidden="true"></video>
 <div class="board-kpis reveal">
   <div class="board-kpi"><b>HBM</b><span>feed AI training</span></div>
   <div class="board-kpi"><b>Power</b><span>lower workload energy</span></div>
@@ -786,6 +788,12 @@ def copy_theme_assets(output: Path, theme: str) -> None:
     shutil.copy2(
         MICRON_DARK_EXECUTIVE_ASSETS / "title-image.jpeg",
         assets_dir / "micron-dark-title-image.jpeg",
+    )
+    icon_target = assets_dir / "primary" / "mp4" / "rev"
+    icon_target.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(
+        MICRON_ICONS_ASSETS / "primary" / "mp4" / "rev" / "ai.mp4",
+        icon_target / "ai.mp4",
     )
 
 

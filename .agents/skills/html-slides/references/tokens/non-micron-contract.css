@@ -16,8 +16,8 @@
 
    What is NOT here (stays in themes/<id>/tokens.css, because it is
    theme expression, not structural plumbing):
-     --ease-out-expo, --duration-normal   (brutalist is instant)
-     --font-mono                          (brutalist uses system mono)
+     --ease-out-expo, --duration-normal
+     --font-mono
 
    verify.py enforces this by sentinel: if the shared runtime is pasted
    (viewport-base.css defines --slide-padding) but a contract token below
@@ -27,7 +27,7 @@
    ============================================================= */
 
 :root {
-  /* Surface + text — glass themes carry --bg-gradient, others --bg. */
+  /* Surface + text. */
   --bg-primary: var(--bg-gradient, var(--bg, #0a0a0c));
   --text-primary: var(--ink, #ffffff);
   --text-secondary: var(--ink-muted, var(--ink, #bfbfbf));
@@ -46,9 +46,7 @@
   --track-eyebrow: 0.14em;
   --track-mono: 0.08em;
 
-  /* Hairlines for layout-kit .rule/.regmark + overview borders.
-     Prefers the theme's own rule colour, then a glass border, then
-     a neutral mid-grey that reads on both light and dark surfaces. */
-  --hairline: 1px solid var(--rule, var(--glass-border, rgba(127, 127, 127, 0.22)));
-  --hairline-dark: 1px solid var(--rule, var(--glass-border, rgba(127, 127, 127, 0.22)));
+  /* Hairlines for layout-kit .rule/.regmark + overview borders. */
+  --hairline: 1px solid var(--rule, rgba(127, 127, 127, 0.22));
+  --hairline-dark: 1px solid var(--rule, rgba(127, 127, 127, 0.22));
 }

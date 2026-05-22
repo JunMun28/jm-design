@@ -8,9 +8,12 @@ sheet, not a web page.
 
 Use this when:
 
-- The theme requires it. **`micron-light` mandates it** (see its
-  `design.md` §7). **`micron-dark-engineering`** uses it for boardroom /
-  readout decks.
+- The theme requires it. **`micron-dark-executive`** uses it for
+  boardroom / executive decks. **`micron-light` mandates a fixed stage but
+  does NOT use this bare overlay** — it uses the richer `.slide-stage` +
+  container-query model in `themes/micron-light/design.md` §8 (this overlay
+  is only its minimum fallback). Read that §8 before building a
+  micron-light deck.
 - The deck must letterbox (not stretch) on a non-16:9 browser — the
   SKILL.md non-negotiable "Fixed-stage decks must expose a real 16:9 slide
   canvas" applies.
@@ -72,7 +75,7 @@ body { background: var(--letterbox, var(--bg-secondary, var(--bg-primary))); }
 
 ```js
 function updateStageScale() {
-  const s = Math.min(1, window.innerWidth / 1600, window.innerHeight / 900);
+  const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
   document.documentElement.style.setProperty("--stage-scale", s.toFixed(4));
 }
 updateStageScale();

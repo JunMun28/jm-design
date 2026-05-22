@@ -37,7 +37,14 @@
         "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
         "name": { "type": "string" },
         "status": { "enum": ["stable", "experimental", "deprecated"] },
-        "tone": { "type": "string" },
+        "role": {
+          "type": "string",
+          "description": "One short occasion label (e.g. engineering-review, executive-cover). Used by the Theme Selector as the prominent eyebrow above the theme name. See ADR 0003."
+        },
+        "recommended": {
+          "type": "boolean",
+          "description": "Exactly one theme should carry this flag. The Theme Selector renders a RECOMMENDED pill on that card and SKILL.md leads Style Selection with it. See ADR 0004."
+        },
         "when": { "type": "string" },
         "design": { "type": "string" },
         "example": { "type": ["string", "null"] },
@@ -75,6 +82,8 @@
           "description": "Decimal 'r, g, b' triplet of the theme accent, matched as a substring of computed colours."
         },
         "accent_max_per_slide": { "type": ["integer", "null"], "minimum": 1 },
+        "only_allow_purple_rgb": { "type": ["string", "null"] },
+        "only_allow_purple_name": { "type": ["string", "null"] },
         "logo_pattern": {
           "type": ["string", "null"],
           "description": "Regex matched against slide::after background-image. null for unbranded themes."
@@ -82,7 +91,36 @@
         "require_logo_on_content_slides": { "type": "boolean" },
         "forbid_chart_on_gradient": { "type": "boolean" },
         "headline_contrast_min": { "type": "number", "minimum": 1 },
-        "palette_lock": { "type": "boolean" }
+        "palette_lock": { "type": "boolean" },
+        "premium_corporate_checks": { "type": "boolean" },
+        "require_primary_animated_icon": { "type": "boolean" },
+        "primary_animated_icon_pattern": { "type": ["string", "null"] },
+        "require_logo_image": { "type": "boolean" },
+        "title_image_pattern": { "type": ["string", "null"] },
+        "title_logo_pattern": { "type": ["string", "null"] },
+        "forbid_accent_text_selectors": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "enforce_sentence_case_headlines": { "type": "boolean" },
+        "forbid_headline_end_punctuation": { "type": "boolean" },
+        "min_label_body_gap_px": { "type": ["number", "null"], "minimum": 0 },
+        "require_fixed_stage": { "type": "boolean" },
+        "stage_width": { "type": ["integer", "null"], "minimum": 1 },
+        "stage_height": { "type": ["integer", "null"], "minimum": 1 },
+        "enforce_stage_overflow": { "type": "boolean" },
+        "min_touch_target_px": { "type": ["number", "null"], "minimum": 0 },
+        "micron_light_title_checks": { "type": "boolean" },
+        "require_title_animated_icon": { "type": "boolean" },
+        "title_icon_pattern": { "type": ["string", "null"] },
+        "title_visual_selector": { "type": ["string", "null"] },
+        "min_title_copy_gap_px": { "type": ["number", "null"], "minimum": 0 },
+        "min_title_icon_width_px": { "type": ["number", "null"], "minimum": 0 },
+        "min_title_icon_right_margin_px": { "type": ["number", "null"], "minimum": 0 },
+        "forbid_selectors": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
       }
     }
   }

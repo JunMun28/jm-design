@@ -105,9 +105,9 @@ Every generated deck must preserve these:
 - `prefers-reduced-motion` is included.
 - never use internal slide scrolling to solve overflow.
 
-## Micron dark engineering runtime choice
+## Micron dark runtime choice
 
-For Micron dark engineering decks, choose the runtime model that best fits the
+For Micron dark decks, choose the runtime model that best fits the
 content instead of matching a demo file.
 
 - Keep `.slide { width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; scroll-snap-align: start; }`.
@@ -147,6 +147,7 @@ Use these only when relevant:
 | Feature | When to use | Rule |
 |---|---|---|
 | React Flow | Complex architecture, pipeline, dependency, or system diagrams | Use only as an approved CDN runtime; make it non-interactive unless the user asks for interactive diagrams |
+| ECharts | Non-trivial charts: trend with target, annotated line/area, waterfall, Pareto, Sankey, heatmap, dashboard chart | Use data/options objects, `ResizeObserver`, flat black/white chart surfaces, and direct labels/annotations |
 | Three.js | Cinematic title templates, shader canvases, 3D wafer/tech hero, milestone motion | Use only when it materially improves the slide; provide a static fallback or reduced-motion behavior |
 | Inline editing | User asks to edit text in-browser | Copy `references/runtime/html-template.md` opt-in editor pattern; skip all edit code otherwise |
 | Export clean HTML | Inline editing enabled | Strip `contenteditable`, edit classes, toggle/banner state before saving |

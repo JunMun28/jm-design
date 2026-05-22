@@ -1,0 +1,78 @@
+<!--
+  TITLE TEMPLATE: photo-title
+  Theme: micron-dark-executive only.
+  Asset source: themes/micron-dark-executive/assets/title-image.jpeg
+-->
+
+<section class="slide title-slide title-photo" data-slide-kind="cover">
+  <div class="slide-content">
+    <img class="md-title-hero-image" src="assets/micron-dark-title-image.jpeg" alt="" aria-hidden="true" decoding="async" />
+    <img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" />
+    <div class="md-title-content">
+      <p class="kicker reveal">[EYEBROW]</p>
+      <h1 class="reveal">[TITLE]</h1>
+      <p class="subtitle reveal">[SUBTITLE]</p>
+      <div class="md-accent-line reveal" aria-hidden="true"></div>
+    </div>
+    <div class="md-title-note">[CONTEXT]</div>
+    <div class="md-title-number">01 / Cover</div>
+  </div>
+</section>
+
+<style>
+  .title-photo .slide-stage,
+  .title-photo .slide-content {
+    background: #000;
+  }
+
+  .title-photo .slide-content {
+    position: relative;
+  }
+
+  .md-title-hero-image {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 68%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 84% center;
+    z-index: 1;
+    opacity: .82;
+    filter: saturate(1.08) contrast(1.08);
+    pointer-events: none;
+  }
+
+  .title-photo .slide-content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(
+      90deg,
+      #000 0%,
+      rgba(0, 0, 0, .98) 30%,
+      rgba(0, 0, 0, .74) 48%,
+      rgba(0, 0, 0, .18) 72%,
+      rgba(0, 0, 0, .05)
+    );
+    pointer-events: none;
+  }
+
+  .title-photo .md-title-brand,
+  .title-photo .md-title-content,
+  .title-photo .md-title-note,
+  .title-photo .md-title-number {
+    z-index: 4;
+  }
+
+  .title-photo .md-title-content .kicker {
+    color: var(--gray-d);
+    font-size: 24px;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+
+  .title-photo .md-accent-line {
+    display: none;
+  }
+</style>

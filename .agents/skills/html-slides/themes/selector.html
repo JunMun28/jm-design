@@ -3,94 +3,982 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Micron slides — theme selector</title>
+<title>html-slides — themes</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" />
+
 <style>
   :root {
-    --bg: #0a0a0c; --panel: #14151a; --line: rgba(255,255,255,.1);
-    --text: #fff; --muted: #bfbfbf; --accent: #bd03f7; --cyan: #32c8ff;
-    --font: "Plus Jakarta Sans", -apple-system, Arial, sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    /* Modern Obsidian palette — OKLCH equivalents of the brief's hex values,
+       tinted faintly cool so they're not raw #000 / #fff. */
+    --obsidian:        oklch(0.085 0.005 260);   /* #080808 */
+    --obsidian-deep:   oklch(0.060 0.005 260);
+    --white:           oklch(0.985 0.003 260);   /* near-#fff */
+    --silver:          oklch(0.910 0.015 250);   /* #E2E8F0 */
+    --silver-quiet:    oklch(0.660 0.020 250);
+    --silver-faint:    oklch(0.480 0.020 250);
+
+    --silver-grad:     linear-gradient(135deg, oklch(0.975 0.005 260) 0%, oklch(0.700 0.025 250) 100%);
+    --silver-grad-dim: linear-gradient(135deg, oklch(0.880 0.012 260) 0%, oklch(0.560 0.022 250) 100%);
+
+    --border:          rgb(255 255 255 / 0.08);
+    --border-strong:   rgb(255 255 255 / 0.18);
+
+    --font-serif: "DM Serif Display", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --font-mono:  "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --font-sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+    /* Heavy ease-out — the brief's curve. Used for entry only; interactions
+       use a faster, lighter curve so clicks don't feel sluggish. */
+    --ease-entry: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-ui:    cubic-bezier(0.22, 1, 0.36, 1);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--font); background: var(--bg); color: var(--text); padding: 3rem clamp(1.5rem, 4vw, 4rem); line-height: 1.5; min-height: 100vh; }
-  header { max-width: 1280px; margin: 0 auto 2.5rem; }
-  .eyebrow { font-family: var(--mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
-  h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
-  .lede { color: var(--muted); max-width: 60ch; margin-top: 1rem; }
-  main { max-width: 1280px; margin: 0 auto; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1.25rem; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
-  .preview { aspect-ratio: 16 / 9; background: #000 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%23111'/%3E%3Ctext x='160' y='95' fill='%23555' font-family='monospace' font-size='12' text-anchor='middle'%3Eno preview%3C/text%3E%3C/svg%3E") center/cover no-repeat; border-bottom: 1px solid var(--line); position: relative; }
-  .preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .body { padding: 1.25rem 1.5rem 1.5rem; flex: 1; display: flex; flex-direction: column; gap: .75rem; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
-  .name { font-size: 1.15rem; font-weight: 700; letter-spacing: -.01em; }
-  .status { font-family: var(--mono); font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
-  .status.stable { color: var(--cyan); border-color: rgba(50,200,255,.4); }
-  .status.experimental { color: #ffbe1e; border-color: rgba(255,190,30,.4); }
-  .status.deprecated { color: #ec0b00; border-color: rgba(236,11,0,.4); }
-  .tone { font-family: var(--mono); font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-  .when { color: var(--muted); font-size: .9rem; }
-  .links { margin-top: auto; display: flex; gap: .75rem; flex-wrap: wrap; padding-top: .5rem; border-top: 1px solid var(--line); }
-  .links a { color: var(--text); text-decoration: none; font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; transition: border-color .2s, color .2s; }
-  .links a:hover { color: var(--accent); border-color: var(--accent); }
-  .links a.disabled { opacity: .35; pointer-events: none; }
-  footer { max-width: 1280px; margin: 3rem auto 0; color: var(--muted); font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; }
-  .err { color: #ec0b00; padding: 1rem; border: 1px solid #ec0b00; border-radius: 8px; }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--obsidian);
+    color: var(--silver);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    padding: clamp(1rem, 1.8vw, 1.5rem) clamp(1.25rem, 4vw, 2.5rem);
+    position: relative;
+  }
+  /* Fractal-noise overlay — adds physicality without colour. SVG inlined so
+     the page stays single-file (no extra HTTP). */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 220px 220px;
+    mix-blend-mode: screen;
+  }
+
+  .app {
+    position: relative;
+    z-index: 1;
+    max-width: 1600px;
+    margin: 0 auto;
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: clamp(0.875rem, 1.4vw, 1.25rem);
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────── */
+
+  header { padding: 0.25rem 0.125rem 0.5rem; }
+  .eyebrow-page {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--silver-quiet);
+  }
+
+  /* ── Two-column layout ─────────────────────────────────────────────── */
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(340px, 26%) 1fr;
+    gap: clamp(1rem, 1.8vw, 1.5rem);
+    min-height: 0;
+  }
+
+  /* ── Sidebar ───────────────────────────────────────────────────────── */
+
+  .sidebar {
+    display: flex; flex-direction: column;
+    gap: 0.25rem;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+    padding: 0.25rem 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 6px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+
+  .theme-row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 0.875rem;
+    padding: 0.5rem 0.625rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.75rem;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    outline: none;
+    /* Entry slide-up — only on initial paint (see @keyframes). */
+    opacity: 0;
+    transform: translateY(8px);
+    animation: slideUp 0.8s var(--ease-entry) forwards;
+    transition:
+      background 220ms var(--ease-ui),
+      border-color 220ms var(--ease-ui);
+  }
+  .theme-row:hover {
+    background: rgb(255 255 255 / 0.03);
+    border-color: var(--border);
+  }
+  .theme-row[aria-selected="true"] {
+    background: rgb(255 255 255 / 0.04);
+    border-color: var(--border-strong);
+  }
+  .theme-row[aria-selected="true"] .thumb {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.32);
+  }
+  .theme-row:focus-visible {
+    outline: 1px solid var(--silver);
+    outline-offset: 3px;
+  }
+
+  /* Stagger the entry by index — each row sets its own delay via inline style. */
+  @keyframes slideUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theme-row { opacity: 1 !important; transform: none !important; animation: none !important; }
+  }
+
+  .thumb {
+    aspect-ratio: 16 / 9;
+    background: var(--obsidian-deep);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    overflow: hidden;
+    position: relative;
+  }
+  .moodboard {
+    position: absolute;
+    inset: 0;
+    display: block;
+    opacity: 0.78;
+    transition: opacity 240ms var(--ease-ui), transform 240ms var(--ease-ui);
+  }
+  .theme-row[aria-selected="true"] .moodboard,
+  .theme-row:hover .moodboard { opacity: 1; transform: scale(1.02); }
+  .mood-swatch {
+    position: absolute;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: 2px;
+    background: var(--sk-line);
+  }
+  .mood-swatch:nth-child(1) {
+    left: 8%;
+    top: 14%;
+    width: 40%;
+    height: 6%;
+    border: 0;
+  }
+  .mood-swatch:nth-child(2) {
+    right: 7%;
+    top: 16%;
+    width: 30%;
+    height: 24%;
+    background: var(--sk-panel);
+  }
+  .mood-swatch:nth-child(3) {
+    left: 8%;
+    top: 30%;
+    width: 46%;
+    height: 36%;
+    background: var(--sk-chart);
+  }
+  .mood-swatch:nth-child(4) {
+    right: 8%;
+    top: 50%;
+    width: 24%;
+    height: 14%;
+    background: var(--sk-accent);
+    border: 0;
+  }
+  .mood-swatch:nth-child(5) {
+    left: 8%;
+    bottom: 14%;
+    width: 72%;
+    height: 11%;
+    border: 0;
+    background:
+      linear-gradient(90deg, var(--sk-muted) 0 28%, transparent 28% 36%, var(--sk-muted) 36% 60%, transparent 60% 68%, var(--sk-muted) 68% 100%);
+    opacity: 0.86;
+  }
+  .moodboard::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 3px;
+    border: 1px solid var(--mood-line, rgb(255 255 255 / 0.12));
+    pointer-events: none;
+  }
+  .thumb[data-theme-id="micron-dark"] {
+    --sk-line: #32c8ff;
+    --sk-panel: #0d1724;
+    --sk-chart: linear-gradient(90deg, transparent 0 18%, #202b3c 18% 20%, transparent 20% 38%, #bd03f7 38% 72%, transparent 72% 100%), #05070a;
+    --sk-accent: #bd03f7;
+    --sk-muted: rgb(216 225 238 / 0.48);
+    background: #05070a;
+  }
+  .thumb[data-theme-id="micron-dark"] .mood-swatch:nth-child(2) { width: 26%; height: 20%; }
+  .thumb[data-theme-id="micron-dark"] .mood-swatch:nth-child(4) { top: 43%; width: 28%; background: #32c8ff; }
+  .thumb[data-theme-id="micron-dark-executive"] {
+    --sk-line: #bd03f7;
+    --sk-panel: #e4edf8;
+    --sk-chart: linear-gradient(135deg, #08101e 0 50%, #bd03f7 50% 54%, #0b8dce 54% 100%);
+    --sk-accent: #bd03f7;
+    --sk-muted: rgb(228 237 248 / 0.52);
+    background: radial-gradient(circle at 80% 38%, #15243a, transparent 34%), #050508;
+  }
+  .thumb[data-theme-id="micron-dark-executive"] .mood-swatch:nth-child(2) { top: 18%; width: 42%; height: 18%; }
+  .thumb[data-theme-id="micron-dark-executive"] .mood-swatch:nth-child(3) { top: 30%; width: 42%; height: 42%; }
+  .thumb[data-theme-id="micron-dark-executive"] .mood-swatch:nth-child(4) { top: 48%; width: 18%; }
+  .thumb[data-theme-id="micron-light"] {
+    --sk-line: #c9d4e2;
+    --sk-panel: #ffffff;
+    --sk-chart: linear-gradient(0deg, transparent 0 24%, #eef3f9 24% 100%), linear-gradient(90deg, #dbe4ef 0 18%, transparent 18% 100%), #ffffff;
+    --sk-accent: #bd03f7;
+    --sk-muted: #dce5ef;
+    background: #eef3f9;
+  }
+  .thumb[data-theme-id="micron-light"] .mood-swatch { border-color: rgb(15 23 42 / 0.12); }
+  .thumb[data-theme-id="micron-light"] .mood-swatch:nth-child(4) { background: #05070a; width: 16%; }
+  .thumb[data-theme-id="guided-learning"] {
+    --sk-line: #32c8ff;
+    --sk-panel: #10223a;
+    --sk-chart: linear-gradient(180deg, transparent 0 32%, #122944 32% 34%, transparent 34% 64%, #122944 64% 66%, transparent 66% 100%), #07121f;
+    --sk-accent: #bd03f7;
+    --sk-muted: rgb(219 234 254 / 0.48);
+    background: #06101c;
+  }
+  .thumb[data-theme-id="guided-learning"] .mood-swatch:nth-child(2) { background: #32c8ff; height: 16%; }
+  .thumb[data-theme-id="guided-learning"] .mood-swatch:nth-child(4) { background: #dbeafe; width: 18%; }
+  .thumb[data-theme-id="playful"] {
+    --sk-line: #2b2118;
+    --sk-panel: #ff6b6b;
+    --sk-chart: linear-gradient(90deg, #2b2118 0 6%, transparent 6% 100%), #fffdf3;
+    --sk-accent: #4ecdc4;
+    --sk-muted: #2b2118;
+    background: #fff8e7;
+  }
+  .thumb[data-theme-id="playful"] .mood-swatch { border-color: rgb(43 33 24 / 0.18); }
+  .thumb[data-theme-id="playful"] .mood-swatch:nth-child(1) { background: #ff6b6b; width: 34%; height: 8%; }
+  .thumb[data-theme-id="playful"] .mood-swatch:nth-child(2) { background: #4ecdc4; top: 38%; height: 18%; }
+  .thumb[data-theme-id="playful"] .mood-swatch:nth-child(4) { background: #ffe66d; top: 38%; }
+
+  .row-meta {
+    min-width: 0;
+    display: flex; align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.625rem;
+    align-self: center;
+  }
+  .row-name {
+    /* Serif italic — quieter than the hero, same voice. */
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.125rem;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.15;
+    color: var(--silver);
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+  .theme-row[aria-selected="true"] .row-name {
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  .pill {
+    display: inline-flex; align-items: center;
+    padding: 0.125rem 0.4375rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--obsidian);
+    background: var(--silver-grad);
+    border-radius: 999px;
+    flex-shrink: 0;
+    max-width: 100%;
+  }
+
+  .status {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    color: var(--silver-quiet);
+  }
+
+  /* ── Preview pane ──────────────────────────────────────────────────── */
+
+  .preview-pane {
+    display: flex; flex-direction: column;
+    min-width: 0; min-height: 0;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: rgb(255 255 255 / 0.015);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(12px);
+    animation: slideUp 0.9s var(--ease-entry) 120ms forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .preview-pane { opacity: 1 !important; transform: none !important; animation: none !important; }
+  }
+
+  .preview-head {
+    /* The one glass moment on the page — floating chrome over the deck. */
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem 1.125rem;
+    background: rgb(255 255 255 / 0.02);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+  }
+  .preview-title { min-width: 0; flex: 1; container-type: inline-size; }
+  .preview-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--silver-faint);
+    margin-bottom: 0.625rem;
+  }
+  /* Hero — DM Serif Display italic. The clamp targets the *preview pane*,
+     which is roughly 60% of viewport width at desktop, so we use a tighter
+     vw multiplier than a full-page hero would. */
+  .preview-name-row {
+    max-width: 100%;
+  }
+  .preview-name {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.75rem, 5.5cqw, 4.25rem);
+    font-weight: 400;
+    letter-spacing: -0.022em;
+    line-height: 1.06;
+    color: var(--silver);
+    margin: 0 0 0.625rem 0;
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+    /* The whole hero is rendered as a silver gradient. */
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  .preview-id-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: -0.25rem 0 0.625rem;
+    max-width: 100%;
+  }
+  .pv-slug {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: clamp(0.5rem, 1.7cqw, 0.6875rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--silver-faint);
+    overflow-wrap: anywhere;
+  }
+  .copy-theme-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3125rem;
+    min-width: 0;
+    height: 1.375rem;
+    padding: 0 0.4375rem;
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.035);
+    color: var(--silver-quiet);
+    cursor: pointer;
+    transition:
+      background 180ms var(--ease-ui),
+      border-color 180ms var(--ease-ui),
+      color 180ms var(--ease-ui);
+  }
+  .copy-theme-button svg {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex: 0 0 auto;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+  .copy-theme-button:hover {
+    color: var(--white);
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.28);
+  }
+  .copy-theme-button[data-copied="true"] {
+    color: var(--obsidian);
+    background: var(--silver-grad);
+  }
+  .copy-theme-button:focus-visible { outline: 1px solid var(--silver); outline-offset: 3px; }
+  .preview-when {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 300;
+    color: var(--silver-quiet);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 64ch;
+  }
+
+  .preview-actions {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.625rem;
+    padding-bottom: 0.25rem;
+  }
+  .preview-actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .preview-actions a {
+    color: var(--obsidian);
+    background: var(--silver-grad);
+    border: 1px solid rgb(255 255 255 / 0.4);
+    transition:
+      transform 220ms var(--ease-ui),
+      box-shadow 220ms var(--ease-ui),
+      filter 220ms var(--ease-ui);
+    will-change: transform;
+  }
+  .preview-actions .open-icon {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+  .preview-actions a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgb(255 255 255 / 0.15);
+    filter: brightness(1.04);
+  }
+  .preview-actions a:active { transform: translateY(0); }
+  .preview-actions a:focus-visible { outline: 1px solid var(--silver); outline-offset: 3px; }
+
+  /* ── Stage ─────────────────────────────────────────────────────────── */
+
+  .stage-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 20%, rgb(255 255 255 / 0.055), transparent 46%),
+      linear-gradient(180deg, oklch(0.185 0.004 255), oklch(0.125 0.004 255));
+    /* Centre the deck-and-hint as a unit: empty space splits top/bottom,
+       hint hugs the deck instead of floating to the pane floor. */
+    display: grid;
+    place-items: center;
+    padding: clamp(0.75rem, 1.2vw, 1rem);
+    position: relative;
+  }
+  .stage-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  .stage-hint {
+    /* Tiny keyboard nudge — tells users they can drive the embedded deck. */
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: oklch(0.74 0.016 250);
+    padding: 0.3125rem 0.6875rem;
+    border: 1px solid rgb(255 255 255 / 0.10);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.035);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
+    user-select: none;
+  }
+  .stage-hint kbd {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 1.125rem;
+    padding: 0.0625rem 0.3125rem 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--silver);
+    background: rgb(255 255 255 / 0.04);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 rgb(255 255 255 / 0.08);
+  }
+  .stage-hint .sep {
+    width: 1px; height: 0.625rem;
+    background: var(--border-strong);
+    margin: 0 0.125rem;
+  }
+  .stage {
+    position: relative;
+    width: var(--box-w, 1280px);
+    height: var(--box-h, 720px);
+    background: black;
+    border-radius: 0.625rem;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.14),
+      0 24px 70px -34px rgb(0 0 0 / 0.86);
+  }
+  .stage-inner {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1280px;
+    height: 720px;
+    transform: scale(var(--scale, 1));
+    transform-origin: top left;
+  }
+  .stage iframe {
+    width: 100%; height: 100%;
+    border: 0;
+    display: block;
+    background: var(--obsidian);
+  }
+  .stage-loading {
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg,
+      var(--obsidian-deep) 30%,
+      rgb(255 255 255 / 0.04) 50%,
+      var(--obsidian-deep) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s var(--ease-ui) infinite;
+  }
+  .stage-loading[hidden] { display: none; }
+  @keyframes shimmer {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  /* ── Error ─────────────────────────────────────────────────────────── */
+
+  .error {
+    color: var(--silver);
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    max-width: 60ch;
+    line-height: 1.6;
+    padding: 1.25rem;
+  }
+  .error .glyph { color: oklch(0.68 0.18 28); font-family: var(--font-mono); margin-right: 0.5rem; }
+  .error .hint { display: block; margin-top: 0.4rem; color: var(--silver-quiet); font-size: 0.8125rem; }
+  .error code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: rgb(255 255 255 / 0.04);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── Narrow ────────────────────────────────────────────────────────── */
+
+  @media (max-width: 760px) {
+    body { padding: 1rem; }
+    .layout { grid-template-columns: 1fr; }
+    .preview-pane { display: none; }
+    .theme-row { grid-template-columns: 112px 1fr; }
+  }
+  /* Tablet / small-laptop band: keep side-by-side but narrow the sidebar
+     and shrink the hero so the preview pane breathes. */
+  @media (min-width: 761px) and (max-width: 1100px) {
+    .layout { grid-template-columns: minmax(280px, 32%) 1fr; }
+    .theme-row { grid-template-columns: 72px 1fr; }
+    .preview-name { font-size: clamp(1.75rem, 4vw, 2.75rem); }
+    .preview-head { align-items: flex-start; }
+    .preview-actions { flex-direction: column; align-items: stretch; }
+    .preview-actions a { justify-content: center; padding-inline: 1rem; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <p class="eyebrow">Micron slides · theme selector</p>
-  <h1>Pick a theme.</h1>
-  <p class="lede">Each theme is a self-contained folder under <code>themes/</code>. Card content is read from <code>themes/themes.json</code> at load — never edit this file directly to add a theme.</p>
-</header>
-<main id="grid"><p class="muted">Loading themes…</p></main>
-<footer><span id="counts"></span></footer>
+<div class="app">
+
+  <header>
+    <span class="eyebrow-page" id="eyebrow-page">Choose a slide theme</span>
+  </header>
+
+  <main class="layout" id="layout" aria-busy="true">
+    <nav class="sidebar" id="sidebar" aria-label="Themes"></nav>
+    <section class="preview-pane" id="preview-pane" aria-live="polite">
+      <header class="preview-head">
+        <div class="preview-title">
+          <div class="preview-eyebrow" id="pv-role"></div>
+          <div class="preview-name-row">
+            <h2 class="preview-name" id="pv-name">…</h2>
+          </div>
+          <div class="preview-id-row">
+            <span class="pv-slug" id="pv-slug"></span>
+            <button class="copy-theme-button" id="copy-theme-button" type="button" data-copy-theme="" aria-label="Copy theme name">
+              <span class="copy-theme-label">copy</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="8" y="8" width="10" height="10" rx="2"></rect>
+                <path d="M6 14H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+          <p class="preview-when" id="pv-when"></p>
+        </div>
+        <div class="preview-actions" id="pv-actions"></div>
+      </header>
+      <div class="stage-wrap" id="stage-wrap">
+        <div class="stage-group">
+          <div class="stage" id="stage" style="--scale: 1">
+            <div class="stage-loading" id="stage-loading" aria-hidden="true"></div>
+            <div class="stage-inner">
+              <iframe id="stage-frame" title="Theme example" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+          </div>
+          <div class="stage-hint" aria-label="Preview navigation hint">
+            <span>Preview slides</span>
+            <span class="sep" aria-hidden="true"></span>
+            <kbd>↓</kbd> <span>next</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+</div>
 
 <script>
-async function load() {
-  const grid = document.getElementById("grid");
-  const counts = document.getElementById("counts");
-  try {
-    const res = await fetch("themes.json");
-    if (!res.ok) throw new Error("themes.json " + res.status);
-    const data = await res.json();
-    const themes = data.themes || [];
-    const stable = themes.filter(t => t.status === "stable").length;
-    const exp = themes.filter(t => t.status === "experimental").length;
-    counts.textContent = `${themes.length} themes · ${stable} stable · ${exp} experimental`;
+const escapeHTML = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+}[c]));
 
-    grid.innerHTML = "";
-    const root = document.createElement("div");
-    root.className = "grid";
-    for (const t of themes) {
-      const card = document.createElement("article");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="preview" data-preview="${t.preview || ""}">
-          ${t.preview ? `<img alt="${t.name} preview" loading="lazy" onerror="this.remove()" src="../${t.preview}" />` : ""}
-        </div>
-        <div class="body">
-          <div class="row">
-            <span class="name">${t.name}</span>
-            <span class="status ${t.status}">${t.status}</span>
-          </div>
-          <div class="tone">${t.tone || ""}</div>
-          <p class="when">${t.when || ""}</p>
-          <div class="links">
-            <a href="../${t.design}">design</a>
-            <a class="${t.example ? "" : "disabled"}" href="${t.example ? "../" + t.example : "#"}">example</a>
-            ${(t.extras || []).map(x => `<a href="../${x}">${x.split("/").pop().replace(".md","")}</a>`).join("")}
-          </div>
-        </div>`;
-      root.appendChild(card);
-    }
-    grid.appendChild(root);
+const formatRole = (role) => role ? String(role).replace(/-/g, " ") : "";
+
+function renderRow(t, i) {
+  const recommended = t.recommended
+    ? `<span class="pill" aria-label="Recommended default">recommended</span>`
+    : "";
+  const status = (t.status && t.status !== "stable")
+    ? `<span class="status ${escapeHTML(t.status)}">${escapeHTML(t.status)}</span>`
+    : "";
+
+  // Stagger the entry — each row arrives 60ms after the previous one.
+  const delay = `${60 * i}ms`;
+
+  return `
+    <button class="theme-row" role="option" id="row-${escapeHTML(t.id)}"
+            data-theme-id="${escapeHTML(t.id)}" data-index="${i}"
+            aria-selected="false"
+            style="animation-delay: ${delay}">
+      <span class="thumb" data-theme-id="${escapeHTML(t.id)}" aria-hidden="true">
+        <span class="moodboard">
+          <span class="mood-swatch"></span>
+          <span class="mood-swatch"></span>
+          <span class="mood-swatch"></span>
+          <span class="mood-swatch"></span>
+          <span class="mood-swatch"></span>
+        </span>
+      </span>
+      <span class="row-meta">
+        <span class="row-name">${escapeHTML(t.name)}</span>
+        ${recommended}
+        ${status}
+      </span>
+    </button>`;
+}
+
+let THEMES = [];
+
+function orderThemes(themes) {
+  return [...themes].sort((a, b) => {
+    if (a.recommended === b.recommended) return 0;
+    return a.recommended ? -1 : 1;
+  });
+}
+
+function select(id) {
+  const t = THEMES.find((x) => x.id === id);
+  if (!t) return;
+
+  document.querySelectorAll(".theme-row").forEach((row) => {
+    row.setAttribute("aria-selected", row.dataset.themeId === id ? "true" : "false");
+  });
+
+  document.getElementById("pv-role").textContent = formatRole(t.role);
+  document.getElementById("pv-name").textContent = t.name;
+  document.getElementById("pv-slug").textContent = t.id;
+  document.getElementById("pv-when").textContent = t.when || "";
+  const copyButton = document.getElementById("copy-theme-button");
+  copyButton.dataset.copyTheme = t.id;
+  copyButton.setAttribute("aria-label", `Copy ${t.id}`);
+  delete copyButton.dataset.copied;
+
+  const examplePath = t.example ? `../${t.example}` : null;
+  const actions = document.getElementById("pv-actions");
+  actions.innerHTML = examplePath
+    ? `<a href="${escapeHTML(examplePath)}" target="_blank" rel="noopener"><span>open</span><span class="open-icon" aria-hidden="true">↗</span></a>`
+    : "";
+
+  const frame   = document.getElementById("stage-frame");
+  const loading = document.getElementById("stage-loading");
+  loading.hidden = false;
+  frame.style.opacity = "0";
+  if (examplePath) {
+    frame.src = examplePath;
+    frame.onload = () => {
+      hidePreviewScrollbars(frame);
+      loading.hidden = true;
+      frame.style.opacity = "1";
+    };
+  } else {
+    frame.removeAttribute("src");
+    loading.hidden = true;
+    frame.style.opacity = "0";
+  }
+
+  if (location.hash !== `#${id}`) history.replaceState(null, "", `#${id}`);
+}
+
+function hidePreviewScrollbars(frame) {
+  try {
+    const doc = frame.contentDocument;
+    if (!doc || doc.getElementById("selector-scrollbar-hide")) return;
+    const style = doc.createElement("style");
+    style.id = "selector-scrollbar-hide";
+    style.textContent = `
+      html, body, #overview { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+      html::-webkit-scrollbar, body::-webkit-scrollbar, #overview::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+    `;
+    doc.head.appendChild(style);
   } catch (err) {
-    grid.innerHTML = `<div class="err">Failed to load themes.json: ${err.message}. Open this file via a local server (paths are relative to themes/).</div>`;
+    // Theme examples are same-origin when served from this skill root.
   }
 }
+
+function fitStage() {
+  const wrap  = document.getElementById("stage-wrap");
+  const stage = document.getElementById("stage");
+  const hint  = document.querySelector(".stage-hint");
+  if (!wrap || !stage) return;
+  const style = getComputedStyle(wrap);
+  const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+  const padY = parseFloat(style.paddingTop)  + parseFloat(style.paddingBottom);
+  // Reserve room below the deck for the keyboard hint + the flex gap above it.
+  const hintReserve = hint ? hint.offsetHeight + 10 : 0;
+  const availW = Math.max(0, wrap.clientWidth  - padX);
+  const availH = Math.max(0, wrap.clientHeight - padY - hintReserve);
+  const scale = Math.max(0.05, Math.min(availW / 1280, availH / 720));
+  stage.style.setProperty("--scale", String(scale));
+  stage.style.setProperty("--box-w", `${Math.round(1280 * scale)}px`);
+  stage.style.setProperty("--box-h", `${Math.round(720 * scale)}px`);
+}
+
+window.addEventListener("resize", fitStage);
+
+async function copyText(text) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      // Some embedded browsers expose Clipboard API but deny it. Keep the
+      // fallback inside the user click path so execCommand can still work.
+    }
+  }
+
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  const copied = document.execCommand("copy");
+  ta.remove();
+  if (!copied) throw new Error("copy command rejected");
+}
+
+document.addEventListener("click", async (e) => {
+  const button = e.target.closest("[data-copy-theme]");
+  if (!button) return;
+
+  const value = button.dataset.copyTheme;
+  const isIconButton = button.classList.contains("copy-theme-button");
+  const label = button.querySelector(".copy-theme-label");
+  const previousText = label ? label.textContent : button.textContent;
+  const previousLabel = button.getAttribute("aria-label");
+  try {
+    await copyText(value);
+    if (label) {
+      label.textContent = "copied";
+      button.setAttribute("aria-label", "Copied theme name");
+    } else {
+      button.textContent = "copied";
+    }
+    button.dataset.copied = "true";
+  } catch (err) {
+    if (label) {
+      label.textContent = "failed";
+      button.setAttribute("aria-label", "Copy failed");
+    } else {
+      button.textContent = "copy failed";
+    }
+  }
+
+  window.clearTimeout(button._copyTimer);
+  button._copyTimer = window.setTimeout(() => {
+    if (label) {
+      label.textContent = previousText;
+      button.setAttribute("aria-label", previousLabel);
+    } else {
+      button.textContent = previousText;
+    }
+    delete button.dataset.copied;
+  }, 1400);
+});
+
+function scrollPreviewSlides(direction) {
+  const frame = document.getElementById("stage-frame");
+  const win = frame?.contentWindow;
+  if (!win) return;
+
+  try {
+    const presentation = win.presentation;
+    if (presentation && typeof presentation[direction] === "function") {
+      presentation[direction]();
+      return;
+    }
+
+    const doc = win.document;
+    const slides = Array.from(doc.querySelectorAll(".slide"));
+    if (slides.length === 0) return;
+    const currentIndex = slides.reduce((best, slide, index) => {
+      const distance = Math.abs(slide.getBoundingClientRect().top);
+      return distance < best.distance ? { index, distance } : best;
+    }, { index: 0, distance: Infinity }).index;
+    const nextIndex = direction === "next"
+      ? Math.min(slides.length - 1, currentIndex + 1)
+      : Math.max(0, currentIndex - 1);
+    slides[nextIndex].scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    // Preview examples are same-origin when served from this skill root.
+  }
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+  e.preventDefault();
+  e.stopPropagation();
+  scrollPreviewSlides(e.key === "ArrowDown" ? "next" : "prev");
+}, true);
+
+async function load() {
+  const sidebar = document.getElementById("sidebar");
+  const layout  = document.getElementById("layout");
+
+  try {
+    const res = await fetch("themes.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`themes.json responded ${res.status}`);
+    const data = await res.json();
+    THEMES = Array.isArray(data.themes)
+      ? orderThemes(data.themes.filter((t) => t.status !== "deprecated"))
+      : [];
+
+    if (THEMES.length === 0) {
+      sidebar.innerHTML = `<p class="error"><span class="glyph" aria-hidden="true">✕</span>themes.json loaded, but no themes are registered.<span class="hint">Add a theme entry under <code>themes</code> in <code>themes/themes.json</code>.</span></p>`;
+      layout.setAttribute("aria-busy", "false");
+      return;
+    }
+
+    sidebar.innerHTML = THEMES.map(renderRow).join("");
+    layout.setAttribute("aria-busy", "false");
+
+    sidebar.addEventListener("click", (e) => {
+      const row = e.target.closest(".theme-row");
+      if (!row) return;
+      select(row.dataset.themeId);
+      row.focus();
+    });
+
+    const fromHash = location.hash ? location.hash.slice(1) : "";
+    const initial =
+      THEMES.find((t) => t.id === fromHash) ||
+      THEMES.find((t) => t.recommended === true) ||
+      THEMES[0];
+    select(initial.id);
+    fitStage();
+    requestAnimationFrame(fitStage);
+    setTimeout(fitStage, 250);
+  } catch (err) {
+    const isFile = location.protocol === "file:";
+    sidebar.innerHTML = `
+      <p class="error">
+        <span class="glyph" aria-hidden="true">✕</span>${escapeHTML(isFile
+          ? "Could not load themes.json from a local file."
+          : `Could not load themes.json: ${err.message}.`)}
+        ${isFile
+          ? `<span class="hint">Browser <code>file://</code> blocks JSON fetch. Serve the skill root: <code>cd .agents/skills/html-slides &amp;&amp; python3 -m http.server 8787</code>, then open <code>http://127.0.0.1:8787/themes/selector.html</code>.</span>`
+          : `<span class="hint">Run <code>scripts/verify.py</code> to check the manifest.</span>`}
+      </p>`;
+    layout.setAttribute("aria-busy", "false");
+  }
+}
+
 load();
 </script>
 </body>

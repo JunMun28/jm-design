@@ -16,6 +16,8 @@
       --muted: #475569;
       --hairline: #d0d7de;
       --letterbox: #eef0f4;
+      --light-sheet: rgb(253, 251, 255);
+      --light-sheet-bottom: rgb(249, 247, 253);
       --surface: #ffffff;
       --surface-cool: #fbfcfe;
       --surface-soft: #f8fafc;
@@ -71,6 +73,21 @@
 
     .deck::-webkit-scrollbar {
       display: none;
+    }
+
+    html,
+    body,
+    #overview {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    #overview::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
     }
 
     .nav-dots {
@@ -139,13 +156,32 @@
       width: var(--stage-width);
       height: var(--stage-height);
       overflow: hidden;
-      background: var(--micron-white);
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--micron-white) 76%, var(--light-sheet)) 0 44%, color-mix(in srgb, var(--micron-accent-display) 2.5%, var(--light-sheet-bottom)) 74%, var(--light-sheet-bottom) 100%);
       filter: drop-shadow(0 18px 60px rgba(15, 23, 42, 0.14));
       transform: scale(var(--stage-scale));
       transform-origin: top left;
       isolation: isolate;
       display: flex;
       flex-direction: column;
+    }
+
+    .slide:not(.title-slide) .slide-stage::before {
+      content: "";
+      position: absolute;
+      right: -330px;
+      bottom: -260px;
+      width: 860px;
+      height: 640px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.72;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(ellipse at center, transparent 0 58px, color-mix(in srgb, var(--micron-accent-display) 11%, transparent) 59px 60px, transparent 61px 118px),
+        radial-gradient(ellipse at 42% 38%, color-mix(in srgb, var(--micron-accent-display) 5%, transparent) 0 18%, transparent 58%);
+      transform: rotate(-12deg);
+      mask-image: radial-gradient(ellipse at center, #000 0 52%, transparent 76%);
     }
 
     .slide:not(.title-slide) .slide-stage::after {
@@ -271,6 +307,18 @@
     .reveal:nth-child(6) { transition-delay: 0.4s; }
 
     /* Title slide */
+    .title-slide .slide-stage {
+      background:
+        radial-gradient(circle at 8% 18%, rgba(255,255,255,.98) 0 20%, transparent 42%),
+        radial-gradient(circle at 78% 18%, color-mix(in srgb, #d98cff 26%, transparent) 0 13%, transparent 36%),
+        radial-gradient(circle at 84% 46%, color-mix(in srgb, var(--micron-accent-display) 18%, transparent) 0 18%, transparent 46%),
+        radial-gradient(circle at 94% 72%, rgba(255,255,255,.62) 0 18%, transparent 44%),
+        radial-gradient(circle at 100% 100%, rgba(255,255,255,.86) 0 18%, transparent 42%),
+        radial-gradient(circle at 18% 94%, color-mix(in srgb, var(--micron-accent-display) 7%, transparent) 0 15%, transparent 38%),
+        linear-gradient(118deg, #fff 0 30%, color-mix(in srgb, #eef7ff 36%, var(--light-sheet)) 55%, color-mix(in srgb, #f1c8ff 18%, var(--light-sheet-bottom)) 78%, color-mix(in srgb, #fff 34%, var(--light-sheet-bottom)) 100%);
+      background-blend-mode: screen, normal, normal, screen, screen, normal, normal;
+    }
+
     .title-slide .slide-content {
       justify-content: center;
       padding-top: 0;
@@ -1513,7 +1561,7 @@
     .progressive-title {
       max-width: none;
       margin: 0 0 14px;
-      font-size: 64px;
+      font-size: 58px;
       line-height: 0.98;
       letter-spacing: 0;
     }
@@ -1548,7 +1596,7 @@
       flex-direction: column;
       min-width: 0;
       min-height: 438px;
-      padding: 22px 24px 18px;
+      padding: 18px 18px 16px;
       border: 1px solid var(--hairline);
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.9);
@@ -1654,11 +1702,11 @@
 
     .skill-choice {
       display: grid;
-      grid-template-columns: 52px 1fr;
+      grid-template-columns: 44px 1fr;
       align-items: center;
-      gap: 12px;
-      min-height: 58px;
-      padding: 6px 12px;
+      gap: 10px;
+      min-height: 66px;
+      padding: 8px 10px;
       border: 0;
       border-radius: 0;
       border-bottom: 1px solid var(--hairline);
@@ -1684,38 +1732,38 @@
     .mini-icon {
       display: grid;
       place-items: center;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 11px;
       color: var(--micron-accent-display);
       background: color-mix(in srgb, var(--micron-accent-display) 10%, white);
     }
 
     .mini-icon svg {
-      width: 30px;
-      height: 30px;
+      width: 28px;
+      height: 28px;
       stroke: currentColor;
     }
 
     .skill-choice b {
       display: block;
       margin-bottom: 2px;
-      font-size: 16px;
+      font-size: 20px;
       line-height: 1.05;
     }
 
     .skill-choice > div > span {
       display: block;
       color: var(--ink-soft);
-      font-size: 14px;
-      line-height: 1.1;
+      font-size: 20px;
+      line-height: 1.12;
     }
 
     .panel-caption {
       margin: auto 0 0;
       text-align: center;
       color: var(--ink);
-      font-size: 19px;
+      font-size: 24px;
       font-weight: 800;
       line-height: 1.22;
     }
@@ -1725,8 +1773,8 @@
       margin-top: 10px;
       padding-top: 8px;
       border-top: 1px solid var(--hairline);
-      font-size: 15px;
-      line-height: 1.18;
+      font-size: 24px;
+      line-height: 1.2;
       white-space: normal;
     }
 
@@ -1760,7 +1808,7 @@
 
     .skill-open-head span {
       color: var(--ink-soft);
-      font-size: 15px;
+      font-size: 20px;
     }
 
     .skill-parts {
@@ -1780,7 +1828,7 @@
       border-radius: 6px;
       background: color-mix(in srgb, var(--micron-accent-display) 12%, white);
       color: var(--ink);
-      font-size: 14px;
+      font-size: 20px;
       font-weight: 800;
     }
 
@@ -1984,18 +2032,9 @@
       .reveal { opacity: 1; transform: none; transition: none; }
     }
 
-    /* Presentation mode: fullscreen + minimal chrome */
-    html.presentation-mode {
-      background: #0b0c0f;
-    }
-
-    html.presentation-mode body {
-      background: #0b0c0f;
-    }
-
     .presentation-hotspot {
       position: fixed;
-      z-index: 9998;
+      z-index: 80;
       top: 0;
       right: 0;
       display: flex;
@@ -2006,7 +2045,7 @@
       padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 0 0;
     }
 
-    .presentation-toggle {
+    .present-toggle {
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -2029,42 +2068,34 @@
       transition: opacity 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
 
-    .presentation-hotspot:hover .presentation-toggle,
-    .presentation-hotspot:focus-within .presentation-toggle {
+    .presentation-hotspot:hover .present-toggle,
+    .presentation-hotspot:focus-within .present-toggle {
       opacity: 1;
       pointer-events: auto;
       transform: none;
     }
 
-    .presentation-toggle svg {
+    .present-toggle svg {
       width: 18px;
       height: 18px;
       display: block;
       fill: currentColor;
     }
 
-    .presentation-toggle:hover,
-    .presentation-toggle:focus-visible {
+    .present-toggle:hover,
+    .present-toggle:focus-visible {
       outline: none;
       color: var(--micron-accent-display);
       border-color: color-mix(in srgb, var(--micron-accent-display) 55%, transparent);
       box-shadow: 0 14px 34px rgba(189, 3, 247, 0.16);
       transform: translateY(-1px);
     }
-
-    .presentation-toggle[aria-pressed="true"] {
-      border-color: color-mix(in srgb, var(--micron-accent-display) 65%, transparent);
-      background: rgba(255, 255, 255, 0.96);
-      color: var(--micron-accent-display);
-    }
   </style>
 </head>
 <body>
 <div class="presentation-hotspot" aria-hidden="false">
-  <button type="button" class="presentation-toggle" aria-pressed="false" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
-    <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M8 5.5v13l10-6.5-10-6.5Z" />
-    </svg>
+  <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+    <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
     <span class="presentation-toggle-text">Present</span>
   </button>
 </div>
@@ -2214,15 +2245,11 @@
           </header>
           <div class="split-card-body">
             <div class="split-card-icon" aria-hidden="true">
-              <img
-                class="split-card-icon-img split-card-icon-img--now"
-                src="../../../../../assets/copilot-now-monitor-icon.png"
-                alt=""
-                width="156"
-                height="156"
-                decoding="async"
-                loading="lazy"
-              />
+              <svg class="split-card-icon-svg split-card-icon-svg--now" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="10" y="14" width="76" height="52" rx="6" />
+                <path d="M38 78h20M48 66v12M30 30h22M30 42h36" />
+                <circle cx="68" cy="31" r="5" stroke="#bd03f7" />
+              </svg>
             </div>
             <div class="split-card-split" aria-hidden="true"></div>
             <div class="split-card-lines">
@@ -2695,7 +2722,7 @@ class SlidePresentation {
     this.deck = document.querySelector(".deck");
     this.navDotsContainer = document.querySelector(".nav-dots");
     this.overview = document.getElementById("overview");
-    this.presentationToggle = document.querySelector(".presentation-toggle");
+    this.presentationToggle = document.querySelector(".present-toggle");
     this.buildSlide = document.querySelector(".slide-progressive");
     this.buildStep = 1;
     this.maxBuildStep = 5;
@@ -2827,6 +2854,10 @@ class SlidePresentation {
     this.slides.forEach((s) => observer.observe(s));
   }
 
+  requestPresent() {
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+
   syncPresentationUI() {
     const btn = this.presentationToggle;
     if (!btn) return;
@@ -2909,7 +2940,7 @@ class SlidePresentation {
 
     this.presentationToggle?.addEventListener("click", (e) => {
       e.preventDefault();
-      this.togglePresentation();
+      this.requestPresent();
     });
   }
 
@@ -2926,7 +2957,7 @@ class SlidePresentation {
         !e.altKey
       ) {
         e.preventDefault();
-        this.togglePresentation();
+        this.requestPresent();
         return;
       }
 

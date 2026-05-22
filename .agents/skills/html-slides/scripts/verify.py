@@ -28,6 +28,8 @@ UNIVERSAL_VERIFY = {
     "required_tokens": [],
     "accent_rgb": None,
     "accent_max_per_slide": None,
+    "only_allow_purple_rgb": None,
+    "only_allow_purple_name": None,
     "forbid_visible_accent_rgb": None,
     "forbid_visible_accent_name": None,
     "logo_pattern": None,
@@ -36,6 +38,8 @@ UNIVERSAL_VERIFY = {
     "headline_contrast_min": 4.5,
     "palette_lock": False,
     "premium_corporate_checks": False,
+    "require_primary_animated_icon": False,
+    "primary_animated_icon_pattern": None,
     "require_logo_image": False,
     "title_image_pattern": None,
     "title_logo_pattern": None,
@@ -176,6 +180,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         if (slides.length && !slides[0].classList.contains('title-slide') && slides[0].dataset.slideKind !== 'cover') {
                             out.push('first slide is not a title slide (.title-slide or data-slide-kind="cover")');
                         }
+                        let primaryAnimatedIconCount = 0;
                         slides.forEach((s, i) => {
                             const isTitle = s.classList.contains('title-slide') || s.dataset.slideKind === 'cover';
                             // Logo/brand mark check
@@ -480,6 +485,24 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                     }
                                 }
                             }
+                            if (cfg.require_primary_animated_icon && !isTitle) {
+                                const shown = (el) => {
+                                    if (!el) return false;
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    return cs.display !== 'none' && cs.visibility !== 'hidden' && r.width > 24 && r.height > 24;
+                                };
+                                const pattern = cfg.primary_animated_icon_pattern ? new RegExp(cfg.primary_animated_icon_pattern, 'i') : null;
+                                const videos = Array.from(s.querySelectorAll('video')).filter(shown);
+                                const matches = videos.filter((video) => {
+                                    const src = video.getAttribute('src') || '';
+                                    return /\\.mp4(\\?|#|$)/i.test(src) && (!pattern || pattern.test(src));
+                                });
+                                primaryAnimatedIconCount += matches.length;
+                                if (videos.length && matches.length === 0) {
+                                    out.push(`slide ${i + 1}: animated Micron icon must be a primary MP4 asset matching /${cfg.primary_animated_icon_pattern}/i`);
+                                }
+                            }
                             // Accent overuse check (theme-driven RGB).
                             // All four border sides + outline so side-stripe
                             // accents (a banned anti-pattern) are not invisible
@@ -530,6 +553,69 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 });
                                 if (offenders.length) {
                                     out.push(`slide ${i + 1}: ${forbiddenName} used as visible accent (${offenders.length} elements); use Micron purple for active/highlight states`);
+                                }
+                            }
+                            if (cfg.only_allow_purple_rgb) {
+                                const allowed = cfg.only_allow_purple_rgb.split(',').map((n) => Number(n.trim()));
+                                const allowedName = cfg.only_allow_purple_name || `rgb(${cfg.only_allow_purple_rgb})`;
+                                const isAllowed = (rgb) => rgb.length >= 3 && rgb[0] === allowed[0] && rgb[1] === allowed[1] && rgb[2] === allowed[2];
+                                const isPurpleish = (rgb) => {
+                                    if (rgb.length < 3) return false;
+                                    const [r, g, b] = rgb;
+                                    const max = Math.max(r, g, b);
+                                    const min = Math.min(r, g, b);
+                                    if (max - min < 35) return false;
+                                    // Purple/violet/magenta family: red + blue dominate green.
+                                    if (r < 75 || b < 90) return false;
+                                    if (g > Math.min(r, b) * 0.72) return false;
+                                    return true;
+                                };
+                                const colorsFrom = (value) => {
+                                    if (!value || value === 'none' || value === 'transparent') return [];
+                                    return Array.from(value.matchAll(/rgba?\\(([^)]+)\\)/gi)).map((m) => {
+                                        const nums = (m[1].match(/-?\\d+(\\.\\d+)?/g) || []).map(Number);
+                                        const alpha = nums.length >= 4 ? nums[3] : 1;
+                                        return { rgb: nums.slice(0, 3), alpha, raw: m[0] };
+                                    }).filter((c) => c.rgb.length >= 3 && c.alpha > 0.05);
+                                };
+                                const shown = (el) => {
+                                    const cs = getComputedStyle(el);
+                                    const r = el.getBoundingClientRect();
+                                    return cs.display !== 'none' && cs.visibility !== 'hidden' && Number(cs.opacity || 1) > 0.05 && r.width > 1 && r.height > 1;
+                                };
+                                const offenders = [];
+                                s.querySelectorAll('*').forEach((el) => {
+                                    if (!shown(el)) return;
+                                    const cs = getComputedStyle(el);
+                                    const props = [
+                                        'color',
+                                        'backgroundColor',
+                                        'borderTopColor',
+                                        'borderRightColor',
+                                        'borderBottomColor',
+                                        'borderLeftColor',
+                                        'outlineColor',
+                                        'fill',
+                                        'stroke',
+                                        'boxShadow',
+                                        'textShadow',
+                                        'backgroundImage'
+                                    ];
+                                    for (const prop of props) {
+                                        for (const c of colorsFrom(cs[prop] || '')) {
+                                            if (isPurpleish(c.rgb) && !isAllowed(c.rgb)) {
+                                                offenders.push({ el, prop, raw: c.raw });
+                                                return;
+                                            }
+                                        }
+                                    }
+                                });
+                                if (offenders.length) {
+                                    const sample = offenders.slice(0, 3).map(({ el, prop, raw }) => {
+                                        const name = el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).trim().replace(/\\s+/g, '.') : '');
+                                        return `${name} ${prop}=${raw}`;
+                                    }).join('; ');
+                                    out.push(`slide ${i + 1}: non-Micron purple color used (${offenders.length} elements). Use only ${allowedName} rgb(${cfg.only_allow_purple_rgb}). ${sample}`);
                                 }
                             }
                             // Chart-on-gradient
@@ -588,6 +674,9 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 }
                             }
                         });
+                        if (cfg.require_primary_animated_icon && primaryAnimatedIconCount === 0) {
+                            out.push(`deck: micron-dark-executive must include at least one visible official Micron primary animated MP4 icon matching /${cfg.primary_animated_icon_pattern}/i`);
+                        }
                         // Universal UX lints (run for every theme).
                         // 1. Interactive elements should have cursor:pointer.
                         document.querySelectorAll('button, [role="button"], a[href], .ov-card').forEach((el) => {

@@ -4,6 +4,33 @@ Common feedback you'll receive after the first draft, and how to apply it cleanl
 
 The big idea: read terse feedback charitably. "Less words" usually means "the slide is doing too much," not just "delete some lines." Diagnose the root cause, then make the fix general — most fixes apply across multiple slides.
 
+## "Not convincing" / "so what?" / "where's the proof?" / "feels hand-wavy"
+
+This is the most important feedback in the file and the one users name least
+often — usually because the proactive Phase 3 rigor audit should have caught
+it first. When it surfaces here, treat it as an argument failure, never a
+copy failure. Do **not** respond by rewording.
+
+1. **Locate the hole.** Re-run the five rigor checks
+   (`references/template.md` → Rigor audit) against the current spine. The
+   complaint maps to one of them:
+   - "so what?" → a *so-what slide*: info with no claim. Cut it or give it a
+     claim that earns its place.
+   - "not convincing" / "hand-wavy" → a *claim with no evidence*. Find the
+     slide whose `EVIDENCE` is thin and either supply real proof or soften
+     the claim to what the evidence supports.
+   - "what about X?" → an *unanswered objection*. The Phase 2 strongest
+     objection is not rebutted anywhere; add or repurpose a slide to answer
+     it, and update the arc's "How the deck answers" line.
+   - "I don't get the point" → a *buried lede*. Move the core message to a
+     single sentence by slide ≤3.
+2. **If the evidence genuinely does not exist**, say so and reframe — a
+   proposal honestly labelled beats a proof that isn't one. Do not invent a
+   statistic, source, or quote to close the gap. (Fabrication is a hard
+   non-negotiable downstream too.)
+3. **Fix the deck, not the slide.** A weak argument is rarely one slide —
+   re-audit the whole spine and log every change in CHANGES.
+
 ## "Less words" / "more premium" / "Apple feel" / "Cursor feel"
 
 Cut copy by 50–70%. Specifically:

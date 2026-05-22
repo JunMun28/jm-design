@@ -1,0 +1,504 @@
+===============================================================================
+ASCII SLIDE DESIGN: GitHub Copilot for everyone
+===============================================================================
+
+Source HTML : docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html
+Audience    : non-technical managers
+Goal        : explain Copilot as an everyday work agent, then demo it
+Style       : Micron light, editorial, restrained, purple accent
+Format      : 8 slides
+Date        : 2026-05-19
+
+Core thesis:
+  GitHub Copilot started as coding help.
+  It now behaves more like an agent for everyday computer work.
+  The important habit is asking clearly, reviewing carefully, and reusing skills.
+
+Story spine:
+  01  Why are we here?
+  02  How did Copilot evolve?
+  03  Who is it for now?
+  04  What is the usage loop?
+  05  What can I ask it to do?
+  06  How do we try it live?
+  07  What are agent skills?
+  08  How does an agent find and use the right skill?
+
+
+===============================================================================
+SHARED DESIGN GRAMMAR
+===============================================================================
+
+Canvas:
+  1600 x 900 fixed stage, centered on a light letterbox.
+  White slide surface. Bottom-right Micron logo on content slides.
+  Right-edge nav dots. Top progress cue by slide position.
+
+Tokens from HTML:
+  Background      #ffffff
+  Letterbox       #eef0f4
+  Ink             #0f172a
+  Soft ink        #334155
+  Muted           #475569
+  Hairline        #d0d7de
+  Accent          #bd03f7
+  Font display    Micron Basis / Arial / system sans
+  Font mono       Courier New / ui-monospace
+
+Reusable frame:
+
++-----------------------------------------------------------------------------+
+| progress ------------------------------------------------------------------ |
+|                                                                             |
+|   0N - SECTION LABEL                                                        |
+|                                                                             |
+|   Large headline.                                                           |
+|   One accent word in purple italic.                                         |
+|                                                                             |
+|   -----------------------------------------------------------------------   |
+|   slide-specific visual system                                              |
+|   -----------------------------------------------------------------------   |
+|                                                                             |
+|   Optional closer / footer line                                             |
+|                                                                             |
+|   GitHub Copilot for everyone                                      [logo]   |
++-----------------------------------------------------------------------------+
+
+
+===============================================================================
+SLIDE 01 - TITLE
+===============================================================================
+
+HTML content:
+  Kicker    An introduction
+  H1        GitHub Copilot
+  Subtitle  for everyone
+  Tagline   Plain English in.
+  Tagline   Real work out.
+  Footer    Presented by Jun Mun
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+|                                                                             |
+|                                                                             |
+|      AN INTRODUCTION                                +-------------------+    |
+|                                                     |                   |    |
+|      GitHub Copilot                                |    COPILOT MARK   |    |
+|                                                     |                   |    |
+|      for everyone                                  +-------------------+    |
+|                                                                             |
+|      Plain English in.                                                      |
+|      Real work out.                                                         |
+|                                                                             |
+|                                                                             |
+|                                                                             |
+|      [Micron logo] ---- Presented by Jun Mun                                 |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Two-column cover. Left side is typography. Right side is the Copilot mark.
+  No content card. The icon is the visual anchor.
+
+
+===============================================================================
+SLIDE 02 - THE SHIFT
+===============================================================================
+
+HTML content:
+  Section   02 - THE SHIFT
+  H2        From tab-complete / to agent.
+  Subtitle  How GitHub Copilot evolved from code assistance to agentic work.
+
+  Flow:
+    Tab-complete  ->  Finish my line
+    Copilot       ->  Finish my function
+    Chat coding   ->  Write me this thing
+    Agent         ->  Build it. Test it. Fix it.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 02 --------------------------------------------------------------- |
+|                                                                             |
+|   02 - THE SHIFT                                                            |
+|                                                                             |
+|   From tab-complete                                                         |
+|   to agent.                                                                 |
+|                                                                             |
+|   How GitHub Copilot evolved from code assistance to agentic work.           |
+|                                                                             |
+|   +---------------+   >   +---------------+   >   +---------------+   >     |
+|   | Tab-complete  |       | Copilot       |       | Chat coding   |         |
+|   |               |       |               |       |               |         |
+|   | [window icon] |       | [code icon]   |       | [chat icon]   |         |
+|   |---------------|       |---------------|       |---------------|         |
+|   | Finish my     |       | Finish my     |       | Write me this |         |
+|   | line          |       | function      |       | thing         |         |
+|   +---------------+       +---------------+       +---------------+         |
+|                                                                             |
+|                                                 >   +---------------+       |
+|                                                     | Agent         |       |
+|                                                     | [mark icon]   |       |
+|                                                     |---------------|       |
+|                                                     | Build it.     |       |
+|                                                     | Test it.      |       |
+|                                                     | Fix it.       |       |
+|                                                     +---------------+       |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Horizontal evolution story. Cards are intentional here because each stage is
+  an object in a timeline. Final card gets accent treatment.
+
+
+===============================================================================
+SLIDE 03 - THE EXPANSION
+===============================================================================
+
+HTML content:
+  Section   03 - THE EXPANSION
+  H2        It was for developers. / Now it is for everyone.
+
+  Then:
+    A coding assistant.
+    Lives in the IDE.
+    Writes code.
+    Built for developers.
+
+  Now:
+    General purpose assistant.
+    Works across your PC.
+    Helps with almost anything.
+    Built for anyone.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 03 --------------------------------------------------------------- |
+|                                                                             |
+|   03 - THE EXPANSION                                                        |
+|                                                                             |
+|   It was for developers.                                                    |
+|   Now it is for everyone.                                                   |
+|                                                                             |
+|   -----------------------------------------------------------------------   |
+|                                                                             |
+|   +-------------------------------+     >     +--------------------------+   |
+|   | THEN                          |           | NOW                      |   |
+|   |                               |           |                          |   |
+|   | A coding assistant.           |           | General purpose          |   |
+|   |                               |           | assistant.               |   |
+|   | [IDE icon]                    |           | [monitor icon]           |   |
+|   |                               |           |                          |   |
+|   | ----------------------------- |           | ------------------------ |   |
+|   | Lives in the IDE.             |           | Works across your PC.    |   |
+|   | Writes code.                  |           | Helps with almost        |   |
+|   | Built for developers.         |           | anything.                |   |
+|   |                               |           | Built for anyone.        |   |
+|   +-------------------------------+           +--------------------------+   |
+|                                                                             |
+|   -----------------------------------------------------------------------   |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Comparison slide. More framed than the earlier brainstorm, matching actual
+  HTML split-card implementation.
+
+
+===============================================================================
+SLIDE 04 - HOW
+===============================================================================
+
+HTML content:
+  Section   04 - How
+  H2        Ask. Execute. / Review. Repeat.
+  Subtitle  One simple loop for getting work done with Copilot.
+  Cards:
+    01 Ask      -> You speak in plain English
+    02 Execute  -> Copilot plans and executes the tasks
+    03 Review   -> You check, guide, and approve
+  Callout:
+    That's the whole loop
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 04 --------------------------------------------------------------- |
+|                                                                             |
+|   04 - HOW                                                                  |
+|                                                                             |
+|   Ask. Execute.                                                             |
+|   Review. Repeat.                                                           |
+|                                                                             |
+|   One simple loop for getting work done with Copilot.                       |
+|                                                                             |
+|         +------------------+     +------------------+     +--------------+  |
+|         | 01               | --> | 02               | --> | 03           |  |
+|         | [speech icon]    |     | [cursor icon]    |     | [eye icon]   |  |
+|         |                  |     |                  |     |              |  |
+|         | Ask              |     | Execute          |     | Review       |  |
+|         | You speak in     |     | Copilot plans    |     | You check,   |  |
+|         | plain English    |     | and executes     |     | guide, and   |  |
+|         |                  |     | the tasks        |     | approve      |  |
+|         +------------------+     +------------------+     +--------------+  |
+|                              \             infinity loop              /      |
+|                                                                             |
+|   That's the whole loop                                                      |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Three-card loop. Use icons as scan anchors. Keep the explanation simple.
+
+
+===============================================================================
+SLIDE 05 - REAL PROMPTS
+===============================================================================
+
+HTML content:
+  Section   05 - Real prompts
+  H2        Things you can ask / GitHub Copilot to do
+
+  Prompts:
+    01 Create slides     "Turn this folder of notes into slides."
+    02 Update files      "Update this Excel file with the latest numbers."
+    03 Analyze data      "Analyze these CSVs and show the trend."
+    04 Troubleshoot PC   "Troubleshoot why my PC is running slow."
+    05 Browser task      "Use the browser to fill this web form."
+    06 Install software  "Help me install Python."
+
+  Footer:
+    Local files. Browser tasks. Real workflows.
+    All from plain English.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 05 --------------------------------------------------------------- |
+|                                                                             |
+|   05 - REAL PROMPTS                                                         |
+|                                                                             |
+|   Things you can ask                                                        |
+|   GitHub Copilot to do                                                      |
+|                                                                             |
+|   -----------------------------------------------------------------------   |
+|                                                                             |
+|   + icon 01  Create slides        + icon 02  Update files                   |
+|             "Turn this folder               "Update this Excel file         |
+|              of notes into slides."           with the latest numbers."     |
+|                                                                             |
+|   + icon 03  Analyze data         + icon 04  Troubleshoot PC                |
+|             "Analyze these CSVs             "Troubleshoot why my PC         |
+|              and show the trend."             is running slow."             |
+|                                                                             |
+|   + icon 05  Browser task         + icon 06  Install software               |
+|             "Use the browser to             "Help me install Python."       |
+|              fill this web form."                                           |
+|                                                                             |
+|   -----------------------------------------------------------------------   |
+|   [agent icon]  Local files. Browser tasks. Real workflows. | All from       |
+|                 plain English.                                              |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Actual HTML uses a two-column prompt grid with icons, not the older 3x2 quote
+  grid. The footer summarizes the promise.
+
+
+===============================================================================
+SLIDE 06 - LET'S TRY IT
+===============================================================================
+
+HTML content:
+  Section   06 - Let's try it
+  H2        Your turn.
+  Body      Open VS Code and let's try together.
+  Prompt    Let's code together.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 06 --------------------------------------------------------------- |
+|                                                                             |
+|   06 - LET'S TRY IT                                                         |
+|                                                                             |
+|   Your turn.                                                               |
+|                                                                             |
+|   Open VS Code and let's try together.                                      |
+|                                                                             |
+|             +-------------------------------------------------------+       |
+|             | cmd  o  o  o                                      x   |       |
+|             |-------------------------------------------------------|       |
+|             | | | |  file list       1  ---------------------       |       |
+|             | | | |  ---------       2  ------------------------    |       |
+|             | | | |  ----------      3  ----------------            |       |
+|             | | | |  --------        4  --------------------------  |       |
+|             | | | |  ----------      5  ------------------          |       |
+|             +-------------------------------------------------------+       |
+|                        >_ Let's code together.  |                         |
+|                                                                             |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Transition to live demo. Large whitespace plus a stylized VS Code window.
+  The slide should feel like an invitation, not an instruction manual.
+
+
+===============================================================================
+SLIDE 07 - WHAT ARE AGENT SKILLS?
+===============================================================================
+
+HTML content:
+  Section   07 - What are agent skills?
+  H2        Agent Skills
+  Subtitle  Reusable workflows that teach AI agents how to complete tasks properly.
+
+  Inside a Skill:
+    1. Purpose  -> What task to complete
+    2. Steps    -> How the work should happen
+    3. Rules    -> What to follow or avoid
+    4. Tools    -> What systems it can use
+    5. Output   -> What good result looks like
+
+  Bottom:
+    Skills make agent behavior consistent, repeatable, and reliable.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 07 --------------------------------------------------------------- |
+|                                                                             |
+|   07 - WHAT ARE AGENT SKILLS?                                               |
+|                                                                             |
+|   Agent Skills                                                              |
+|                                                                             |
+|   Reusable workflows that teach AI agents how to complete tasks properly.   |
+|                                                                             |
+|       +----------------------------------------------------------------+    |
+|       | Inside a Skill                                                 |    |
+|       |----------------------------------------------------------------|    |
+|       | [target icon]  | 1. Purpose | What task to complete            |    |
+|       | [list icon]    | 2. Steps   | How the work should happen       |    |
+|       | [shield icon]  | 3. Rules   | What to follow or avoid          |    |
+|       | [tool icon]    | 4. Tools   | What systems it can use          |    |
+|       | [chart icon]   | 5. Output  | What good result looks like      |    |
+|       +----------------------------------------------------------------+    |
+|                                                                             |
+|   Skills make agent behavior consistent, repeatable, and reliable.          |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  A board layout. The "Inside a Skill" table is the main artifact.
+  Good for manager framing because the categories are concrete.
+
+
+===============================================================================
+SLIDE 08 - PROGRESSIVE DISCOVERY
+===============================================================================
+
+HTML content:
+  Section   08 - Progressive discovery
+  H2        The agent discovers the right skill as it works
+  Subtitle  Example: Turn this folder of notes into slides.
+
+  Flow:
+    1 User goal
+      "Turn this folder of notes into slides."
+      The goal is clear. The method is not.
+
+    2 Scan skill descriptions
+      Slide Drafting    -> create slide outlines from notes
+      Meeting Summary   -> turn transcripts into action items
+      Data Analysis     -> analyze CSVs and explain trends
+      Email Writing     -> draft messages from context
+      Browser Task      -> complete a web workflow
+      Caption: Scan first. Open what matters.
+
+    3 Open the selected skill
+      Slide Drafting
+      Steps, Rules, Tools, Examples, Output format
+      Caption: Now read the full details of the chosen skill.
+
+    4 Apply + output
+      Slide draft ready
+      The agent follows the selected skill to produce the result.
+
+  Bottom:
+    Progressive discovery keeps the agent efficient: scan first, open what
+    matters, then act.
+
+ASCII layout:
+
++-----------------------------------------------------------------------------+
+| progress 08 --------------------------------------------------------------- |
+|                                                                             |
+|   08 - PROGRESSIVE DISCOVERY                                                |
+|                                                                             |
+|   The agent discovers the right skill as it works                           |
+|   Example: Turn this folder of notes into slides.                           |
+|                                                                             |
+| +----------------+  ->  +----------------------+  ->  +------------------+  |
+| | 1 User goal    |      | 2 Scan skill desc.   |      | 3 Open selected  |  |
+| |                |      |                      |      | skill            |  |
+| | Turn this      |      | * Slide Drafting     |      |                  |  |
+| | folder of      |      |   create outlines    |      | Slide Drafting   |  |
+| | notes into     |      | * Meeting Summary    |      | ---------------- |  |
+| | slides.        |      | * Data Analysis      |      | Steps            |  |
+| |                |      | * Email Writing      |      | Rules            |  |
+| | Goal clear.    |      | * Browser Task       |      | Tools            |  |
+| | Method not.    |      |                      |      | Examples         |  |
+| +----------------+      | Scan first.          |      | Output format    |  |
+|                         | Open what matters.   |      +------------------+  |
+|                         +----------------------+              |             |
+|                                                               v             |
+|                         +---------------------------------------------+     |
+|                         | 4 Apply + output                            |     |
+|                         |                                             |     |
+|                         | [slide preview]  Slide draft ready          |     |
+|                         | The agent follows the selected skill.        |     |
+|                         +---------------------------------------------+     |
+|                                                                             |
+|   Progressive discovery keeps the agent efficient: scan first, open what     |
+|   matters, then act.                                                        |
++-----------------------------------------------------------------------------+
+
+Design notes:
+  Four-panel workflow. Slide has build steps in HTML, so reveal panels one at a
+  time: user goal, scan descriptions, open selected skill, apply and output.
+
+
+===============================================================================
+VISUAL VARIETY MAP
+===============================================================================
+
+  Slide  Layout signature                                      Main object
+  -----  -----------------------------------------------------  ----------------
+  01     Two-column title                                      Copilot mark
+  02     Four-stage horizontal evolution                       timeline cards
+  03     Then/Now comparison                                   split cards
+  04     Three-step loop                                       action cards
+  05     Prompt examples                                       two-column grid
+  06     Live demo transition                                  VS Code window
+  07     Agent skill anatomy                                   board/table
+  08     Progressive discovery                                 four-panel flow
+
+
+===============================================================================
+BUILD NOTES
+===============================================================================
+
+  Keep:
+    - Micron light palette.
+    - Accent purple #bd03f7.
+    - Plain-English copy.
+    - Manager-readable framing.
+    - Slide 08 staged build animation.
+
+  Watch:
+    - Slides 02, 03, 04, and 05 all use repeated framed objects. Keep spacing,
+      icons, and hierarchy distinct so the deck does not become card-heavy.
+    - Slide 08 is dense. Reveal it progressively and keep bottom sentence short.
+    - Do not replace the current HTML copy with the older brainstorm copy unless
+      the deck is being intentionally rewritten.
+
+END

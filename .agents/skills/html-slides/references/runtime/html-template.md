@@ -6,15 +6,15 @@ Reference runtime + skeleton for every generated deck. Inline-editing and image 
 
 The token layer is theme-dependent. Pick the branch for the chosen theme.
 
-**Micron themes** (`micron-dark`, `micron-dark-engineering`, `micron-light`, `course-module`, `weekly-update` — anything whose manifest `verify.logo_pattern` is set):
+**Micron themes** (`micron-dark-executive`, `micron-dark`, `micron-light`, `guided-learning` — anything whose manifest `verify.logo_pattern` is set):
 
 1. `references/tokens/micron-tokens.css` — paste verbatim at the top of `<style>`. It is variables-only.
 2. `references/tokens/viewport-base.css` — paste after tokens.
 3. `references/tokens/layout-kit.css` — paste after viewport.
 4. **Micron base block** (below) — paste after layout-kit. micron-tokens.css sets no element rules, so this block wires `html/body`, `h1–h3`, the reveal, and the mandatory Micron logo from the tokens.
-5. The chosen theme's `themes/<id>/design.md` (e.g. `themes/micron-dark-engineering/design.md`) provides theme-specific rules that build on these tokens. Do not redefine `:root` colors/scale in the deck — extend them.
+5. The chosen theme's `themes/<id>/design.md` (e.g. `themes/micron-dark/design.md`) provides theme-specific rules that build on these tokens. Do not redefine `:root` colors/scale in the deck — extend them.
 
-**Non-Micron themes** (`swiss-light`, `editorial-dark`, `brutalist`, `glassmorphism`, `playful` — manifest `verify.logo_pattern` is `null`):
+**Non-Micron themes** (`playful` — manifest `verify.logo_pattern` is `null`):
 
 1. `themes/<id>/tokens.css` — paste verbatim at the top of `<style>`. It styles `html/body` and `h1–h3` and sets the theme's own `--ease-out-expo`/`--duration-normal` (and `--font-mono` where the theme needs one).
 2. `references/tokens/non-micron-contract.css` — paste right after the theme tokens. One identical file for every non-Micron theme; it maps the theme's names onto the runtime contract (`--bg-primary`, `--text-primary`, `--space-*`, `--col-gutter`, `--hairline`) that viewport-base.css + layout-kit.css consume. Skipping it fails `verify.py` (the contract names are universal required tokens).
@@ -104,6 +104,17 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
         font-size: var(--type-base);
         line-height: var(--leading-body);
       }
+      html, body, #overview {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar,
+      #overview::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
       h1, h2, h3 {
         font-family: var(--font-display), "Micron Basis Fallback", sans-serif;
         letter-spacing: var(--track-headline);
@@ -139,6 +150,12 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
   <body>
     <div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
     <nav class="nav-dots" aria-label="Slide navigation"></nav>
+    <div class="presentation-hotspot" aria-hidden="false">
+      <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+        <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+        <span class="presentation-toggle-text">Present</span>
+      </button>
+    </div>
 
     <main class="deck" tabindex="-1">
       <section class="slide title-slide" data-slide-kind="cover">
@@ -170,6 +187,7 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
           this.deck = document.querySelector(".deck");
           this.navDotsContainer = document.querySelector(".nav-dots");
           this.progressBar = document.querySelector(".progress-bar");
+          this.presentToggle = document.querySelector(".present-toggle");
           this.overview = document.getElementById("overview");
 
           this.setupNavDots();
@@ -177,6 +195,7 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
           this.setupKeyboardNav();
           this.setupWheelNav();
           this.setupTouchNav();
+          this.setupPresentationMode();
           this.applySlide(0);
         }
 
@@ -259,6 +278,11 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
               if (e.key === "Tab") this.trapFocus(e);
               return;
             }
+            if (e.key.toLowerCase() === "p") {
+              e.preventDefault();
+              this.requestPresent();
+              return;
+            }
             if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
               e.preventDefault(); this.next();
             } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
@@ -306,6 +330,14 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
           }, { passive: true });
         }
 
+        setupPresentationMode() {
+          this.presentToggle?.addEventListener("click", () => this.requestPresent());
+        }
+
+        requestPresent() {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        }
+
         buildOverview() {
           this.overview.innerHTML = "";
           const head = document.createElement("div");
@@ -324,6 +356,9 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
             thumb.className = "ov-thumb";
             const clone = slide.cloneNode(true);
             clone.classList.add("clone", "visible");
+            clone.setAttribute("aria-hidden", "true");
+            clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+            clone.querySelectorAll("button, a, input, select, textarea, [tabindex]").forEach((el) => el.setAttribute("tabindex", "-1"));
             thumb.appendChild(clone);
             const label = document.createElement("div");
             label.className = "ov-label";
@@ -341,12 +376,15 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
           requestAnimationFrame(() => {
             this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
               const clone = thumb.querySelector(".clone");
-              // Source dimensions: the live slide, not the window. Fixed-stage
-              // decks set their own slide width via CSS variable; fall back to
-              // the slide's bounding box for fluid decks.
+              // Fixed-stage decks contain a 16:9 .slide-stage inside a
+              // viewport-height .slide. Scale the stage dimensions for the
+              // overview so thumbnails do not include letterbox space.
+              // CSS should pin `.clone > .slide-stage` to top-left and remove
+              // its live transform inside overview cards.
               const slideRect = this.slides[0].getBoundingClientRect();
-              const srcW = slideRect.width || window.innerWidth;
-              const srcH = slideRect.height || window.innerHeight;
+              const fixedStage = Boolean(clone.querySelector(":scope > .slide-stage"));
+              const srcW = fixedStage ? 1600 : (slideRect.width || window.innerWidth);
+              const srcH = fixedStage ? 900 : (slideRect.height || window.innerHeight);
               clone.style.width = srcW + "px";
               clone.style.height = srcH + "px";
               clone.style.transform = `scale(${thumb.clientWidth / srcW})`;
@@ -389,12 +427,14 @@ The token layer is theme-dependent. Pick the branch for the chosen theme.
 
 Every deck must include:
 
-1. **SlidePresentation controller** with keyboard, wheel, touch, nav dots, progress bar, ESC overview.
+1. **SlidePresentation controller** with keyboard, wheel, touch, nav dots, progress bar, Present button, ESC overview.
 2. **IntersectionObserver** gated by `programmaticScroll` so it doesn't race `goTo()`.
 3. **Focus trap + `aria-modal`** on `#overview`; restore focus on close.
 4. **Passive wheel listener on the `.deck` element** — never on window with `{passive:false}`. Scroll-snap is the primary flow; wheel just nudges currentSlide.
 5. **Brand mark** rule for `.slide:not(.title-slide)`. One CSS rule, never per slide. Micron themes only — it lives in the Micron base block. Non-Micron themes are unbranded by contract (`verify.logo_pattern: null`) and must not carry it.
 6. **Letterbox color** on `body` (`var(--bg-primary)`) so non-16:9 windows show neutral space, not stretch.
+7. **Present button** inside a top-right `.presentation-hotspot`; the `.present-toggle` pill is hidden until hover/focus, includes a play icon, and requests fullscreen on click and via the `P` shortcut.
+8. **No visible browser scrollbars** on the slide flow or overview; use `scrollbar-width:none`, `-ms-overflow-style:none`, and hidden WebKit scrollbar pseudo-elements while preserving scroll-snap.
 
 ## Accessibility checklist
 

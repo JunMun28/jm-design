@@ -1,7 +1,7 @@
 /* =============================================================
    MICRON TOKENS — single source of truth
    Paste into the deck's <style> BEFORE any theme overrides.
-   Theme references (micron-dark-design.md, micron-engineering-dark.md,
+   Theme references (micron-dark-executive/design.md, micron-dark/design.md,
    micron-light-design.md) extend these tokens; they do not redefine them.
 
    Required tokens (verify.py checks these are present):

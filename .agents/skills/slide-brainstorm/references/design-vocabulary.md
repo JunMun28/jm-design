@@ -105,6 +105,37 @@ Open VS Code · Press Cmd+I · Type · Watch.
 
 Great for the "let's try it" slide before a live demo.
 
+### prompt-output specimen
+
+Two adjacent surfaces: the user's plain-language request on the left, and the
+assistant's draft/output on the right. The output must look like a real work
+artifact, not filler text.
+
+```
+PROMPT                              │  OUTPUT
+"Clean this spreadsheet             │  [spreadsheet grid]
+ and flag missing values."          │  Missing owner: 7 rows
+                                    │  Duplicate IDs: 3 rows
+```
+
+Best for: training walkthroughs, non-technical enablement, showing what a user
+types and what they get back. This is often stronger than another explanation
+slide because the audience can copy the pattern.
+
+### artifact strip
+
+Three inspectable mini-artifacts in a row: spreadsheet, slide thumbnail, chart,
+memo, approval note, or similar. Each artifact has enough visible structure to
+be recognized at a glance.
+
+```
+[spreadsheet rows]     [slide thumbnail]     [small chart + takeaway]
+Clean.                 Draft.                Analyze.
+```
+
+Best for: "what it can do" slides. Use this instead of icon chips when the
+audience needs to see business work, not categories.
+
 ### italic closer
 
 One centered italic sentence below the main block. The slide's emotional resolution.
@@ -122,6 +153,8 @@ Almost every content slide can earn one if the closer line genuinely advances th
 | Three steps / phases / principles | manuscript row (preferred) or steps grid |
 | Before-after comparison | vertical hairline split (preferred) or split-card |
 | Use cases / examples | borderless quote grid |
+| Training example / what user types | prompt-output specimen |
+| Business artifacts / non-technical examples | artifact strip |
 | Climactic thesis | stat-row + soft wash panel |
 | Pre-demo "let's try" | inline action line |
 | Definitions / who is in scope | kicker + H2 + italic closer, no signature block |

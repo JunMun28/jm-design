@@ -8,8 +8,15 @@ The frame is the cheapest possible prototype. It conveys:
 - How much copy goes in each slot
 - The hierarchy (what's largest)
 - The design intent (annotated with `← arrows`)
+- **The visual idea** — the layout signature, the one protagonist, and the
+  *feel* the composition should create, written vividly in the `VISUAL`
+  block so the frame is interesting, not just a wireframe of boxes.
 
-It does NOT convey colour, exact typography, or interaction. That's fine — those live in the DESIGN SYSTEM section, not in the frame.
+It does NOT pin colour, exact typography, a font, or a theme — those are
+chosen later in `html-slides`. The frame describes the *visual idea* in
+theme-agnostic terms (composition, scale contrast, negative space, rhythm,
+the protagonist), not the brand. Keep specifics out of the frame; keep the
+imagination in.
 
 ## Character set
 
@@ -44,7 +51,63 @@ Put a `←` followed by a short note at the right edge of any line whose design 
 │   For everyone.                                                         │
 ```
 
-Don't over-annotate. Two or three arrows per slide is plenty. The COPY and TECHNIQUE blocks below the frame carry the rest.
+Don't over-annotate. Two or three arrows per slide is plenty. The COPY, ARGUMENT and TECHNIQUE blocks below the frame carry the rest.
+
+## Describe the visual — make it interesting
+
+A frame of empty boxes tells the build skill *where* things go but nothing
+about *why it should feel like anything*. Every frame gets a `VISUAL` block
+(see `references/template.md`) that does the imaginative work:
+
+- **LAYOUT** — reach for a named signature from
+  `references/design-vocabulary.md` (vertical hairline split, full-bleed
+  stat, manuscript row, three-up borderless grid…). One name beats a
+  paragraph and the build skill already understands it.
+- **PROTAGONIST** — the single thing the eye hits first. If you can't name
+  one, the slide has two messages; fix the slide.
+- **FEEL** — one vivid sentence. This is the line that makes the deck
+  interesting. Write the *mood and drama*, not the mechanics.
+- **MOTION** — only if the entrance/build is part of the idea.
+
+Make `FEEL` evocative but theme-agnostic — describe scale, space, tension,
+and pacing, never a hex value, font, or theme name:
+
+```
+✗ flat:    "Big number, centered, on a light background."
+✓ alive:   "One number the size of a fist, marooned in white space —
+            the silence around it is the argument."
+
+✗ flat:    "Two columns comparing before and after."
+✓ alive:   "A hairline splits the slide like a ledger; the left side is
+            cramped and grey-feeling, the right breathes — the gap does
+            the persuading."
+
+✗ flat:    "Title slide with the deck name."
+✓ alive:   "Near-empty canvas, one line of type holding its breath low
+            on the page; it should feel like the moment before someone
+            starts talking."
+```
+
+The test: a reader who sees only the `VISUAL` block should be able to
+picture the slide and *want to see it built*. If it reads like a furniture
+list, rewrite it.
+
+## The ARGUMENT block is not optional
+
+Every frame is followed by the `ARGUMENT` block defined in
+`references/template.md`. The frame shows *where copy sits*; the `ARGUMENT`
+block states *why the slide is allowed to exist*:
+
+- An argument slide: `CLAIM` (what it asserts) + `EVIDENCE` (the proof).
+- A structural slide (title, section, transition, close): `ROLE: structural
+  — no claim`.
+
+Never draw a frame without it. The arrows annotate design intent; the
+`ARGUMENT` block is the accountability layer — it is where a claim with no
+evidence becomes visible instead of hiding behind a nice layout. If you
+catch yourself writing `EVIDENCE: (the demo will show it)` or leaving it
+blank on a content slide, the slide is not ready — that is a Phase 3 rigor
+audit finding, not a frame you present.
 
 ## Showing progress bars and rails
 
@@ -79,6 +142,13 @@ If the reference theme hides the rail (`display:none`), say so in SHARED GRAMMAR
   │                                                                        │
   │   GitHub Copilot — for everyone                              [GH logo] │
   └────────────────────────────────────────────────────────────────────────┘
+
+  VISUAL
+    LAYOUT      manuscript row — three hairline-ruled rows, generous gutter
+    PROTAGONIST the numbered verbs (Ask / Refine / Ship) marching down
+    FEEL        reads like a recipe card, not a slide — calm, inevitable,
+                each rule a quiet drumbeat that says "this is all there is"
+    MOTION      rows wipe in top-to-bottom, one beat apart
 ```
 
 ## Worked example — title slide (two-column)

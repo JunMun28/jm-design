@@ -1,4 +1,4 @@
 interface:
   display_name: "HTML Slides"
-  short_description: "Generate single-file HTML slide decks across themes (Micron, Swiss, editorial, …)"
+  short_description: "Generate single-file HTML slide decks across current stable themes."
   default_prompt: "Use $html-slides to create a single-file HTML slide deck."

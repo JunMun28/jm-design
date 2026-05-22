@@ -1,9 +1,9 @@
 # Shared brand assets
 
-`themes/themes.json → shared` points here. The Micron themes
-(`micron-dark`, `micron-dark-engineering`, `micron-light`, `course-module`,
-`weekly-update`) reference these binaries. The non-Micron themes are
-unbranded and need nothing from this folder.
+`themes/themes.json -> shared` points here. The Micron themes
+(`micron-dark-executive`, `micron-dark`, `micron-light`, `guided-learning`)
+reference these binaries. The non-Micron themes are unbranded and need nothing
+from this folder.
 
 ## Binaries
 

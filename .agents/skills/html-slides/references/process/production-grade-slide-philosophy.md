@@ -125,11 +125,17 @@ Slides are read from distance.
 
 - Body text floor: 24px on 1920x1080 equivalent
 - Ideal body: 28-36px
+- Table cells, captions, and supporting labels: 20px minimum
 - Title: 60-120px
 - Section title: 80-160px
 - Hero word: 180-240px when it is the visual protagonist
 
 For responsive HTML, map these through `clamp()` but preserve the same hierarchy.
+Tiny text is allowed only for decorative chrome: slide number, footer, nav,
+overview labels, or miniature UI texture that the audience does not need to
+read. Any audience-facing sentence, bullet, table value, callout, prompt, or
+code line must clear the readability floor. If it does not fit, split the
+slide.
 
 ## Motion
 

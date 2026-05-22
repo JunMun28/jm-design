@@ -15,7 +15,7 @@ Reference lineage: MailChimp marketing era, Notion onboarding, Duolingo branding
 
 - Anything corporate or formal.
 - High-data engineering decks.
-- Editorial / longform — use `editorial-dark`.
+- Formal longform or high-density narrative decks.
 
 ## Tokens (frozen)
 
