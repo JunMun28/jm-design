@@ -14,8 +14,9 @@ description: Use when creating or editing single-file HTML slide decks across mu
 - Use Micron dark executive for executive, marketing, vision, chapter, and non-technical walkthrough decks that need the approved photo-title cover.
 - For new Micron dark executive decks, use only the `photo-title` treatment from `themes/micron-dark-executive/title-templates.md` and the theme-owned photo asset in `themes/micron-dark-executive/assets/`. Other dark title treatments belong to `micron-dark`.
 - Use Micron dark for practical technical or engineering decks: internal reviews, roadmaps, postmortems, architecture readouts, rollout updates, process sharing, technical launches, and product demos.
-- For a new Micron dark deck, use `silk-wave-purple` from `themes/micron-dark/title-templates/silk-wave-purple.html` as the default title slide. Do not replace it with a custom precision-board, screen-stack, wafer, photo, or other title treatment unless the user explicitly names that title direction.
+- For a new Micron dark deck, use `wafer-portal` from `themes/micron-dark/title-templates/wafer-portal.html` as the default title slide. Do not replace it with silk-wave, precision-board, screen-stack, photo, or other title treatment unless the user explicitly names that title direction.
 - For Micron themes, use the standalone `micron-icons` skill when official Micron iconography or decorative Micron icon texture would improve the deck. Do not browse icon folders manually.
+- For any slide animation, first consult the project-local `../emil-design-engineering/SKILL.md` and especially `../emil-design-engineering/animations.md`. Use purposeful motion only, animate `transform`/`opacity` or library-rendered chart entry states, avoid `transition: all`, prevent layout shift, and include `prefers-reduced-motion` handling.
 - Content slides should be custom to the topic. Do not reuse fixed demo layouts by default.
 - If the user asks for `.pptx`, PowerPoint, or editable Office output, use the project `pptx` skill instead of generating HTML first.
 - Ask only when theme/template choice changes the outcome materially.

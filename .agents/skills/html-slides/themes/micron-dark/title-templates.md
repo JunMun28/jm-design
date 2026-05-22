@@ -14,11 +14,13 @@ engineering demo HTML file.
 - Keep title text left aligned.
 - Use official `assets/micron-logo-white-tm-rgb.png` if present; otherwise omit logo.
 - Use one visual protagonist: wafer object, diagonal band, grain field, wave field, or screen stack.
-- For all new Micron dark decks, default to `silk-wave-purple`: high-energy
-  Micron purple silk wave cover with a large left title, official logo, useful
+- For all new Micron dark decks, default to `wafer-portal`: brand-led
+  semiconductor portal cover with a large left title, official logo, useful
   context note, and restrained content metadata. Use another title template
   only when the user explicitly names that title direction. Use `editorial-ops`
   only when the user explicitly asks for a sober operating-board cover.
+- Do not include a visible title counter such as `01 / Cover` on Micron dark
+  title slides.
 - `editorial-ops`: precision-board black
   field, no full-slide grid background, large magazine-like title, optional thin
   metadata rule, short decision note, and optional boxed bottom KPI strip. Do
@@ -32,11 +34,11 @@ engineering demo HTML file.
 
 | Template | Use when | Visual recipe |
 |---|---|---|
-| `wafer-portal` | Strategy, launch, technical overview | Black field, left title block, right wafer/semiconductor object, quiet radial purple/blue glow |
+| `wafer-portal` | Default Micron dark cover | Black field, left title block, right wafer/semiconductor object, quiet radial purple/blue glow |
 | `divider-band` | Fast update, sober status, internal briefing | Dark blue/black field, large diagonal gradient band from lower right, strong left title |
 | `grain-wave` | Research, data, infrastructure | Subtle noise/grain field, left black readability overlay, cyan/purple energy on right |
 | `silk-wave` | Transformation, architecture, premium keynote | Flowing ribbon or wave across right side, black overlay behind copy |
-| `silk-wave-purple` | Default Micron dark cover | `silk-wave` variant with stronger `#BD03F7`; use for every new Micron dark deck unless explicitly overridden |
+| `silk-wave-purple` | High-energy milestone | `silk-wave` variant with stronger `#BD03F7`; use only when explicitly requested |
 | `screen-stack` | Product demo, workflow walkthrough | Stacked interface cards on right using real workflow labels, left title block |
 | `editorial-ops` | Daily team updates, operating reviews, internal content-team decks | Flat dark field, huge left title, flexible right-side instrument, short decision note, boxed bottom KPI strip |
 
@@ -45,9 +47,9 @@ Copy-pasteable fragments live in `title-templates/`.
 ## Selection
 
 - If the user names a title template, use it.
-- If topic strongly implies a template, still use `silk-wave-purple` unless the
+- If topic strongly implies a template, still use `wafer-portal` unless the
   user explicitly names a different title direction.
-- If there is no direction, choose `silk-wave-purple`. Do not silently fall back
+- If there is no direction, choose `wafer-portal`. Do not silently fall back
   to `editorial-ops`; it is opt-in for sober operating-board covers.
 - Prefer CSS/SVG/canvas built inside the single HTML file.
 - Use Three.js only when title motion carries the slide and the deck can depend on CDN runtime.

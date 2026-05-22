@@ -84,6 +84,9 @@
         "accent_max_per_slide": 4,
         "forbid_visible_accent_rgb": "50, 200, 255",
         "forbid_visible_accent_name": "cyan",
+        "forbid_selectors": [
+          ".title-slide .md-title-number"
+        ],
         "logo_pattern": "micron-logo",
         "require_logo_on_content_slides": true,
         "forbid_chart_on_gradient": true,
@@ -95,8 +98,8 @@
         "enforce_stage_overflow": true,
         "require_title_animated_icon": true,
         "title_icon_pattern": "assets/primary/mp4/rev/.+\\.mp4",
-        "title_visual_selector": ".title-silk-purple .md-silk-wave, .title-silk-purple .md-silk-canvas-purple",
-        "require_title_template_selector": ".title-slide.title-silk-purple .md-silk-canvas-purple",
+        "title_visual_selector": ".title-wafer .md-wafer-canvas",
+        "require_title_template_selector": ".title-slide.title-wafer .md-wafer-canvas",
         "require_title_shader_ready": true
       }
     },

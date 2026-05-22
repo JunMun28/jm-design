@@ -24,7 +24,7 @@ MANIFEST_PATH = SKILL_ROOT / "themes" / "themes.json"
 SHARED_ASSETS = SKILL_ROOT / "themes" / "_shared"
 MICRON_DARK_EXECUTIVE_ASSETS = SKILL_ROOT / "themes" / "micron-dark-executive" / "assets"
 MICRON_ICONS_ASSETS = SKILL_ROOT.parent / "micron-icons" / "assets"
-SILK_WAVE_PURPLE_TEMPLATE = SKILL_ROOT / "themes" / "micron-dark" / "title-templates" / "silk-wave-purple.html"
+WAFER_PORTAL_TEMPLATE = SKILL_ROOT / "themes" / "micron-dark" / "title-templates" / "wafer-portal.html"
 
 
 THEME_CSS = {
@@ -106,6 +106,16 @@ body{background:#050505;color:var(--ink);font-family:var(--font-body)}
 .title-silk-purple .md-accent-line{width:84px;height:7px;background:#BD03F7;border-radius:999px;margin-top:28px;box-shadow:0 0 22px rgba(168,85,247,.42)}
 .title-silk-purple .md-title-note{position:absolute;left:96px;bottom:38px;z-index:5;font-size:15px;color:#8c8c8c}
 .title-silk-purple .md-title-number{position:absolute;right:34px;bottom:28px;z-index:5;font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.04em;font-family:var(--font-mono)}
+.title-wafer .slide-stage{background:radial-gradient(circle at 72% 45%,rgba(189,3,247,.24),transparent 34%),radial-gradient(circle at 92% 12%,rgba(255,140,255,.15),transparent 26%),#000;isolation:isolate}
+.title-wafer .slide-stage::before{display:none}
+.title-wafer .md-wafer-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;pointer-events:none}
+.title-wafer .md-title-brand{position:absolute;top:46px;left:96px;z-index:5;width:126px;height:auto;opacity:.94}
+.title-wafer .md-title-content{position:relative;z-index:4;max-width:820px}
+.title-wafer .md-title-content .kicker{color:#BD03F7;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:17px;margin-bottom:16px}
+.title-wafer .md-title-content h1{font-size:72px;line-height:1.02;font-weight:800;max-width:760px;color:#fff}
+.title-wafer .md-title-content .subtitle{font-size:24px;line-height:1.35;color:#e6e6e6;max-width:760px;margin-top:18px}
+.title-wafer .md-accent-line{width:84px;height:7px;background:#BD03F7;border-radius:999px;margin-top:28px;box-shadow:0 0 22px rgba(168,85,247,.42)}
+.title-wafer .md-title-note{position:absolute;left:96px;bottom:38px;z-index:5;font-size:15px;color:#8c8c8c}
 @media (max-width:760px){.editorial-ops-title .slide-content{padding:32px 22px 40px}.ops-meta{display:block;font-size:13px;margin-bottom:28px}.ops-meta span+span{display:block;margin-top:10px}.editorial-spread,.signal-layout{display:block}.section-label{font-size:20px}.icon-slot{display:none}.editorial-copy h1{font-size:46px;max-width:8ch}.editorial-copy .subtitle{font-size:22px;max-width:16ch}.ops-note{font-size:18px}.metric-strip{display:none}.big-metric{font-size:78px}.slide[data-slide-kind="evidence"] h2{font-size:42px}.evidence-row{grid-template-columns:82px minmax(0,1fr) 70px;padding:14px 0}.evidence-row b{font-size:20px}}
 """,
     "micron-light": """
@@ -410,9 +420,7 @@ def build_title_slide(title: str, theme: str, title_template: str | None) -> str
         return slide(
             "cover",
             f"""
-<div class="md-silk-wave" aria-hidden="true">
-  <canvas class="md-silk-canvas-purple"></canvas>
-</div>
+<canvas class="md-wafer-canvas" aria-hidden="true"></canvas>
 <img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" width="126" height="32" decoding="async" />
 <div class="md-title-content">
   <p class="kicker reveal">FY26 operating review</p>
@@ -420,11 +428,10 @@ def build_title_slide(title: str, theme: str, title_template: str | None) -> str
   <p class="subtitle reveal">Recovery is real, but the constraint moved downstream.</p>
   <div class="md-accent-line reveal"></div>
 </div>
-<div class="md-title-note">silk-wave-purple · mock operating data</div>
-<div class="md-title-number">01 / Cover</div>
+<div class="md-title-note">wafer-portal · mock operating data</div>
 """,
             title=True,
-            extra_class="title-silk title-silk-purple",
+            extra_class="title-wafer",
         )
     return slide(
         "cover",
@@ -716,14 +723,14 @@ def build_html(title: str, theme: str, slides: int, title_template: str | None =
         css += MICRON_DARK_FIXED_STAGE_CSS
         js = fixed_stage_js(1600, 900) + JS
     if theme == "micron-dark":
-        template = SILK_WAVE_PURPLE_TEMPLATE.read_text()
+        template = WAFER_PORTAL_TEMPLATE.read_text()
         match = re.search(r'<script type="module">(.*?)</script>', template, re.S)
         if not match:
-            raise SystemExit("silk-wave-purple.html is missing its required Three.js module script")
+            raise SystemExit("wafer-portal.html is missing its required Three.js module script")
         module_body = match.group(1).strip()
         module_body = module_body.replace(
             "renderer.render(scene, camera);",
-            'renderer.render(scene, camera);\n      canvas.dataset.silkShaderReady = "true";\n      window.__silkWavePurpleReady = true;',
+            'renderer.render(scene, camera);\n      canvas.dataset.titleShaderReady = "true";\n      window.__waferPortalReady = true;',
         )
         module_script = f'  <script type="module">\n{module_body}\n  </script>\n'
     if theme == "guided-learning":
@@ -792,7 +799,7 @@ def main() -> int:
     parser.add_argument(
         "--title-template",
         default=None,
-        help="Micron dark defaults to silk-wave-purple. For micron-dark-executive: photo-title only.",
+        help="Micron dark defaults to wafer-portal. For micron-dark-executive: photo-title only.",
     )
     parser.add_argument("--list-themes", action="store_true")
     args = parser.parse_args()

@@ -11,8 +11,8 @@ the content needs it, and a clear ask/action. It should feel polished and
 attention-grabbing without becoming the `micron-dark-executive` photo/keynote
 style.
 
-The default title slide is `silk-wave-purple` from
-`title-templates/silk-wave-purple.html`. Use that template for every new Micron
+The default title slide is `wafer-portal` from
+`title-templates/wafer-portal.html`. Use that template for every new Micron
 dark deck unless the user explicitly names another title direction. Do not
 silently substitute a custom precision-board, screen-stack, wafer, photo, or
 operating-board cover.
@@ -122,7 +122,8 @@ Title templates live in `title-templates.md` and reusable fragments live in
 - Use title templates for title slides, section dividers, or closing moments.
 - Do not use title templates as default content-slide layouts.
 - Do not vary the default title treatment for new Micron dark decks. Use
-  `silk-wave-purple` unless the user explicitly names another title direction.
+  `wafer-portal` unless the user explicitly names another title direction.
+- Do not show a cover counter such as `01 / Cover` on Micron dark title slides.
 - Do not include visible template labels in generated decks.
 
 ## Content slide principles
@@ -150,7 +151,7 @@ Use layout families only as mental prompts, not templates:
 
 For day-to-day team decks, use this editorial rhythm before inventing a new one:
 
-- Cover: use `silk-wave-purple` by default. If the user explicitly asks for
+- Cover: use `wafer-portal` by default. If the user explicitly asks for
   `editorial-ops`, use a large left-aligned title, optional thin metadata rule,
   flat dark field with subtle local glow, short decision note, and optional
   boxed bottom KPI strip.

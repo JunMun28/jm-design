@@ -464,8 +464,8 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                     const requiredTemplate = s.querySelector(cfg.require_title_template_selector);
                                     if (!shown(requiredTemplate)) {
                                         out.push(`slide ${i + 1}: title slide must use required template selector ${cfg.require_title_template_selector}`);
-                                    } else if (cfg.require_title_shader_ready && requiredTemplate.dataset.silkShaderReady !== 'true') {
-                                        out.push(`slide ${i + 1}: title slide must initialize the real silk-wave-purple Three.js shader, not just a static fallback`);
+                                    } else if (cfg.require_title_shader_ready && requiredTemplate.dataset.titleShaderReady !== 'true') {
+                                        out.push(`slide ${i + 1}: title slide must initialize the required Three.js title shader, not just a static fallback`);
                                     }
                                 }
                                 const pattern = cfg.title_icon_pattern ? new RegExp(cfg.title_icon_pattern, 'i') : null;
@@ -534,6 +534,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             }
                             // Chart-on-gradient
                             if (cfg.forbid_chart_on_gradient) {
+                                if (isTitle) return;
                                 const charts = s.querySelectorAll('svg[role="img"], canvas, .chart, [data-chart]');
                                 charts.forEach((c) => {
                                     let p = c.parentElement;

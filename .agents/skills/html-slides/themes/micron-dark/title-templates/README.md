@@ -64,6 +64,6 @@ version (`three@0.184.0`) exactly as below and keep it to title slide 1.
 | `silk-wave-purple` | `title-option-silk-purple` | `#BD03F7` silk variant | Three.js (CSS fallback) |
 | `screen-stack` | `title-option-screen` | animated 3-card product/dashboard stack | CSS + vanilla JS |
 
-Default: new `micron-dark` decks use `silk-wave-purple.html` unless the user
-names another title direction. See `../title-templates.md` for the selection
-rule and the gap analysis that motivated this extraction.
+Default: new `micron-dark` decks use `wafer-portal.html` unless the user
+names another title direction. The default cover has no `01 / Cover` counter,
+no CSS fallback ball over the copy, and one right-side wafer portal.
