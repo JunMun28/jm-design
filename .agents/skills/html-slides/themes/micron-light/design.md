@@ -166,6 +166,7 @@ Device catalog (all present in `example.html` — read it for exact CSS):
 | **Circular numbered badge + connectors** | A sequence/loop | `.loop-num` accent-filled circle, abutting cards joined by an `::after` `→` glyph in accent |
 | **U-shaped return loop + ∞ badge** | "repeat"/cycle slides | a 3-sided accent border under the row with an arrowhead and a small `∞` chip — shows the loop without an SVG |
 | **Multi-color icon chips** | A 6-up prompt/use-case grid | per-cell `--prompt-color` (purple/green/blue/orange/violet/gold), icon in a radial-highlight chip; the grid is colorful but the accent budget is spent only on the kicker/H2 |
+| **Icon-rich technical explainer map** | AI / data-flow / architecture / process explainers that need a polished infographic treatment | top input/source strip with semantic colored icons, central numbered pipeline, evidence rail, artifact card, bottom outcome strip with curved accent edge — see §4A.5 |
 | **Realistic app chrome + floating pill** | "let's try it"/demo | window bar with traffic dots, skeleton rail/file/code lines, a rounded prompt pill that overhangs the window edge with a blur glow and accent send button |
 | **Accent-ruled board** | "anatomy of X" enumerations | one bordered board, rows split by hairlines, a 2px vertical accent rule per row, accent item labels |
 | **Featured-panel flow + skeleton + SVG mock** | Progressive discovery / multi-step process | 4 panels joined by `→`, one `.featured` panel with accent border+glow, skeleton `<span>` lines for "detail," an inline SVG mock of the *output* (a slide, a chart) — never lorem text |
@@ -389,6 +390,160 @@ The point is hierarchy: the eye should read headline → focal KPI → dominant
 chart → action strip. If the viewer has to compare every box equally, the slide
 is not premium enough.
 
+### 4A.5 Icon-rich technical explainer map
+
+Use this when the prompt asks for "how X works," AI / data-flow /
+architecture / process diagrams, or when a reference image shows a polished
+infographic with many semantic icons and more than Micron purple. Treat the
+recipe below as a flexible role map, not a fixed layout. Adapt the labels,
+counts, and side artifacts to the subject; do not depend on a local generated
+deck unless the user explicitly asks to match that file.
+
+This pattern is allowed to use a controlled secondary palette because the
+colors carry semantic categories, not decoration. Keep Micron purple as the
+lead signal, then add a small set of consistent category colors:
+
+- Purple: primary / active / selected state.
+- Blue: search, current, refresh, live lookup, discovery.
+- Green: trust, policy, quality, verified state.
+- Orange: storage, system, organization knowledge, action step.
+- Violet: output, answer, chat/check, closing state.
+
+Recommended structure for a single 1600×900 slide:
+
+```text
+[big left title + summary] [input/source strip with semantic icons]
+[artifact/example card]    [numbered vertical pipeline] [evidence/proof rail]
+[bottom outcome/value strip with dark left label + curved accent edge]
+```
+
+Required pieces:
+
+- **Top input/source strip:** usually 3–5 white rounded cards. Each card has one
+  semantic line icon in a soft tinted chip, a bold name, and one short type or
+  role. Use one icon family across all cards. These can be documents,
+  databases, teams, systems, sensors, apps, decisions, or any input set the
+  story needs.
+- **Central pipeline:** 4–6 rounded process cards, each with a colored numbered
+  badge, matching icon chip, bold step name, and one short detail line. A
+  vertical connector may run behind the badges, but it must stop before the
+  bottom strip. It must never pass through labels or overflow into the outcome
+  strip. The number is part of the circular badge, not a loose
+  label: center it with grid/flex, clip the badge, and avoid broad selectors
+  like `.step span` that accidentally restyle `.badge` or `.chip`.
+- **Evidence/proof rail:** one side panel with repeated icon rows. Each row has
+  a colored circular icon, a colored keyword, and one short explanatory line.
+  This rail should feel like the reason to trust the flow, not another bullet
+  list. Name it for the subject: "Why it works," "What changes," "Controls,"
+  "Signals," "Checks," or similar.
+- **Artifact/example card:** the side card should contain a visible artifact,
+  not just text. Use whatever concrete object proves the process: prompt/output
+  snippet, tiny chart, file mock, search lens, state diagram, mini UI, before/
+  after specimen, or domain-specific icon illustration.
+- **Optional input/query/specimen card:** if the diagram needs a floating input
+  specimen between the artifact card and the pipeline, size it as a real
+  artifact, not a tiny badge. Give it enough width for the label and detail
+  line, enough height for wrapped text, and reserve matching pipeline padding
+  so it does not collide with the first process card.
+- **Bottom outcome/value strip:** the dark left label may include a simple
+  outline mark (diamond, target, signal) and a short outcome label such as
+  "Why it matters," "What improves," "Value," or "Controls." Its purple accent
+  should be a curved/arc edge or vertical glow at the boundary, not a hard
+  diagonal wedge that cuts through the words. The remaining cells use compact
+  colored icon chips plus short labels. Keep the strip opaque if the Micron
+  logo sits behind it.
+
+Implementation guidance:
+
+- Inline SVG symbols inspired by Lucide/Tabler are acceptable for this pattern
+  when official Micron icons do not cover the semantics. Keep `stroke-width`
+  consistent, rounded caps/joins, and no filled emoji/clipart.
+- Scope process-card, source/input-card, evidence-row, and outcome-cell text
+  selectors to named copy elements, never to all spans. This bad rule moves
+  badge numbers and icon chips out of place:
+
+  ```css
+  .step span { display:block; margin-top:8px; }
+  .source-card span { display:block; margin-top:8px; }
+  .proof-row span { display:block; margin-top:7px; }
+  .why-cell span { display:block; margin-top:5px; }
+  ```
+
+  Use named classes instead:
+
+  ```css
+  .step {
+    display: grid;
+    grid-template-columns: 64px 62px minmax(0, 1fr);
+    align-items: center;
+  }
+  .step-badge {
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--step-color);
+    color: var(--micron-white);
+    font: 800 25px/1 var(--font-display);
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--step-color) 26%, transparent);
+  }
+  .step-chip {
+    display: grid;
+    place-items: center;
+  }
+  .step-copy b { display: block; }
+  .step-copy small { display: block; margin-top: 8px; }
+  .source-card-copy > span,
+  .evidence-row-copy > span,
+  .outcome-cell-copy > span { display: block; }
+  ```
+
+- Do not make the slide purple-only. If the reference has colored icon
+  categories, use the semantic palette above and keep purple as the primary
+  state rather than the only color.
+- Use fixed 16:9 stage geometry and verify at `1024x576`, `1280x720`, and a
+  non-16:9 viewport. Inspect screenshots: title padding, the pipeline spine,
+  floating input/specimen cards, the bottom strip, and the logo layer are
+  common failure points. A non-16:9/tall viewport is especially good at
+  exposing text clipped inside small absolute-positioned cards.
+- Avoid fixed-height floating cards unless the text is guaranteed single-line.
+  Prefer `min-height` plus real padding, `minmax(0, 1fr)` copy columns, and
+  shorter detail copy. If the card sits to the left of the pipeline, increase
+  the pipeline's left padding/connector offset together with the card width.
+- If the Micron logo overlaps the bottom strip, layer it behind content
+  (`z-index` lower than `.slide-content`) and make the strip opaque. Do not
+  position the logo as an ordinary foreground `<img>` in the content grid.
+  Prefer a stage pseudo-element:
+
+  ```css
+  .slide:not(.title-slide) .slide-stage::after {
+    content: "";
+    position: absolute;
+    right: 52px;
+    bottom: 30px;
+    z-index: 0; /* behind .slide-content */
+    width: 112px;
+    height: 32px;
+    background: url("themes/_shared/micron-logo-black-tm-rgb.png") right bottom / contain no-repeat;
+    opacity: .9;
+    pointer-events: none;
+  }
+  .slide-content {
+    position: relative;
+    z-index: 2;
+  }
+  .outcome-strip {
+    position: relative;
+    z-index: 3;
+    background: var(--micron-white); /* or a fully opaque strip surface */
+  }
+  ```
+
+- If a title or source strip is crowded, reduce local type or split the slide.
+  Do not let the title touch the top edge; leave visible paper margin.
+
 ---
 
 ## 5. Typography
@@ -587,6 +742,30 @@ The recurring failure modes when building in this theme:
   bars make the deck feel like a dark theme inverted onto white. Use
   violet-tinted ink for text and pale violet/cool-blue tints for structure.
 - **Generic uniform cards (the #1 failure).** Rendering every slide as the same `1px hairline + 8px radius + #fff` box collapses the deck into a spreadsheet. Each slide needs its own bespoke class and at least one richness device from §4A. This is what separates a plain interpretation from the reference.
+- **Purple-only technical explainers.** If the reference uses colorful semantic
+  icons, do not flatten it into Micron purple badges only. Use the controlled
+  icon palette in §4A.5 so each input, check, action, storage, and output state
+  remains visually distinct.
+- **Pipeline spine overflow.** Vertical connector lines in technical explainers
+  must be scoped to the pipeline area only. They should stop near the last step
+  and never continue into the bottom outcome strip or through benefit labels.
+- **Loose badge numbers or drifting icon chips.** A numbered pipeline badge is
+  a single circular UI element. If numbers appear above, left of, or outside
+  the colored circle, or source/proof/benefit chips sit off-center, the CSS is
+  usually using broad descendants such as `.step span`, `.source-card span`, or
+  `.why-cell span`. Use named badge/chip/copy classes instead.
+- **Clipped floating specimen cards.** Absolute-positioned input, query, or
+  specimen cards often look fine at 16:9 and clip in tall/non-16:9
+  verification. Use `min-height`, adequate width, and reserved pipeline
+  padding; then inspect the tall screenshot before shipping.
+- **Bottom strip accent cutting text.** A dark outcome/value strip may have a
+  curved purple edge or glow at the boundary, but the accent must not slice
+  through the words. Reserve a clear text lane before drawing the curved edge.
+- **Logo on top of content.** Content-slide logo pseudo-elements should sit
+  behind the content layer when a bottom strip spans the slide. Make the strip
+  opaque if the logo would otherwise ghost through it. If the logo appears
+  clipped, floating above the strip, or competing with benefit text, move it to
+  the stage background layer or reserve an empty safe area.
 - **Equal-weight dashboard snapshot.** KPI rows and chart grids where every
   block has the same border, size, and emphasis feel like an app screenshot,
   not an executive slide. Use the §4A.4 snapshot hierarchy instead.
@@ -678,6 +857,19 @@ Before you ship a slide:
 - [ ] Cover copy has breathing room between eyebrow, title, subtitle, and meta
 - [ ] Cover headline mixes ink + a purple-italic phrase (§5) — not a flat monochrome title
 - [ ] Every structural panel has a rounded corner (§4A.3: 8–20px; pills/badges 999px) — no sharp 90° hairline boxes
+- [ ] Icon-rich technical explainers follow §4A.5 as a flexible role map:
+      semantic icon colors, visible input/source strip, numbered pipeline,
+      evidence rail, artifact/example card, and outcome strip with curved accent
+      edge
+- [ ] Pipeline connector lines stop before the bottom strip; no connector line
+      runs through benefits or labels
+- [ ] Pipeline badge numbers are visually centered inside the colored circles;
+      no broad `.step span` rule can affect badges or icon chips
+- [ ] Any floating input/specimen artifact has no clipped text at both 16:9 and
+      tall/non-16:9 verification sizes, and nearby process content is padded to
+      avoid it
+- [ ] Bottom-strip Micron logo is behind content and fully hidden by the opaque
+      strip when they overlap
 - [ ] KPI / chart snapshot slides use §4A.4 hierarchy: one focal KPI, one dominant chart, quiet support panel, bottom action strip
 - [ ] Top-right hover-only `.present-toggle` + horizontal build-fragment controller present (lifted from `example.html`)
 - [ ] White stage, ink (not pure black) headline

@@ -4,11 +4,11 @@
     {
       "id": 1,
       "prompt": "Find a Micron icon for a dark engineering slide about memory and storage performance. Return three deterministic candidates.",
-      "expected_output": "Uses the technical-capability group with micron-dark theme, returns rev PNG paths in stable order.",
+      "expected_output": "Uses the technical-capability group with micron-dark theme, returns rev SVG paths in stable order.",
       "files": [],
       "expectations": [
         "The output uses bin/find-icon.py instead of browsing folders manually.",
-        "The output returns PNG assets by default.",
+        "The output returns SVG assets by default.",
         "The output uses rev style for micron-dark."
       ]
     },
@@ -26,12 +26,12 @@
     {
       "id": 3,
       "prompt": "The Micron icon zips changed. Rebuild the icon assets and verify the manifest counts.",
-      "expected_output": "Runs the extractor from source archives, preserves source assets, and verifies expected counts.",
+      "expected_output": "Runs the extractor from source archives, converts static icons to SVG, and verifies expected counts.",
       "files": [],
       "expectations": [
         "The output uses bin/extract-icons.py.",
-        "The output preserves original files without optimization.",
-        "The output verifies primary PNG, primary MP4, and secondary PNG counts."
+        "The output converts static PNG source files into SVG assets.",
+        "The output verifies primary SVG, primary MP4, and secondary SVG counts."
       ]
     }
   ]

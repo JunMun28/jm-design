@@ -13,7 +13,7 @@ brand assets belong in theme assets or a separate skill.
 
 1. Decide whether the icon is semantic or decorative.
 2. Use `bin/find-icon.py` instead of browsing folders manually.
-3. Prefer PNG. Use MP4 only for intentional title, hero, transition, or single
+3. Prefer SVG. Use MP4 only for intentional title, hero, transition, or single
    visual-protagonist moments.
 4. For Micron slide themes, pass `--theme` so the finder chooses the right
    polarity:
@@ -89,8 +89,9 @@ Avoid:
 - icon entries with canonical slug, source slug, category, label, alt text,
   relative path, original filename, and anomaly metadata
 
-The source zip archives are not bundled into this skill. The extracted assets
-are preserved without recompression, recoloring, conversion, or visual edits.
+The source zip archives are not bundled into this skill. Static source PNGs are
+converted into SVGs so slide usage gets a proper scalable icon format. Animated
+MP4 assets are preserved as MP4s.
 
 ## Rebuilding Assets
 
@@ -101,7 +102,12 @@ python3 bin/extract-icons.py --source-dir /Users/wongjunmun/development/ai-devel
 ```
 
 The extractor skips archive noise (`__MACOSX`, `._*`, `.DS_Store`) and records
-known source naming anomalies instead of hiding them.
+known source naming anomalies instead of hiding them. Rebuilding SVG assets
+requires the Python `vtracer` package:
+
+```sh
+python3 -m pip install vtracer
+```
 
 ## Visual Review
 
@@ -113,5 +119,5 @@ python3 -m http.server 8788
 
 Then visit `http://127.0.0.1:8788/preview.html`.
 
-The preview page loads `assets/manifest.json`, filters icons, previews PNG/MP4,
+The preview page loads `assets/manifest.json`, filters icons, previews SVG/MP4,
 and shows semantic and decorative HTML snippets.

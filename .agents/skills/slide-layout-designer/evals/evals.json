@@ -1,0 +1,23 @@
+{
+  "skill_name": "slide-layout-designer",
+  "evals": [
+    {
+      "id": "technical-infographic-layout",
+      "prompt": "Design a slide layout for a developer training slide titled 'How LoRA Works' using an attached infographic-style reference.",
+      "expected_output": "A layout blueprint that extracts reference grammar, uses a technical infographic archetype, includes a 16:9 canvas contract, and specifies numbered zones, side rail, bottom band, semantic colors, and implementation notes.",
+      "files": []
+    },
+    {
+      "id": "upgrade-boring-deck",
+      "prompt": "Review this technical deck because the layout feels boring and too card-heavy. Suggest a stronger layout system before rebuilding.",
+      "expected_output": "A review-mode response that identifies weak layout patterns, selects showcase slides, replaces generic grids with archetypes, and defines quality gates.",
+      "files": []
+    },
+    {
+      "id": "handoff-to-html-slides",
+      "prompt": "Create layouts for an html-slides deck teaching developers QLoRA. Keep the content approved but make the visual system more impressive.",
+      "expected_output": "A slide-by-slide layout plan with CSS-friendly zones, visual protagonists, semantic color roles, text budgets, and overflow risks suitable for html-slides implementation.",
+      "files": []
+    }
+  ]
+}

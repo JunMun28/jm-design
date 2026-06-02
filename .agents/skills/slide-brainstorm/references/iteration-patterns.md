@@ -46,10 +46,22 @@ Then audit whitespace. Premium decks have 40–60% empty space on every content 
 
 Cards-on-cards is the most common visual failure. The fix is layout variety, not just removing cards.
 
-1. **Audit**: count cards per slide. If the deck has >2 cards total, you have a card problem.
-2. **Swap cards for**: manuscript rows · vertical hairline splits · borderless quote grids · stat-row.
-3. **Variety map**: list every slide's layout signature in a table. No two adjacent slides should share one.
-4. **One card slide max**: usually the use-cases slide if it really needs icon containers. Everything else: hairlines and whitespace.
+1. **Run the anti-boring checklist**:
+   `references/strong-slide-design-checklist.md`. Do not treat "boring" as a
+   styling complaint only; it usually means the slide has no intuitive visual
+   job.
+2. **Audit**: count cards per slide. If the deck has >2 cards total, you have
+   a card problem.
+3. **Name the visual job** of each content slide: map, loop, decision,
+   contrast, artifact, proof, scorecard, timeline, checklist, specimen, or ask.
+4. **Swap cards for**: manuscript rows · vertical hairline splits · borderless
+   quote grids · stat-row · checklist gate · mission board · decision cockpit ·
+   operating loop · journey map · map surface · contrast wall.
+5. **Variety map**: list every slide's layout signature in a table. No two
+   adjacent slides should share one.
+6. **One card slide max**: usually the use-cases slide if it really needs
+   product tiles. Everything else: hairlines, whitespace, artifacts, maps, or
+   decision surfaces.
 
 ## "Tailor to <industry>"
 

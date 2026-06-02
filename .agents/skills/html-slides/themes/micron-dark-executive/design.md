@@ -1,6 +1,8 @@
 # Micron slide design system
 
-Source synthesis: merged from the two previous design drafts.
+Source synthesis: merged from the two previous design drafts and realigned to
+`/Users/wongjunmun/Downloads/micron-about-dark.original.pptx` (About Micron,
+May 2026).
 Purpose: single slide-generation reference for Micron-branded HTML/PPT slides.
 Compiled: May 2026.
 
@@ -23,6 +25,23 @@ Slides should feel:
 - Clean, confident, high-contrast
 - Futuristic, not playful
 - Simple and impactful, not crowded
+
+The current style anchor is the About Micron dark deck:
+
+- Stark black canvas, not decorative dark blue or purple atmosphere
+- Real Micron photography and product imagery, especially cleanroom,
+  manufacturing, people at work, fabs, data centers, wafers, and device renders
+- Big white Arial-style headlines with short, plain supporting copy
+- Split photo covers: black title field on the left, image field on the right
+- Title covers use the wide Micron + `Intelligence Accelerated` lockup, not
+  the plain Micron wordmark
+- The title image is the theme-owned high-resolution VR portrait asset, used
+  as a real image on the right half of the stage, not as a flattened screenshot
+  of a previous cover
+- Dense facts are allowed when structured as rows, stat walls, comparison
+  blocks, or image-led panels
+- Purple appears as a precise Micron state, chart, map, or icon accent; it does
+  not wash the whole deck
 
 Use three brand metaphors:
 
@@ -52,8 +71,21 @@ visible slide surface is a centered `.slide-stage` at **1600 x 900**.
 Do not stretch dark slides to arbitrary browser aspect ratios.
 Use true black for both browser letterbox and the default slide stage. Add
 purple/blue energy only through approved Micron gradients, official primary
-icons, progress/navigation, or one data emphasis. Do not use purple as normal
-text decoration.
+icons, one data emphasis, or a source-backed map/chart state. Do not use
+purple as normal text decoration.
+
+Generated HTML decks must keep the shared verifier/runtime contract:
+
+- Define `--font-display`, `--scale-ratio`, and `--col-count` in addition to
+  Micron color tokens.
+- Use `<main class="deck">`, one `.slide-stage` per slide, and `#overview`
+  with `.ov-card` / `.ov-thumb` overview thumbnails.
+- Use `.slide-progress-chip` for the hover-only progress label; do not invent
+  alternate classes such as `.progress-chip`.
+- Content-slide Micron marks should be supplied by a `.slide-stage::after`
+  background image whose URL includes `micron-logo`, matching the shared
+  verifier contract. Direct `<img>` logos may be used only as supplemental
+  content, not as the only brand mark.
 
 For Office / PowerPoint export, use **Arial** unless Micron Basis is guaranteed installed.
 
@@ -81,9 +113,19 @@ Every content slide may include:
 Do not add a repeated deck title / program label as a content-slide footer in
 `micron-dark-executive`. Keep the footer area quiet unless the slide needs the logo.
 Do not add visible slide counters such as `02 / 06` on content slides; the
-runtime already provides progress and navigation dots.
+runtime already provides progress and navigation affordances.
+Do not show a persistent top or bottom progress bar in normal presentation
+screenshots.
+The About Micron reference uses a quiet bottom-right logo/number treatment, not
+web chrome. Do not show the right-edge dot rail by default for
+`micron-dark-executive`; keep slide navigation available through keyboard,
+scroll, swipe, and Esc overview. Put visible slide progress in the top-right
+presentation hotspot beside the `Present` button, hidden until hover/focus.
 
 Keep body text left-aligned. Avoid centered body copy.
+Keep meaningful slide captions and body text at least 24px on the 1600 x 900
+stage. If tiles, roadmap phases, scorecards, or close notes feel tight, reduce
+item count or split the slide instead of dropping to 21-23px type.
 
 ### Training / walkthrough decks in dark mode
 
@@ -189,13 +231,13 @@ Never use accent:
 This rule intentionally overrides earlier visual experiments that colored one
 headline keyword purple. Micron's current brand guidance says not to use the
 accent color in headlines or non-link text. For a premium executive slide,
-make the headline white/off-white and let purple appear in the data, icon, or
-navigation system.
+make the headline white/off-white and let purple appear in data, maps, charts,
+approved gradients, or official icons.
 
 Do not use translucent purple fills such as `rgba(189,3,247,...)`,
 `color-mix(... var(--micron-accent) ...)`, or purple gradients as background
 surfaces. Use black, white, or neutral gray surfaces. Purple may mark one
-active data point, one small rule, progress/navigation, or an official icon
+active data point, an approved gradient/map/chart state, or an official icon
 detail only.
 
 ---
@@ -226,10 +268,19 @@ Simple charts:
 - Single active constraint, selected state, or key positive highlight:
   Purple A `#BD03F7` on one important chart bar or the text label/value.
   Do not combine purple fill and purple border on the same object.
+- In tables, matrices, comparison grids, and row-based decision frames, do not
+  use purple left borders or inset selection stripes. If a cell needs emphasis,
+  use a neutral charcoal fill, stronger white text, or a small data mark that
+  is clearly tied to a chart/value.
 - Do not use multiple gray shades inside one ranked bar chart unless the
   shades represent explicit groups. If bar length already encodes magnitude,
   keep all non-highlight bars the same gray so darker gray is not mistaken for
   lower importance.
+- Pie charts should read as executive allocation or mix charts, not colorful
+  dashboards: use a thin donut or clean pie, direct labels or a nearby label
+  rail, neutral gray slices, and exactly one Micron-purple slice for the key
+  decision state. Keep the center/annotation white or gray; do not put purple
+  in the chart title or legend text.
 
 Complex charts:
 
@@ -248,18 +299,28 @@ Complex charts:
 
 ## 5. Gradients
 
-Use one gradient per slide.
-All gradients travel diagonally corner-to-corner at 135deg.
-Text over gradients is white only.
+Gradients are optional, not the default. The About Micron dark reference uses
+mostly black, charcoal, photography, product renders, and occasional strong
+purple blocks. Use a gradient only for chapter dividers, abstract memory or
+wafer moments, or a single high-energy transition.
+
+When a gradient is used, use one gradient per slide. All gradients travel
+diagonally corner-to-corner at 135deg. Text over gradients is white only.
+For HTML decks, gradients must still satisfy the theme verifier's purple rule:
+any purple stop must be exactly `#BD03F7`. Do not use near-purple stops such
+as `#9601c5`, `#c605d3`, `#8b16f4`, or pink/magenta stops as a shortcut for
+the About Micron chapter-dividers. If a richer brand gradient is needed, use
+the source image/gradient as an approved asset rather than hand-authoring
+off-palette CSS colors.
 
 Official gradient tokens:
 
 ```css
 :root {
-  --grad-hero: linear-gradient(135deg, #434c5c 0%, #2c013b 55%, #9601c5 100%);
+  --grad-hero: linear-gradient(135deg, #244dff 0%, #BD03F7 100%);
   --grad-blue-dark: linear-gradient(135deg, #0156d5 0%, #012152 50%, #14151a 100%);
-  --grad-bright-2: linear-gradient(135deg, #a60cf6 0%, #6027f5 50%, #0b5efe 100%);
-  --grad-bright-3: linear-gradient(135deg, #e70470 0%, #e70c55 50%, #c605d3 100%);
+  --grad-bright-2: linear-gradient(135deg, #244dff 0%, #BD03F7 100%);
+  --grad-bright-3: linear-gradient(135deg, #244dff 0%, #BD03F7 100%);
   --grad-bright-4: linear-gradient(135deg, #01a02b 0%, #017dae 50%, #2b42f7 100%);
   --grad-bright-1: linear-gradient(135deg, #fac30b 0%, #f58c29 50%, #e8156b 100%);
 }
@@ -278,7 +339,7 @@ Usage:
 
 Rules:
 
-- One gradient per slide
+- Zero or one gradient per slide
 - No vertical gradients
 - No hard color breaks
 - No black text on gradients
@@ -389,6 +450,9 @@ Rules:
 - Left-align type and content
 - Use sharp or near-square containers
 - Avoid bubbly cards
+- Avoid generic dashboard cards as the default executive pattern. Prefer
+  source-like stat walls, hairline comparison grids, image-led panels, maps,
+  product/evidence panels, and dense corporate proof tables.
 - Avoid dense paragraphs
 - Do not nest cards inside cards
 - Do not decorate with random orbs, blobs, or generic abstract shapes
@@ -396,10 +460,69 @@ Rules:
 ### Executive visual standard
 
 Do not hand-draw diagrams, curves, fake maps, or decorative SVG/HTML visuals
-for `micron-dark-executive`. If a slide needs a complex visual, use a real
-asset, an official Micron icon, a source-backed chart/table, or a proven
-diagram/chart runtime. If those are not available, keep the slide typographic
-and structured rather than inventing artwork.
+for `micron-dark-executive`. The About Micron reference favors real assets and
+plain structured information: photos, product renders, stat walls, comparison
+tables, timelines, maps, and chart panels. If a slide needs a complex visual,
+use a real asset, an official Micron icon, a source-backed chart/table, or a
+proven diagram/chart runtime. If those are not available, keep the slide
+typographic and structured rather than inventing artwork.
+
+The May 2026 About Micron deck shows these reusable slide grammars:
+
+- Black fact-wall slides with charcoal stat cells and short white labels.
+- Black agenda / content slides with a simple left title field and a right
+  hairline list. The slide should read as real deck content, not a template
+  annotation.
+- Black editorial slides with one right-side photo, map, product render, or
+  data object carrying the visual weight.
+- Gradient section dividers with only a large white section title and the small
+  Micron logo at the lower right.
+- In fixed-stage HTML, the divider gradient must be applied to `.slide-stage`
+  (for example `.divider .slide-stage { ... }`), not only to the outer
+  `.slide` viewport wrapper. Otherwise the overview or exported slide can
+  silently regress to a black stage.
+- If the runtime clones `.slide-stage` into overview thumbnails, include an
+  overview clone rule too, such as `.ov-thumb .clone.divider { background:
+  var(--grad-hero); }`, so the thumbnail matches the live slide.
+- Black image grids that use real photography, product imagery, or official
+  Micron icons. Do not fake the photo-grid look with purple glow tiles.
+- Black hierarchy / architecture slides that use plain editable geometry,
+  hairlines, and one active state. Do not add neon artwork around the diagram.
+- Leadership and team slides should use real headshots when available. If real
+  people assets are not available in a mock, use clean text rows or restrained
+  placeholder initials, but never let names, titles, and avatars collide.
+- ESG / sustainability / accountability slides should use compact metric walls:
+  charcoal cells, large white numbers, and short labels.
+- Product portfolio slides on black with real chip/module renders, not
+  abstract neon UI mockups.
+- Appendix or dense evidence slides that stay mostly black/charcoal, use tight
+  table rows, and keep purple to one selected data state.
+- Financial-results slides in the About Micron deck are colorful infographic
+  slides, not muted dashboards. Use the slide 6 / slide 7 grammar from
+  `micron-about-dark.original.pptx`: huge blue-to-green gradient revenue
+  number, large magenta/gray revenue-by-technology donut with leader lines,
+  a vertical revenue-by-business-unit stacked bar using green, cyan,
+  magenta/pink, and blue segments, a dark gray operating-results column, and
+  a far-right CEO quote panel. Do not shrink this into small metric cards.
+- For source-backed finance charts, color can encode the source categories.
+  Micron purple still uses `#BD03F7`, but the finance infographic may include
+  non-purple green, cyan, and blue category colors visible in the reference.
+  Keep those colors in charts and large numeric treatments only; do not use
+  them as decorative prose colors.
+  Small Q/Q and Y/Y annotations in these finance charts may use
+  `.chart-detail` so they can stay source-like and compact without being
+  treated as primary room-readability copy by the verifier.
+
+Avoid generic VR, chatbot, sci-fi, or neon-dashboard imagery beyond the
+theme-owned title image unless it is part of the actual source material. Dark
+executive should feel like the Micron About deck first, then like an AI or
+strategy deck second.
+
+Do not put theme or layout commentary on the slide canvas. Visible phrases
+such as "pattern example", "reference-style", "this mirrors the PPTX", "use
+this as a placeholder", or "example slide type" are review notes, not deck
+content. Keep that information in comments, docs, or `data-slide-kind`; the
+rendered slide should read like a plausible executive presentation.
 
 Every `micron-dark-executive` deck must include at least one official Micron
 primary animated icon. Use `../micron-icons/bin/find-icon.py` and prefer
@@ -421,21 +544,24 @@ Color blocking:
 
 | Slide type | Background | Notes |
 |---|---|---|
-| Cover / title | Black + one gradient panel or curve frame | Use strong hero image or wafer abstract |
-| Section divider | Full-bleed gradient | White headline only |
-| Agenda / TOC | White | Simple list, black text |
-| Bullets / key points | Black | Short points, strong hierarchy |
-| Stats / metrics | White | Big number, one accent max |
-| Comparison / 2-column | White | Thin dividers, no heavy boxes |
+| Cover / title | Black left field + right photo | Use the official split photo cover, not abstract AI art |
+| Section divider | Black, full-bleed photo, or approved gradient | White headline only; no visible template notes |
+| Agenda / TOC | Black | Simple hairline list, white text, one active row max |
+| Bullets / key points | Black | Short points, strong hierarchy, no paragraph walls |
+| Stats / metrics | Black or charcoal | Big number, short label, one accent max |
+| Comparison / 2-column | Black or charcoal | Thin dividers, no heavy boxes, no purple selection border |
 | Quote / callout | Black | Large type, sparse layout |
-| Image + text | Black | Use curve frame for image portal |
-| Timeline / process | White | Thin lines, precise markers |
+| Image + text | Black | Real photo/product/icon carries visual weight |
+| Image / use-case grid | Black | Real images or official icons; no purple glow tiles or fake neon panels |
+| Timeline / process | Black or charcoal | Thin lines, precise markers |
 | Data viz / chart | White or black | Never gradient |
 | KPI dashboard | Black | Controlled contrast, minimal colors |
-| Team / people | White | Clean, structured |
-| Roadmap | White | Clear phases, subtle dividers |
-| FAQ / Q&A | White | Dense but clean |
-| Closing | Hero or Bright 3 gradient | White type only |
+| Architecture / hierarchy | Black | Plain editable geometry, hairlines, one active layer |
+| Team / people | Black or charcoal | Real headshots preferred; placeholders must not look like product icons |
+| Roadmap | Black or charcoal | Clear phases, subtle dividers |
+| FAQ / Q&A | Black or charcoal | Dense but clean |
+| Sustainability / scorecard | Black or charcoal | Compact metric wall with large white numbers |
+| Closing | Black, photo, or approved gradient | White type only |
 
 ---
 
@@ -446,13 +572,23 @@ Read `themes/micron-dark-executive/title-templates.md` before creating a new
 `photo-title`, using
 `themes/micron-dark-executive/assets/title-image.jpeg`.
 
-Always use that photo on title slides. The image sits on the right, shifted
-right by 20%, with a black overlay protecting the left title block. Do not use
-wafer portals, divider bands, grain waves, silk waves, screen-stack UI, shader
-fields, or abstract gradient art for `micron-dark-executive` title slides.
+Always use that high-resolution photo on title slides. Generated decks copy it
+to `assets/micron-dark-title-image.jpeg`; do not substitute a PNG screenshot,
+browser capture, or low-resolution crop. The image sits on the right half with
+`object-fit: cover` and a center/right crop that keeps the headset and face
+sharp, with a hard black title field on the left. Do not use a full-slide photo
+wash, wafer portals, divider bands, grain waves, silk waves, screen-stack UI,
+shader fields, or abstract gradient art for `micron-dark-executive` title
+slides.
 
-Title-slide eyebrow labels are larger than content-slide eyebrows: use
-24px, line-height 1, gray/off-white text, and at least 24px bottom spacing before the H1.
+Title slides should read like the May 2026 About Micron cover: large white H1
+on the left, date or context under it, and the Micron + `Intelligence
+Accelerated` lockup anchored bottom left. Do not add a visible slide number,
+accent rule, decorative kicker, or subtitle unless the user explicitly asks
+for a cover with more context.
+
+Title-slide context labels are larger than content-slide eyebrows: use
+28-34px, line-height 1, gray/off-white text, and generous spacing from the H1.
 Content-slide eyebrow labels need visible breathing room: use line-height 1
 and at least 20px bottom spacing before the content title. Do not set eyebrow
 labels in purple unless they are real navigation/UI state.
@@ -501,6 +637,17 @@ Use the `.slide-stage` wrapper for all new `micron-dark-executive` HTML decks.
 The controller must wrap each slide's children in `.slide-stage` before
 `new SlidePresentation()`, then set `--stage-scale`,
 `--stage-scaled-width`, and `--stage-scaled-height` on resize.
+When wrapping, copy non-`slide` parent classes onto the stage. The overview
+runtime clones `.slide-stage`; without those copied classes, parent-scoped
+layouts such as `.title-slide`, `.divider`, `.divider-slide`, or `.close` can
+look correct in live presentation mode but lose gradients, title positioning,
+or other styling in overview thumbnails.
+
+```js
+slide.classList.forEach((name) => {
+  if (name !== "slide") stage.classList.add(name);
+});
+```
 
 Overview thumbnails must also use this contract:
 
@@ -556,6 +703,10 @@ Use imagery to speak to the copy, not as filler.
 
 Preferred styles:
 
+- Real Micron cleanroom and manufacturing photography
+- Real Micron people-at-work photography
+- Fabs, data centers, labs, and other operational settings
+- Product renders on black or white fields
 - Macro semiconductor wafer texture
 - Vivid purple / blue / cyan reflections
 - Cinematic lighting
@@ -838,8 +989,9 @@ Always:
 - 135deg gradient direction
 - White text on gradients/images
 - Accent color used minimally and intentionally
-- Accent appears in navigation/progress, official primary icons, or one data
-  emphasis; not as prose decoration or card border
+- Accent appears in official primary icons, approved gradients, maps, charts,
+  or one data emphasis; not as persistent web chrome, prose decoration, or card
+  border
 - Charts on white or black only
 - Curve frame only for hero moments
 - Arial fallback for PowerPoint
@@ -852,6 +1004,10 @@ Never:
 - Charts on gradients
 - Gradient-filled body/callout/CTA text
 - Purple content backgrounds, CTA fills, selection borders, or card borders
+- Persistent top progress bars or always-visible navigation dots in normal
+  slide screenshots
+- Right-edge dot rails for `micron-dark-executive`; use the hidden top-right
+  hover/focus progress chip beside `Present` instead
 - Gray as primary background
 - Content-heavy black slides
 - Centered body copy

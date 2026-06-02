@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gamified Copilot Learning Platform - Brainstorm</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: oklch(0.19 0 0);
+      --muted: oklch(0.35 0 0);
+      --line: oklch(0.82 0 0);
+      --paper: oklch(0.97 0 0);
+      --surface: oklch(0.93 0 0);
+      --slide-ink: oklch(0.16 0 0);
+      --slide-bg: oklch(0.95 0 0);
+      --accent: oklch(0.34 0 0);
+      --accent-2: oklch(0.62 0 0);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(115deg, transparent 0 46%, oklch(0.60 0 0 / 0.12) 46% 46.35%, transparent 46.35%),
+        linear-gradient(90deg, oklch(0.20 0 0 / 0.045) 0 1px, transparent 1px 86px),
+        linear-gradient(0deg, oklch(0.20 0 0 / 0.035) 0 1px, transparent 1px 86px),
+        linear-gradient(180deg, oklch(0.98 0.005 255), oklch(0.91 0.006 255));
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1160px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 30px 0 72px;
+    }
+
+    h1, h2, p { margin: 0; }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: 0;
+      margin-top: 10px;
+      max-width: 820px;
+    }
+
+    section {
+      border-top: 1px solid oklch(0.62 0 0 / 0.26);
+      padding: 32px 0;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .label {
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .core-idea {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.64fr) minmax(0, 1.55fr);
+      gap: clamp(18px, 3vw, 42px);
+      align-items: start;
+      padding: clamp(20px, 3vw, 34px);
+      margin-top: 18px;
+      border: 1px solid oklch(0.30 0 0 / 0.58);
+      border-radius: 7px;
+      background: oklch(0.97 0 0 / 0.52);
+    }
+
+    .core-idea .big {
+      font-size: clamp(28px, 4vw, 54px);
+      max-width: 520px;
+      line-height: 1.04;
+    }
+
+    .core-copy {
+      display: grid;
+      gap: 14px;
+      color: var(--muted);
+      max-width: 760px;
+      border-left: 1px solid oklch(0.42 0 0 / 0.28);
+      padding-left: clamp(20px, 3vw, 42px);
+    }
+
+    .core-copy strong { color: var(--ink); }
+
+    .core-copy p {
+      position: relative;
+      padding-left: 24px;
+    }
+
+    .core-copy p::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.66em;
+      width: 7px;
+      height: 7px;
+      background: var(--ink);
+    }
+
+    .structure-label {
+      display: grid;
+      grid-template-columns: max-content minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+      margin: 18px 0 20px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+
+    .structure-label::after {
+      content: "";
+      height: 1px;
+      background: oklch(0.54 0 0 / 0.32);
+    }
+
+    .deck {
+      display: grid;
+      gap: clamp(34px, 6vw, 72px);
+    }
+
+    .slide-panel {
+      padding: 0;
+      background: transparent;
+    }
+
+    .slide-head {
+      border-bottom: 1px solid oklch(0.56 0 0 / 0.28);
+      padding: 0 4px 14px;
+      margin-bottom: 18px;
+    }
+
+    .slide-head h2 {
+      font-size: 24px;
+      color: var(--ink);
+      font-weight: 760;
+      margin-bottom: 8px;
+    }
+
+    .slide-head p {
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .preview {
+      position: relative;
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+      border: 1px solid oklch(0.20 0 0);
+      background:
+        linear-gradient(135deg, color-mix(in oklch, var(--accent) 9%, var(--paper)), transparent 42%),
+        linear-gradient(315deg, color-mix(in oklch, var(--accent-2) 9%, var(--paper)), transparent 36%),
+        linear-gradient(90deg, oklch(0.20 0 0 / 0.025) 0 1px, transparent 1px 58px),
+        linear-gradient(0deg, oklch(0.20 0 0 / 0.020) 0 1px, transparent 1px 58px),
+        var(--slide-bg);
+      border-radius: 4px;
+      padding: clamp(24px, 3.6vw, 48px);
+      display: grid;
+      gap: clamp(12px, 1.6vw, 20px);
+      overflow: visible;
+      color: var(--slide-ink);
+      box-shadow:
+        0 10px 28px oklch(0.12 0 0 / 0.14),
+        inset 0 0 0 1px oklch(0.99 0 0 / 0.72);
+    }
+
+    .slide-panel[data-slide="01"] .preview { --slide-bg: oklch(0.91 0.005 255); --accent: oklch(0.22 0.006 255); }
+    .slide-panel[data-slide="02"] .preview { --slide-bg: oklch(0.94 0.004 255); }
+    .slide-panel[data-slide="03"] .preview { --slide-bg: oklch(0.92 0.006 255); }
+    .slide-panel[data-slide="04"] .preview { --slide-bg: oklch(0.96 0.004 255); }
+    .slide-panel[data-slide="05"] .preview { --slide-bg: oklch(0.93 0.004 255); }
+    .slide-panel[data-slide="06"] .preview { --slide-bg: oklch(0.95 0.003 255); }
+    .slide-panel[data-slide="07"] .preview { --slide-bg: oklch(0.91 0.005 255); }
+    .slide-panel[data-slide="08"] .preview { --slide-bg: oklch(0.96 0.003 255); }
+    .slide-panel[data-slide="09"] .preview { --slide-bg: oklch(0.90 0.006 255); }
+
+    .preview::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, oklch(0.18 0 0 / 0.045) 0 1px, transparent 1px 84px),
+        linear-gradient(0deg, oklch(0.18 0 0 / 0.035) 0 1px, transparent 1px 84px);
+      mask-image: linear-gradient(135deg, black, transparent 76%);
+      pointer-events: none;
+    }
+
+    .preview::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-top: 1px solid oklch(0.24 0 0 / 0.18);
+      border-right: 1px solid oklch(0.24 0 0 / 0.10);
+      pointer-events: none;
+    }
+
+    .preview > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .preview.is-dense {
+      gap: clamp(10px, 1.3vw, 16px);
+    }
+
+    .preview.mission-dense {
+      gap: clamp(8px, 1vw, 12px);
+      padding: clamp(20px, 3vw, 40px);
+    }
+
+    .preview.mission-dense .big {
+      font-size: clamp(30px, 4.1vw, 58px);
+    }
+
+    .big {
+      font-size: clamp(30px, 4.1vw, 56px);
+      line-height: 1.3;
+      max-width: 920px;
+      letter-spacing: 0;
+    }
+
+    .preview.is-dense .big {
+      font-size: clamp(28px, 3.7vw, 50px);
+    }
+
+    .title-slide {
+      grid-template-columns: minmax(0, 1.1fr) minmax(190px, 0.38fr);
+      align-content: center;
+      align-items: stretch;
+      gap: clamp(20px, 3vw, 36px);
+    }
+
+    .title-slide .big {
+      font-size: clamp(42px, 6.2vw, 86px);
+      line-height: 1.3;
+      max-width: 980px;
+    }
+
+    .title-subtitle {
+      max-width: 820px;
+      font-size: clamp(20px, 2.4vw, 34px);
+      line-height: 1.32;
+      color: var(--muted);
+    }
+
+    .title-scope {
+      grid-column: 1 / -1;
+      max-width: 860px;
+      padding-top: 18px;
+      border-top: 1px solid oklch(0.44 0 0 / 0.30);
+      font-size: clamp(14px, 1.5vw, 18px);
+      color: var(--muted);
+    }
+
+    .pilot-mark {
+      align-self: stretch;
+      display: grid;
+      align-content: space-between;
+      justify-items: end;
+      border-left: 1px solid oklch(0.30 0 0 / 0.28);
+      padding-left: clamp(16px, 2vw, 28px);
+      color: var(--accent);
+    }
+
+    .pilot-mark strong {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: clamp(52px, 7vw, 92px);
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    .pilot-mark span {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .muted { color: var(--muted); }
+
+    .hairline-split {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      gap: clamp(18px, 3vw, 38px);
+      align-items: stretch;
+      margin-top: auto;
+    }
+
+    .hairline { background: color-mix(in oklch, var(--accent) 42%, var(--line)); }
+
+    .manuscript {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid oklch(0.44 0 0 / 0.28);
+      border-bottom: 1px solid oklch(0.44 0 0 / 0.28);
+    }
+
+    .manuscript-row {
+      display: grid;
+      grid-template-columns: 44px 150px minmax(0, 1fr);
+      gap: clamp(12px, 2vw, 26px);
+      align-items: baseline;
+      padding: clamp(12px, 1.5vw, 18px) 0;
+      border-top: 1px solid oklch(0.44 0 0 / 0.20);
+    }
+
+    .manuscript-row:first-child { border-top: 0; }
+
+    .manuscript-row span,
+    .matrix span,
+    .decision-row span,
+    .mission-row span,
+    .score span {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .manuscript-row strong {
+      font-size: clamp(18px, 2vw, 25px);
+      line-height: 1.3;
+    }
+
+    .manuscript-row p { color: var(--muted); }
+
+    .flowchart {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr) 32px minmax(0, 1fr) 32px minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(10px, 1.4vw, 18px);
+      margin-top: auto;
+    }
+
+    .flow-step {
+      min-height: clamp(88px, 10vw, 120px);
+      padding: clamp(12px, 1.6vw, 20px);
+      border: 1px solid oklch(0.36 0 0 / 0.34);
+      background: oklch(0.98 0 0 / 0.42);
+      display: grid;
+      align-content: space-between;
+      gap: 10px;
+    }
+
+    .flow-step span {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .flow-step strong {
+      font-size: clamp(17px, 1.9vw, 24px);
+      line-height: 1.3;
+    }
+
+    .flow-arrow {
+      height: 1px;
+      background: oklch(0.30 0 0 / 0.54);
+      position: relative;
+      transform: translateY(-12px);
+    }
+
+    .flow-arrow::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -5px;
+      width: 10px;
+      height: 10px;
+      border-top: 1px solid oklch(0.30 0 0 / 0.72);
+      border-right: 1px solid oklch(0.30 0 0 / 0.72);
+      transform: rotate(45deg);
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: 1.1fr 1.45fr 1.1fr 1.1fr;
+      border-top: 1px solid oklch(0.44 0 0 / 0.30);
+      border-bottom: 1px solid oklch(0.44 0 0 / 0.30);
+    }
+
+    .matrix > div {
+      padding: clamp(10px, 1.2vw, 15px) clamp(8px, 1.1vw, 14px);
+      border-left: 1px solid oklch(0.44 0 0 / 0.22);
+      border-top: 1px solid oklch(0.44 0 0 / 0.18);
+      min-width: 0;
+    }
+
+    .matrix > div:nth-child(4n+1) { border-left: 0; }
+    .matrix > div:nth-child(-n+4) { border-top: 0; }
+    .matrix .head { color: var(--accent); font-weight: 800; }
+    .matrix strong { display: block; font-size: clamp(15px, 1.5vw, 20px); line-height: 1.3; }
+    .matrix p { color: var(--muted); font-size: clamp(12px, 1.05vw, 15px); line-height: 1.35; }
+
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(10px, 1.3vw, 15px);
+    }
+
+    .mission-row {
+      display: grid;
+      min-height: 112px;
+      gap: 7px;
+      padding: clamp(10px, 1.2vw, 14px);
+      border: 1px solid oklch(0.30 0 0 / 0.30);
+      background:
+        linear-gradient(135deg, oklch(0.22 0 0 / 0.06), transparent 48%),
+        oklch(0.98 0 0 / 0.42);
+      align-content: space-between;
+    }
+
+    .mission-row:first-child { border-top: 1px solid oklch(0.30 0 0 / 0.30); }
+    .mission-row strong { font-size: clamp(15px, 1.5vw, 20px); line-height: 1.3; }
+    .mission-row p { color: var(--muted); font-size: clamp(12px, 1.05vw, 15px); line-height: 1.35; }
+
+    .mission-dense .mission-row {
+      padding: clamp(9px, 1vw, 12px);
+      grid-template-columns: 1fr;
+    }
+
+    .mission-dense .mission-row strong {
+      font-size: clamp(14px, 1.32vw, 18px);
+      line-height: 1.3;
+    }
+
+    .mission-dense .mission-row p {
+      font-size: clamp(11px, 0.95vw, 13px);
+      line-height: 1.35;
+    }
+
+    .mission-dense .decision-row {
+      padding: clamp(8px, 1vw, 12px) 0;
+    }
+
+    .mission-dense .decision-row strong {
+      font-size: clamp(16px, 1.75vw, 23px);
+      line-height: 1.3;
+    }
+
+    .artifact-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(12px, 1.6vw, 20px);
+    }
+
+    .artifact {
+      min-height: 114px;
+      padding: 0 0 12px;
+      border-bottom: 1px solid oklch(0.44 0 0 / 0.28);
+    }
+
+    .artifact .bar {
+      height: 8px;
+      border-radius: 999px;
+      background: color-mix(in oklch, var(--accent) 22%, var(--line));
+      margin: 8px 0;
+    }
+
+    .artifact .bar.short { width: 58%; }
+    .artifact .bar.mid { width: 78%; }
+
+    .score {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      text-align: center;
+      border-top: 1px solid oklch(0.44 0 0 / 0.28);
+      border-bottom: 1px solid oklch(0.44 0 0 / 0.28);
+    }
+
+    .score div {
+      padding: 10px 8px;
+      border-left: 1px solid oklch(0.44 0 0 / 0.28);
+    }
+
+    .score div:first-child { border-left: 0; }
+
+    .score strong {
+      display: block;
+      font-size: clamp(19px, 2.3vw, 32px);
+      line-height: 1;
+      margin-bottom: 5px;
+      color: var(--accent);
+    }
+
+    .mermaid-panel {
+      display: grid;
+      gap: 10px;
+      min-height: clamp(228px, 22vw, 280px);
+      align-content: start;
+      padding: 2px 0;
+    }
+
+    .mermaid {
+      margin: 0;
+      width: 100%;
+      min-height: clamp(184px, 18vw, 230px);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: transparent;
+    }
+
+    .mermaid svg {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: auto !important;
+      min-height: clamp(176px, 17vw, 220px);
+    }
+
+    .mermaid .node rect,
+    .mermaid .node polygon {
+      rx: 0;
+      ry: 0;
+      stroke: oklch(0.28 0 0 / 0.50) !important;
+      fill: oklch(0.985 0 0 / 0.62) !important;
+    }
+
+    .mermaid .edgePath .path {
+      stroke: oklch(0.24 0 0 / 0.68) !important;
+      stroke-width: 1.35px !important;
+    }
+
+    .mermaid .arrowheadPath {
+      fill: oklch(0.24 0 0 / 0.70) !important;
+      stroke: oklch(0.24 0 0 / 0.70) !important;
+    }
+
+    .mermaid .nodeLabel {
+      color: var(--slide-ink) !important;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px !important;
+      font-weight: 750 !important;
+      line-height: 1.25 !important;
+    }
+
+    .mermaid-fallback {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: clamp(8px, 1vw, 12px);
+    }
+
+    .mermaid-ready .mermaid-fallback {
+      display: none;
+    }
+
+    .fallback-node {
+      min-height: 72px;
+      display: grid;
+      align-content: start;
+      gap: 4px;
+      padding: clamp(8px, 1vw, 11px);
+      border: 1px solid oklch(0.28 0 0 / 0.34);
+      background:
+        linear-gradient(135deg, oklch(0.20 0 0 / 0.08), transparent 46%),
+        oklch(0.985 0 0 / 0.50);
+      box-shadow: 0 1px 0 oklch(0.12 0 0 / 0.10);
+    }
+
+    .fallback-node span {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .fallback-node strong {
+      font-size: clamp(16px, 1.55vw, 21px);
+      line-height: 1.18;
+    }
+
+    .fallback-node p {
+      color: var(--muted);
+      font-size: clamp(11px, 0.9vw, 13px);
+      line-height: 1.25;
+    }
+
+    .fallback-node.is-decision {
+      text-align: center;
+      align-content: center;
+      background:
+        linear-gradient(135deg, oklch(0.15 0 0 / 0.12), transparent 52%),
+        oklch(0.95 0 0 / 0.74);
+    }
+
+    .decision-sheet {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid oklch(0.44 0 0 / 0.30);
+      border-bottom: 1px solid oklch(0.44 0 0 / 0.30);
+    }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 142px minmax(0, 1fr);
+      gap: clamp(16px, 2.4vw, 28px);
+      padding: clamp(11px, 1.45vw, 16px) 0;
+      border-top: 1px solid oklch(0.44 0 0 / 0.24);
+      align-items: baseline;
+    }
+
+    .decision-row:first-child { border-top: 0; }
+
+    .decision-row strong {
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.34;
+    }
+
+    .image-placeholder {
+      min-height: clamp(74px, 8.8vw, 108px);
+      display: grid;
+      align-content: end;
+      gap: 4px;
+      padding: clamp(12px, 1.8vw, 18px);
+      border: 1px dashed oklch(0.36 0 0 / 0.42);
+      background:
+        linear-gradient(135deg, oklch(0.18 0 0 / 0.045) 0 1px, transparent 1px 18px),
+        linear-gradient(45deg, oklch(0.18 0 0 / 0.035) 0 1px, transparent 1px 18px);
+    }
+
+    .image-placeholder strong {
+      font-size: clamp(16px, 1.8vw, 22px);
+      line-height: 1.3;
+    }
+
+    .soft-wash {
+      background:
+        linear-gradient(135deg, color-mix(in oklch, var(--accent) 16%, var(--paper)), oklch(0.985 0 0 / 0.62)),
+        var(--surface);
+      border-radius: 8px;
+      padding: clamp(18px, 2.8vw, 38px);
+      text-align: center;
+      border: 1px solid oklch(0.44 0 0 / 0.18);
+    }
+
+    .soft-wash .big { margin-inline: auto; }
+
+    .closer {
+      text-align: center;
+      font-style: italic;
+      color: var(--muted);
+      font-size: clamp(14px, 1.4vw, 18px);
+    }
+
+    @media (max-width: 900px) {
+      main { width: min(100vw - 24px, 760px); }
+      .core-idea,
+      .artifact-strip,
+      .hairline-split {
+        grid-template-columns: 1fr;
+      }
+      .core-copy {
+        border-left: 0;
+        border-top: 1px solid oklch(0.42 0 0 / 0.28);
+        padding-left: 0;
+        padding-top: 18px;
+      }
+      .hairline { height: 1px; }
+      .flowchart {
+        grid-template-columns: 1fr;
+      }
+      .flow-arrow {
+        width: 1px;
+        height: 28px;
+        justify-self: center;
+        transform: none;
+      }
+      .flow-arrow::after {
+        right: -5px;
+        top: 17px;
+        transform: rotate(135deg);
+      }
+      .matrix,
+      .mission-row,
+      .manuscript-row,
+      .decision-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .matrix > div,
+      .matrix > div:nth-child(4n+1),
+      .matrix > div:nth-child(-n+4) {
+        border-left: 0;
+        border-top: 1px solid oklch(0.44 0 0 / 0.18);
+      }
+      .score { grid-template-columns: 1fr; }
+      .score div {
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+      .score div:first-child { border-top: 0; }
+      .mermaid-panel {
+        min-height: 0;
+      }
+      .mermaid {
+        min-height: 210px;
+      }
+      .mermaid-fallback {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .fallback-node {
+        min-height: 72px;
+      }
+      .mission-list {
+        grid-template-columns: 1fr;
+      }
+      .title-slide {
+        grid-template-columns: 1fr;
+      }
+      .pilot-mark {
+        justify-items: start;
+        border-left: 0;
+        border-top: 1px solid oklch(0.30 0 0 / 0.28);
+        padding-left: 0;
+        padding-top: 16px;
+      }
+      .pilot-mark strong {
+        writing-mode: horizontal-tb;
+        transform: none;
+        font-size: clamp(44px, 14vw, 74px);
+      }
+      .preview {
+        aspect-ratio: auto;
+        min-height: 520px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!--
+    HEADER
+    Title: Gamified Copilot Learning Platform
+    Format: 10-15 minute compact executive briefing, 9 slides, dense executive slide density.
+    Audience: Executives / sponsors with working knowledge of Copilot and AI tools.
+    Goal: Decision / approval for a bounded pilot.
+    Source status: None.
+    Assumptions:
+    - ASSUMPTION: Current Copilot training is too passive; employees need repeated practice inside real work scenarios.
+    - ASSUMPTION: A gamified platform can turn Copilot learning into missions, progress, and team momentum without making it feel childish.
+    - ASSUMPTION: The platform should cover Copilot Chat and in-app Copilot workflows across Teams, Outlook, SharePoint, PowerPoint, Excel, and related Microsoft 365 tools.
+    Strongest objection: "This sounds like a game, but will it actually improve productivity?"
+
+    CDN DEPENDENCIES
+    - Mermaid 11.12.0 from jsDelivr: https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs
+      Reason: render slide 08 measurement loop as an actual Mermaid flowchart from text-authored diagram syntax.
+      Fallback: static .mermaid-fallback measurement loop remains visible if the CDN or Mermaid render fails.
+
+    NARRATIVE ARC
+    01 Title and ask.
+    02 Frame the adoption gap.
+    03 State the pilot proposal.
+    04 Explain the operating model.
+    05 Map the mission library to Microsoft 365.
+    06 Show sample missions.
+    07 Answer the productivity objection.
+    08 Define pilot measurement.
+    09 Close with scope, guardrails, and decision ask.
+
+    RIGOR AUDIT
+    1. Claim without evidence: PASS with caveat. Unsourced claims are marked as assumptions or pilot hypotheses.
+    2. Objection unanswered: PASS. Slide 07 answers the productivity objection directly.
+    3. Buried lede: PASS. Core message appears in the top summary and by slide 03.
+    4. So-what slide: PASS. Every content slide frames, models, exemplifies, rebuts, measures, guards, or asks.
+    5. Unsourced specifics: PASS. No stats, quotes, or causal proof are asserted without source; measurement is proposed.
+
+    STRONG-SLIDE VERIFICATION
+    Density match: PASS. Dense slides use matrix, flow, mission specimen, Mermaid loop, decision sheet, and artifact structures.
+    Slide job: PASS. Each slide has one job.
+    Claim title: PASS. Content slide titles are claim-led.
+    Concrete content: PASS. Slides 05-07 show missions, work artifacts, and productivity outcomes.
+    Information design: PASS. Dense content is structured, not paragraph-led.
+    Source honesty: PASS. Source status is None; specifics are framed as proposal or assumption.
+    Pushback coverage: PASS. Slide 07 answers the stated objection.
+    Anti-boring design: PASS. Slides use a title marker, contrast split, decision sheet, operating loop, app matrix, mission specimen, Mermaid loop, and ask sheet instead of a repeated title-plus-bullets pattern.
+
+    SUBAGENT REVIEW
+    Status: fixed findings
+    Reviewer summary:
+    - Fixed P1 source-honesty issue on slides 07 and 09 by reframing productivity as a pilot hypothesis.
+    - Fixed P1 objection-answer issue on slide 07 by changing it to a concern / answer / proof-needed / guardrail sheet.
+    - Fixed P2 source-honesty issue on slides 05 and 06 by labeling mission content as proposed pilot examples.
+    - Fixed P2 visual issue on slide 06 by replacing equal-weight mission tiles with one mission specimen plus supporting examples.
+    - Fixed P3 review-record issue by adding this SUBAGENT REVIEW block.
+    - Post-review user comment: converted slide 08 scorecard row into a real Mermaid CDN flowchart with a static fallback.
+
+    VISUAL VARIETY MAP
+    01 structural title / pilot marker
+    02 contrast wall / vertical hairline split
+    03 decision cockpit / decision sheet
+    04 operating loop / workflow path
+    05 map surface / app-skill-artifact matrix
+    06 mission specimen / supporting examples
+    07 objection sheet / proof-needed gate
+    08 Mermaid flowchart / measurement gate
+    09 ask sheet / guardrail checklist
+  -->
+  <main>
+    <header>
+      <p class="eyebrow">BRAINSTORM &mdash; NOT FINAL DECK</p>
+      <h1>Gamified Copilot Learning Platform</h1>
+    </header>
+
+    <section class="core-idea" aria-label="Core idea">
+      <div>
+        <p class="eyebrow">Core idea</p>
+        <p class="big">Make Copilot practice visible.</p>
+      </div>
+      <div class="core-copy">
+        <p><strong>Proposal:</strong> Approve a bounded pilot for a gamified Microsoft Copilot learning platform across Copilot Chat and Microsoft 365 apps.</p>
+        <p><strong>Why it matters:</strong> Employees do not build Copilot habits by watching training alone; they need repeated, work-real practice.</p>
+        <p><strong>What makes it credible:</strong> The pilot is judged by missions, work artifacts, and productivity signals, not by points alone.</p>
+      </div>
+    </section>
+
+    <section class="deck" aria-label="Deck structure">
+      <p class="structure-label">Deck structure</p>
+
+      <!-- ARGUMENT: ROLE: structural - no claim. SOURCES: user-approved proposal framing. -->
+      <article class="slide-panel" data-slide="01" aria-labelledby="slide-01-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 01</p>
+          <h2 id="slide-01-title">Title</h2>
+          <p>Open with the proposal name and the decision being requested.</p>
+        </header>
+        <div class="preview title-slide">
+          <p class="big">Gamified Copilot Learning Platform.</p>
+          <div class="pilot-mark" aria-label="Pilot marker">
+            <span>Decision package</span>
+            <strong>Pilot</strong>
+          </div>
+          <p class="title-subtitle">Approve a bounded pilot to turn Copilot training into repeated, work-based practice.</p>
+          <p class="title-scope">Scope: Copilot Chat, Teams, Outlook, SharePoint, PowerPoint, Excel, and related Microsoft 365 workflows.</p>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: Current Copilot enablement needs a practice layer, not just awareness. EVIDENCE: ASSUMPTION based on user-approved takeaway; no source provided. SOURCES: None. -->
+      <article class="slide-panel" data-slide="02" aria-labelledby="slide-02-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 02</p>
+          <h2 id="slide-02-title">Training awareness does not become daily usage by itself.</h2>
+          <p>Frame the problem without overstating proof.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">The missing layer is repeated practice.</p>
+          <div class="hairline-split">
+            <div>
+              <span class="label">Traditional enablement</span>
+              <div class="manuscript">
+                <div class="manuscript-row"><span>01</span><strong>Watch.</strong><p>Employees attend a session or consume a guide.</p></div>
+                <div class="manuscript-row"><span>02</span><strong>Remember.</strong><p>The burden shifts to individual recall later.</p></div>
+                <div class="manuscript-row"><span>03</span><strong>Try.</strong><p>Usage depends on confidence, time, and a relevant moment.</p></div>
+              </div>
+            </div>
+            <div class="hairline"></div>
+            <div>
+              <span class="label">Practice layer</span>
+              <div class="manuscript">
+                <div class="manuscript-row"><span>01</span><strong>Mission.</strong><p>A real work scenario gives the employee a reason to use Copilot.</p></div>
+                <div class="manuscript-row"><span>02</span><strong>Output.</strong><p>The activity ends with a draft, summary, analysis, or decision artifact.</p></div>
+                <div class="manuscript-row"><span>03</span><strong>Signal.</strong><p>Progress shows repeated practice across apps and skills.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: Leadership should approve a pilot, not a full-scale rollout. EVIDENCE: No proof yet; pilot framing controls risk. SOURCES: None. -->
+      <article class="slide-panel" data-slide="03" aria-labelledby="slide-03-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 03</p>
+          <h2 id="slide-03-title">Approve a pilot, not a promise.</h2>
+          <p>Make the ask explicit by slide 3.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">Use the pilot to test whether missions build real Copilot habits.</p>
+          <div class="decision-sheet">
+            <div class="decision-row"><span>Decision</span><strong>Approve a bounded gamified learning pilot for Microsoft Copilot practice.</strong></div>
+            <div class="decision-row"><span>Premise</span><strong>Work-real missions can create more repetition than passive training alone.</strong></div>
+            <div class="decision-row"><span>Proof needed</span><strong>Employee engagement, repeated usage, useful artifacts, and manager-visible productivity signals.</strong></div>
+            <div class="decision-row"><span>Limit</span><strong>No claim of proven productivity lift until the pilot measures it.</strong></div>
+          </div>
+          <p class="closer">This is a controlled learning experiment, not a blank-check platform rollout.</p>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: The game layer is a behavior loop around real work. EVIDENCE: ASSUMPTION operating model approved in arc; no source provided. SOURCES: None. -->
+      <article class="slide-panel" data-slide="04" aria-labelledby="slide-04-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 04</p>
+          <h2 id="slide-04-title">The platform turns practice into a visible loop.</h2>
+          <p>Show how an employee moves through the experience.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">Pick a mission. Use Copilot. Submit the artifact. Improve the next attempt.</p>
+          <div class="flowchart" aria-label="Mission flow">
+            <div class="flow-step"><span>Step 01</span><strong>Choose a work scenario.</strong><p class="muted">Email, meeting, search, deck, research, analysis.</p></div>
+            <div class="flow-arrow" aria-hidden="true"></div>
+            <div class="flow-step"><span>Step 02</span><strong>Use Copilot in the real app.</strong><p class="muted">Chat, Teams, Outlook, SharePoint, PowerPoint, Excel.</p></div>
+            <div class="flow-arrow" aria-hidden="true"></div>
+            <div class="flow-step"><span>Step 03</span><strong>Submit a work artifact.</strong><p class="muted">Draft, summary, search result, deck outline, insight.</p></div>
+            <div class="flow-arrow" aria-hidden="true"></div>
+            <div class="flow-step"><span>Step 04</span><strong>Earn progress and coaching.</strong><p class="muted">Momentum reflects demonstrated practice.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: The mission library should cover Copilot Chat and in-app Microsoft 365 workflows. EVIDENCE: User selected all proposed examples. SOURCES: User intake; no external source. -->
+      <article class="slide-panel" data-slide="05" aria-labelledby="slide-05-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 05</p>
+          <h2 id="slide-05-title">Learning happens where work already happens.</h2>
+          <p>Map the proposed pilot library to the Microsoft 365 apps executives recognize.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">Proposed pilot library: six work surfaces.</p>
+          <div class="matrix" aria-label="Mission library matrix">
+            <div class="head">App</div><div class="head">Employee mission</div><div class="head">Skill practiced</div><div class="head">Work artifact</div>
+            <div><strong>Outlook</strong></div><div><p>Draft a stakeholder update from rough notes.</p></div><div><p>Prompting and tone control.</p></div><div><p>Email draft.</p></div>
+            <div><strong>Teams</strong></div><div><p>Convert a meeting into follow-up actions.</p></div><div><p>Summarization and action extraction.</p></div><div><p>Action list.</p></div>
+            <div><strong>SharePoint</strong></div><div><p>Find the right policy or project context.</p></div><div><p>Knowledge search and synthesis.</p></div><div><p>Source-backed answer.</p></div>
+            <div><strong>PowerPoint</strong></div><div><p>Create a first draft briefing deck.</p></div><div><p>Structuring and rewriting.</p></div><div><p>Slide outline.</p></div>
+            <div><strong>Copilot Chat</strong></div><div><p>Research a decision or compare options.</p></div><div><p>Question framing and refinement.</p></div><div><p>Decision brief.</p></div>
+            <div><strong>Excel</strong></div><div><p>Analyze a small data set for trends.</p></div><div><p>Data questioning and interpretation.</p></div><div><p>Insight summary.</p></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: Missions make Copilot practice concrete enough for employees to repeat. EVIDENCE: Placeholder mission examples requested by user; no source provided. SOURCES: None. -->
+      <article class="slide-panel" data-slide="06" aria-labelledby="slide-06-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 06</p>
+          <h2 id="slide-06-title">A sample mission shows the learning mechanic.</h2>
+          <p>Show one proposed mission in enough detail to make the platform intuitive.</p>
+        </header>
+        <div class="preview is-dense mission-dense">
+          <p class="big">Sample mission: close the meeting loop.</p>
+          <div class="hairline-split">
+            <div>
+              <span class="label">Featured mission specimen</span>
+              <div class="decision-sheet">
+                <div class="decision-row"><span>Context</span><strong>Teams meeting ended with scattered decisions and owners.</strong></div>
+                <div class="decision-row"><span>Copilot action</span><strong>Summarize decisions, extract owners, and draft follow-up actions.</strong></div>
+                <div class="decision-row"><span>Work artifact</span><strong>Action list ready for review and send-out.</strong></div>
+                <div class="decision-row"><span>Learning signal</span><strong>User demonstrates summarization, refinement, and accountability capture.</strong></div>
+              </div>
+            </div>
+            <div class="hairline"></div>
+            <div>
+              <span class="label">Supporting examples</span>
+              <div class="decision-sheet">
+                <div class="decision-row"><span>Outlook</span><strong>Brief the supplier from rough bullets.</strong></div>
+                <div class="decision-row"><span>PowerPoint</span><strong>Create a first-draft executive update.</strong></div>
+                <div class="decision-row"><span>Excel</span><strong>Explain a trend in a small data set.</strong></div>
+                <div class="decision-row"><span>Chat</span><strong>Pressure-test a plan before review.</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: Productivity value should be treated as a pilot hypothesis measured through output usefulness, not game points. EVIDENCE: Directly answers stated strongest objection; proposed measurement hypothesis only. SOURCES: User objection; no proof yet. -->
+      <article class="slide-panel" data-slide="07" aria-labelledby="slide-07-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 07</p>
+          <h2 id="slide-07-title">The pilot tests output value, not game activity.</h2>
+          <p>Answer the strongest executive objection head-on.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">Concern: activity is easy to create. Value has to be proven.</p>
+          <div class="decision-sheet">
+            <div class="decision-row"><span>Concern</span><strong>A game layer may create points, badges, and activity without improving work.</strong></div>
+            <div class="decision-row"><span>Answer</span><strong>Points only matter when tied to submitted work artifacts and repeated Copilot practice.</strong></div>
+            <div class="decision-row"><span>Proof needed</span><strong>Artifact usefulness, repeat usage, employee confidence, and manager-visible signals.</strong></div>
+            <div class="decision-row"><span>Guardrail</span><strong>No scale decision until the pilot shows observable value signals.</strong></div>
+          </div>
+          <p class="closer">The pilot does not claim productivity lift; it tests whether the signals are worth scaling.</p>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: A pilot can test engagement, repeated usage, artifact quality, and productivity signals. EVIDENCE: Proposed evaluation model; no existing data. SOURCES: None. -->
+      <article class="slide-panel" data-slide="08" aria-labelledby="slide-08-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 08</p>
+          <h2 id="slide-08-title">The pilot should measure behavior change, not course completion.</h2>
+          <p>Give sponsors a governable evaluation plan.</p>
+        </header>
+        <div class="preview is-dense">
+          <p class="big">Measure the habit loop from participation to useful output.</p>
+          <div class="mermaid-panel" aria-label="Pilot measurement loop">
+            <pre class="mermaid">
+%%{init: {"flowchart": {"curve": "basis", "htmlLabels": true}} }%%
+flowchart LR
+  Gate["<b>Scale gate</b><br/>Decide."]:::decision
+  Enrollment["<b>Enrollment</b><br/>Join."]
+  Usage["<b>Usage</b><br/>Repeat."]
+  Missions["<b>Missions</b><br/>Finish."]
+  Artifacts["<b>Artifacts</b><br/>Produce."]
+  Signals["<b>Signals</b><br/>Improve."]:::signal
+
+  Gate --> Enrollment --> Usage --> Missions --> Artifacts --> Signals
+  Signals -. review .-> Gate
+
+  classDef decision fill:#eeeeee,stroke:#555555,color:#171717,stroke-width:1px;
+  classDef signal fill:#f8f8f8,stroke:#555555,color:#171717,stroke-width:1px;
+            </pre>
+            <div class="mermaid-fallback" aria-label="Fallback measurement loop">
+              <div class="fallback-node is-decision"><span>Scale gate</span><strong>Decide.</strong><p>Expand only if value signals are visible.</p></div>
+              <div class="fallback-node"><span>Enrollment</span><strong>Join.</strong><p>Who opts in and which roles the pilot reaches.</p></div>
+              <div class="fallback-node"><span>Usage</span><strong>Repeat.</strong><p>How often employees return to missions.</p></div>
+              <div class="fallback-node"><span>Missions</span><strong>Finish.</strong><p>Which scenarios employees complete.</p></div>
+              <div class="fallback-node"><span>Artifacts</span><strong>Produce.</strong><p>What work outputs get created for review.</p></div>
+              <div class="fallback-node"><span>Signals</span><strong>Improve.</strong><p>Where managers observe useful behavior change.</p></div>
+            </div>
+          </div>
+          <div class="decision-sheet">
+            <div class="decision-row"><span>Do not claim</span><strong>Productivity uplift before evidence exists.</strong></div>
+            <div class="decision-row"><span>Do measure</span><strong>Whether work-real missions create repeat practice and usable outputs.</strong></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ARGUMENT: CLAIM: A bounded pilot lets leadership validate the idea with clear guardrails. EVIDENCE: Proposed pilot controls; no source provided. SOURCES: None. -->
+      <article class="slide-panel" data-slide="09" aria-labelledby="slide-09-title">
+        <header class="slide-head">
+          <p class="eyebrow">Slide 09</p>
+          <h2 id="slide-09-title">Approve the pilot with clear guardrails.</h2>
+          <p>Close on the decision and the low-risk shape of the ask.</p>
+        </header>
+        <div class="preview is-dense">
+          <div class="soft-wash">
+            <p class="big">Approve a bounded Copilot learning pilot.</p>
+            <p class="title-subtitle">Validate whether work-based missions create repeatable Copilot practice and observable productivity signals.</p>
+          </div>
+          <div class="decision-sheet">
+            <div class="decision-row"><span>Start small</span><strong>Limit the audience, mission set, and duration before scaling.</strong></div>
+            <div class="decision-row"><span>Keep it serious</span><strong>Use game mechanics for motivation, but keep content executive-clean and work-relevant.</strong></div>
+            <div class="decision-row"><span>Prove value</span><strong>Review artifacts, usage, and feedback before any enterprise rollout decision.</strong></div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs";
+
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: "strict",
+      theme: "base",
+      themeVariables: {
+        background: "transparent",
+        primaryColor: "#f7f7f7",
+        primaryTextColor: "#171717",
+        primaryBorderColor: "#555555",
+        lineColor: "#5c5c5c",
+        fontFamily: "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif"
+      },
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        useMaxWidth: true
+      }
+    });
+
+    window.addEventListener("load", () => {
+      window.setTimeout(() => {
+        if (document.querySelector(".mermaid svg")) {
+          document.documentElement.classList.add("mermaid-ready");
+        }
+      }, 800);
+    });
+  </script>
+</body>
+</html>

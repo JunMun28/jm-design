@@ -2,7 +2,7 @@
 
 `micron-dark-executive` has exactly one approved title-slide treatment: `photo-title`.
 
-Use the theme-owned photo asset:
+Use the theme-owned high-resolution VR portrait asset:
 
 `themes/micron-dark-executive/assets/title-image.jpeg`
 
@@ -27,10 +27,18 @@ The copy-paste fragment lives at:
 ## CSS Contract
 
 - Black stage.
-- Official white Micron logo top-left.
-- Large left-aligned title block.
-- The photo sits on the right with a right-weighted crop equivalent to a 20%
-  visual shift, without expanding page geometry.
-- A black readability overlay protects the title area.
-- No alternate generated title art, UI stacks, shader fields, wafer portals, or
-  abstract gradient title visuals.
+- Official white Micron + `Intelligence Accelerated` lockup bottom-left.
+- Large left-aligned title block in a hard black field.
+- Date or context sits directly below the title.
+- The photo sits on the right half with a center/right crop that keeps the VR
+  headset and face sharp.
+- Use the actual JPEG asset in the DOM; do not flatten the whole cover into a
+  screenshot, and do not use a low-resolution PNG crop.
+- Keep the split crisp; do not wash the photo under the text area unless a
+  specific photo needs a tiny edge fade.
+- No visible slide number, accent rule, decorative kicker, alternate generated
+  title art, UI stacks, shader fields, wafer portals, or abstract gradient
+  title visuals.
+- Use `assets/micron-logo-white-ia-rgb.png` on generated title slides and
+  `../_shared/micron-logo-white-ia-rgb.png` inside the theme example. Plain
+  Micron wordmark assets are for content-slide footers only.

@@ -1,4 +1,6 @@
 import json
+import importlib.util
+import os
 import subprocess
 import tempfile
 import unittest
@@ -20,26 +22,29 @@ class MicronIconsTests(unittest.TestCase):
 
     def test_manifest_counts(self):
         icons = self.manifest["icons"]
-        primary_png = [i for i in icons if i["set"] == "primary" and i["media"] == "png"]
+        primary_svg = [i for i in icons if i["set"] == "primary" and i["media"] == "svg"]
         primary_mp4 = [i for i in icons if i["set"] == "primary" and i["media"] == "mp4"]
-        secondary_png = [i for i in icons if i["set"] == "secondary" and i["media"] == "png"]
-        self.assertEqual(len(primary_png), 130)
+        secondary_svg = [i for i in icons if i["set"] == "secondary" and i["media"] == "svg"]
+        self.assertEqual(len(primary_svg), 130)
         self.assertEqual(len(primary_mp4), 120)
-        self.assertEqual(len(secondary_png), 142)
+        self.assertEqual(len(secondary_svg), 142)
 
     def test_extractor_rebuild_counts(self):
+        if importlib.util.find_spec("vtracer") is None:
+            self.skipTest("vtracer is required to rebuild SVG icon assets")
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "assets"
             subprocess.run(
                 ["python3", str(EXTRACTOR), "--source-dir", str(SOURCE_DIR), "--output-dir", str(output), "--force"],
                 check=True,
+                env=os.environ.copy(),
                 stdout=subprocess.PIPE,
                 text=True,
             )
             manifest = json.loads((output / "manifest.json").read_text())
-            self.assertEqual(len([i for i in manifest["icons"] if i["set"] == "primary" and i["media"] == "png"]), 130)
+            self.assertEqual(len([i for i in manifest["icons"] if i["set"] == "primary" and i["media"] == "svg"]), 130)
             self.assertEqual(len([i for i in manifest["icons"] if i["set"] == "primary" and i["media"] == "mp4"]), 120)
-            self.assertEqual(len([i for i in manifest["icons"] if i["set"] == "secondary" and i["media"] == "png"]), 142)
+            self.assertEqual(len([i for i in manifest["icons"] if i["set"] == "secondary" and i["media"] == "svg"]), 142)
 
     def test_known_mp4_anomalies_map_to_canonical_slugs(self):
         by_source = {
@@ -52,7 +57,7 @@ class MicronIconsTests(unittest.TestCase):
         self.assertEqual(by_source[("visual-analyitics", "rev")]["canonical_slug"], "visual-analytics")
         self.assertIn("style-mismatch-folder-authoritative", by_source[("cpu-gpu", "rev")]["anomalies"])
 
-    def test_finder_group_is_deterministic_and_theme_sets_rev_png(self):
+    def test_finder_group_is_deterministic_and_theme_sets_rev_svg(self):
         cmd = [
             "python3",
             str(FINDER),
@@ -67,12 +72,12 @@ class MicronIconsTests(unittest.TestCase):
         second = subprocess.check_output(cmd, text=True).splitlines()
         self.assertEqual(first, second)
         self.assertEqual(len(first), 3)
-        self.assertTrue(all("/png/rev/" in path for path in first))
+        self.assertTrue(all("/svg/rev/" in path for path in first))
 
-    def test_finder_defaults_to_png_unless_mp4_requested(self):
-        png = subprocess.check_output(["python3", str(FINDER), "wafer", "--style", "pos"], text=True).strip()
+    def test_finder_defaults_to_svg_unless_mp4_requested(self):
+        svg = subprocess.check_output(["python3", str(FINDER), "wafer", "--style", "pos"], text=True).strip()
         mp4 = subprocess.check_output(["python3", str(FINDER), "wafer", "--style", "pos", "--media", "mp4"], text=True).strip()
-        self.assertTrue(png.endswith(".png"))
+        self.assertTrue(svg.endswith(".svg"))
         self.assertTrue(mp4.endswith(".mp4"))
 
     def test_preview_loads_manifest_path(self):

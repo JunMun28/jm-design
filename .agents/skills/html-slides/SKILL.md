@@ -17,6 +17,7 @@ description: Use when creating or editing single-file HTML slide decks across mu
 - For a new Micron dark deck, use `wafer-portal` from `themes/micron-dark/title-templates/wafer-portal.html` as the default title slide. Do not replace it with silk-wave, precision-board, screen-stack, photo, or other title treatment unless the user explicitly names that title direction.
 - For Micron themes, use the standalone `micron-icons` skill when official Micron iconography or decorative Micron icon texture would improve the deck. Do not browse icon folders manually.
 - For any slide animation, first consult the project-local `../emil-design-engineering/SKILL.md` and especially `../emil-design-engineering/animations.md`. Use purposeful motion only, animate `transform`/`opacity` or library-rendered chart entry states, avoid `transition: all`, prevent layout shift, and include `prefers-reduced-motion` handling.
+- When the user asks for a better/impressive/non-boring layout, attaches a slide image as style reference, or the deck is a diagram-heavy technical explainer, consult the sibling `../slide-layout-designer/SKILL.md` before writing HTML. Treat its output as the slide layout blueprint.
 - Content slides should be custom to the topic. Do not reuse fixed demo layouts by default.
 - If the user asks for `.pptx`, PowerPoint, or editable Office output, use the project `pptx` skill instead of generating HTML first.
 - Ask only when theme/template choice changes the outcome materially.
@@ -141,7 +142,7 @@ Universal across every theme. Theme-specific rules (palette, accent, gradient, c
 - Hide browser scrollbars for presentation mode; keep scroll-snap navigation functional.
 - `window.presentation = new SlidePresentation()`.
 - Keyboard, wheel, touch/swipe, nav dots, progress bar.
-- Right-edge nav dots should read as a tight progress rail: compact vertical stack, no large 44px visual slots. Use about `32px` wide by `18px` high button lanes with a 6-8px centered dot, or a similarly close visual rhythm.
+- If a theme shows right-edge nav dots, they should read as a tight progress rail: compact vertical stack, no large 44px visual slots. Use about `32px` wide by `18px` high button lanes with a 6-8px centered dot, or a similarly close visual rhythm. Theme rules may hide the dots and surface progress elsewhere, such as `micron-dark-executive` using a top-right hover/focus progress chip beside `Present`.
 - Top-right hover hotspot for presentation mode: `.presentation-hotspot` contains a hidden-until-hover/focus `.present-toggle` pill with play icon + `Present`, requesting fullscreen on click and with `P`.
 - ESC opens clickable overview thumbnails.
 - No slide-internal scrolling; split overflow into another slide.
@@ -194,12 +195,14 @@ Rules:
 4. Read relevant design reference plus runtime checklist.
 5. Read the chosen theme's `design.md`. If the theme manifest lists a `title-templates.md` extra (e.g. Micron dark executive or Micron dark), read it only for title slide direction.
 6. For Micron themes, call `../micron-icons/bin/find-icon.py` when the deck needs official iconography, semantic category icons, or decorative icon texture.
-7. Build outline from approved user content.
-8. Add slide 1 as a title page with title, short subtitle, optional audience/date/source note, and a title treatment that fits the chosen theme.
-9. Put the requested explanatory/content material after the title page.
-10. Define deck system: title treatment, background, type, rhythm, visual protagonists, and approved runtime tech. Make content layouts custom to the topic.
+7. When layout quality is a primary concern, when the user provides a style reference image, or when the deck needs an infographic/system-diagram treatment, read `../slide-layout-designer/SKILL.md` and produce a layout blueprint before implementation. Use that blueprint for grids, zones, visual protagonists, semantic color roles, and text budgets.
+8. Build outline from approved user content.
+9. Add slide 1 as a title page with title, short subtitle, optional audience/date/source note, and a title treatment that fits the chosen theme.
+10. Put the requested explanatory/content material after the title page.
+11. Define deck system: title treatment, background, type, rhythm, visual protagonists, and approved runtime tech. Make content layouts custom to the topic.
    - For Micron light training / enablement decks, use the Copilot reference as the pattern language: fixed 16:9 sheet, large left headline, one right-side subject mark or diagram, section labels, hairline comparisons, prompt/demo slides, progressive build fragments, and one soft-purple wash moment.
    - For Micron light decks, make purple visibly present: section labels, active data/chart states, focal panel accents, and one or two soft-purple wash moments. The title slide must include the faint purple dot-grid texture from `themes/micron-light/design.md`; if the dot-grid is absent, the title slide is unfinished.
+   - For Micron light RAG / AI / data-flow / architecture explainers, use the icon-rich technical explainer map in `themes/micron-light/design.md` §4A.5: colorful semantic icon chips, source strip, numbered pipeline, right proof rail, artifact/nutshell card, and bottom "why it matters" strip with a curved purple edge.
    - For Micron dark executive training / enablement decks, do not simply invert the
      light deck into white text rows. Use dark UI specimens: prompt/output
      windows, artifact strips, data-summary panels, and visible work products.
@@ -208,17 +211,17 @@ Rules:
    - If the approved brainstorm says `Presentation style: training
      walkthrough`, include one prompt-output slide before the guardrails/closing
      section unless the user explicitly rejects it.
-11. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
-12. Name the generated HTML file from the deck content: lowercase kebab-case from the title or core topic, such as `ai-roadmap-board-review.html`. Do this for every theme, including Micron themes. Avoid generic names like `micron-slides.html`, `slides.html`, or `deck.html` unless the user explicitly names that file.
-13. Run verification at desktop, mobile, and a non-16:9 browser viewport when fixed-stage output is used, such as `1127x1084`, to confirm the slide canvas letterboxes instead of stretching.
+12. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
+13. Name the generated HTML file from the deck content: lowercase kebab-case from the title or core topic, such as `ai-roadmap-board-review.html`. Do this for every theme, including Micron themes. Avoid generic names like `micron-slides.html`, `slides.html`, or `deck.html` unless the user explicitly names that file.
+14. Run verification at desktop, mobile, and a non-16:9 browser viewport when fixed-stage output is used, such as `1127x1084`, to confirm the slide canvas letterboxes instead of stretching.
    After verification, inspect screenshots. If more than half the content slides
    are text rows, generic cards, or panels without a concrete visual artifact,
    revise before delivery. If screenshot text looks too small for a room,
    split the content or enlarge the layout; do not satisfy fit by shrinking
    copy below the readability floors. Passing `verify.py` is necessary but not
    a design review.
-14. After changing theme examples, scaffold output, runtime, overview behavior, or verifier logic, run `scripts/audit-theme-matrix.py --output tmp/html-slides-audit`. This verifies shipped examples and freshly scaffolded decks for every stable theme at `1280x720`, `375x667`, and `1127x1084`.
-15. Export PDF only when requested.
+15. After changing theme examples, scaffold output, runtime, overview behavior, or verifier logic, run `scripts/audit-theme-matrix.py --output tmp/html-slides-audit`. This verifies shipped examples and freshly scaffolded decks for every stable theme at `1280x720`, `375x667`, and `1127x1084`.
+16. Export PDF only when requested.
 
 ## Density Limits
 

@@ -1,6 +1,8 @@
 # Example excerpt — what good output looks like
 
-This is a real ~80-line excerpt from a brainstorm produced with this skill. Use it as a tonal reference for the level of specificity, the design vocabulary, and the structural rhythm. Full file lives at `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.txt`.
+This is a legacy excerpt from a text brainstorm produced before the skill moved
+to HTML artifacts. Use it only as a tonal reference for specificity, design
+vocabulary, and structural rhythm; do not copy the file format.
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗

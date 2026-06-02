@@ -136,6 +136,165 @@ Clean.                 Draft.                Analyze.
 Best for: "what it can do" slides. Use this instead of icon chips when the
 audience needs to see business work, not categories.
 
+### checklist gate
+
+A decision or readiness slide where each row is a criterion, status, and
+implication. It should feel like an inspection surface, not a bullet list.
+
+```
+GATE                  STATUS        IMPLICATION
+Work-real missions    Required      No generic quizzes.
+Artifact evidence     Required      Completion is not enough.
+Pilot guardrails      Required      Scale only after proof.
+```
+
+Best for: executive approval criteria, pilot readiness, risk controls, launch
+gates, training quality, and "what good looks like" slides.
+
+### mission board
+
+A set of concrete task tiles or rows that read like things a user can do next.
+Each mission shows context, action, and output.
+
+```
+OUTLOOK        Brief the supplier.      Email draft.
+TEAMS          Close the loop.          Action list.
+EXCEL          Explain the trend.       Insight summary.
+```
+
+Best for: learning platforms, gamified experiences, task libraries, app
+coverage, enablement journeys, and use-case slides. The tile is allowed only
+when it behaves like a product object; otherwise use rows.
+
+### decision cockpit
+
+An executive decision surface: decision, premise, proof needed, risks,
+guardrails, owner, and next step in one composed view.
+
+```
+DECISION       Approve pilot.
+PROOF NEEDED   Usage, artifacts, manager signals.
+GUARDRAILS     Small cohort, fixed duration, no scale claim.
+NEXT STEP      Select pilot group.
+```
+
+Best for: approval asks, steering committees, investment decisions, and pilot
+proposals. Stronger than a closing bullet slide because it shows how to decide.
+
+### operating loop
+
+A circular or staged loop where each step changes the state of the next. Use it
+when the idea depends on repetition or behavior change.
+
+```
+Pick task -> Use tool -> Produce artifact -> Get feedback -> Repeat
+```
+
+Best for: adoption, practice, coaching, continuous improvement, product
+mechanics, flywheels, and learning systems.
+
+### node-edge loop
+
+A node-and-edge diagram that borrows the topology of a workflow canvas: boxed
+nodes, thin connectors, and one visible feedback edge. In brainstorm HTML, use
+Mermaid from a pinned CDN as the recommended default when quick layout matters,
+or inline SVG/CSS when exact placement matters more than authoring speed. Do
+**not** call it React Flow unless the actual React Flow library is imported and
+rendered.
+
+```
+[Join] -> [Repeat] -> [Finish] -> [Produce] -> [Improve]
+                    \------------------------> [Decide]
+```
+
+Best for: measurement loops, product mechanics, agent workflows, automation
+flows, approval paths, and anything where the audience needs to see state
+moving through a system. Stronger than a row of equal scorecards because the
+relationships are visible.
+
+Renderer choice:
+
+- Mermaid from a pinned CDN for quick flowcharts, sequence diagrams, and
+  measurement loops. This is the usual recommendation for brainstorm decks.
+- Inline SVG/CSS for diagrams that need precise visual composition and no
+  dependency.
+
+### technical infographic board
+
+A dense teaching slide that explains a mechanism through coordinated visual
+zones: numbered stages, symbolic diagrams, formulas, state labels, side legends,
+and a bottom "why it matters" strip. This is the right pattern when the audience
+needs to understand how a technical method works, not merely remember a
+definition.
+
+```
+TITLE: How LoRA works
+
+[1 Pretrained model] | [2 Low-rank update] | [3 Forward pass] | [training / inference legend]
+   matrix W          |    A x B + formula  |    x -> W + AB -> y | update A/B, freeze W
+
+[benefit] fewer params | [benefit] lower memory | [benefit] task-specific tuning
+```
+
+Best for: algorithms, model-training mechanics, optimization methods,
+architecture walkthroughs, data pipelines, quantization, retrieval, inference
+paths, and any explanation where the audience needs a mental model of moving
+parts.
+
+Use it when a simple flowchart or three-card explanation would be too shallow.
+The board must have:
+
+- **3-4 primary zones** that map to the mechanism's actual stages.
+- **At least one real symbolic artifact** such as a matrix, tensor, equation,
+  parameter table, graph, or pseudo-interface.
+- **A side legend or callout rail** that distinguishes training-time vs
+  inference-time behavior, frozen vs trainable state, or input vs output path.
+- **A bottom payoff strip** with 2-3 concrete reasons the mechanism matters.
+- **Tight labels attached to objects**, not disconnected bullets.
+
+Avoid making every technical slide this dense. Use the technical infographic
+board as the main "how it works" anchor, then follow with simpler workflow,
+comparison, or product slides so the deck still breathes.
+- `@xyflow/react` via an ESM CDN for a real React Flow canvas when the user
+  needs dragging, zooming, handles, or interactive edge editing.
+- D3 for custom data-driven SVG.
+- ELK or Dagre when auto-layout matters more than interaction.
+
+When a CDN renderer is used, record the library, exact version, CDN URL, and
+fallback in the brainstorm HTML comment. Mermaid node labels should be short;
+put detailed explanations in nearby rows, captions, or a decision sheet so the
+auto-layout does not shrink into unreadable type.
+
+### journey map
+
+A before/during/after path with states, actions, artifacts, and friction.
+Unlike a timeline, it tracks experience and state change.
+
+Best for: onboarding, customer stories, employee adoption, training paths, and
+workflow transformation.
+
+### map surface
+
+A spatial arrangement of zones, modules, capabilities, teams, or product areas.
+It should help the audience locate where things live.
+
+Best for: platforms, capability models, product suites, curriculums, game
+worlds, and maturity stages.
+
+### contrast wall
+
+A strong comparison surface where opposing claims or states are placed against
+each other with one decisive takeaway.
+
+```
+PASSIVE TRAINING        ACTIVE PRACTICE
+Watch once.             Repeat in real work.
+Completion proves seat. Artifact proves skill.
+```
+
+Best for: objections, before/after, risk/control, promise/proof, and
+old/new framing.
+
 ### italic closer
 
 One centered italic sentence below the main block. The slide's emotional resolution.
@@ -155,6 +314,14 @@ Almost every content slide can earn one if the closer line genuinely advances th
 | Use cases / examples | borderless quote grid |
 | Training example / what user types | prompt-output specimen |
 | Business artifacts / non-technical examples | artifact strip |
+| Approval criteria / readiness / guardrails | checklist gate |
+| Learning tasks / gamified platform / use cases | mission board |
+| Executive ask / pilot scope / decision | decision cockpit |
+| Repeated practice / flywheel / behavior change | operating loop or Mermaid node-edge loop |
+| Measurement loop / stateful workflow / automation path | Mermaid node-edge loop |
+| Adoption path / onboarding / experience change | journey map |
+| Platform areas / capability groups / world zones | map surface |
+| Objection / before-after / promise-proof | contrast wall |
 | Climactic thesis | stat-row + soft wash panel |
 | Pre-demo "let's try" | inline action line |
 | Definitions / who is in scope | kicker + H2 + italic closer, no signature block |

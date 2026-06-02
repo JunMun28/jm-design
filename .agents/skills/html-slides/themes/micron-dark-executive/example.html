@@ -18,8 +18,8 @@
     --micron-black:#000; --micron-white:#fff; --micron-off-white:#f0f0ee;
     --micron-accent:#bd03f7; --micron-cyan:#32c8ff;
     --gray-c:#8c8c8c; --gray-d:#bfbfbf; --gray-e:#e6e6e6;
-    --grad-hero:linear-gradient(135deg,#434c5c 0%,#2c013b 55%,#9601c5 100%);
-    --grad-bright-3:linear-gradient(135deg,#e70470 0%,#e70c55 50%,#c605d3 100%);
+    --grad-hero:linear-gradient(135deg,#244dff 0%,#bd03f7 100%);
+    --grad-bright-3:linear-gradient(135deg,#244dff 0%,#bd03f7 100%);
     --font-display:"Micron Basis","Plus Jakarta Sans",Arial,sans-serif;
     --font-body:"Micron Basis","Plus Jakarta Sans",Arial,sans-serif;
     --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -63,9 +63,6 @@
     text-transform:uppercase;color:var(--text-secondary)}
   .slide:not(.title-slide) .eyebrow{line-height:1;margin-bottom:20px}
   .divider .eyebrow{color:#fff;opacity:.85}
-  .slide-coord{position:absolute;top:var(--space-5);left:var(--space-5);font-family:var(--font-mono);
-    font-size:var(--type-xs);letter-spacing:var(--track-mono);color:var(--text-secondary);opacity:.6;z-index:3}
-  .slide-coord::before{content:"// ";opacity:.5}
   .stack>*+*{margin-top:var(--space-3)}
 
   .reveal{opacity:0;transform:translateY(24px);
@@ -75,23 +72,22 @@
   .reveal:nth-child(3){transition-delay:.25s}.reveal:nth-child(4){transition-delay:.35s}
 
   /* Title — approved Micron dark executive photo treatment only. */
-  .title-slide .hero-photo{position:absolute;inset:0 0 0 auto;width:68%;height:100%;
-    object-fit:cover;object-position:84% center;z-index:1;opacity:.82;
-    filter:saturate(1.08) contrast(1.08);pointer-events:none}
-  .title-slide::before{content:"";position:absolute;inset:0;z-index:2;
-    background:linear-gradient(90deg,#000 0%,rgba(0,0,0,.98) 30%,rgba(0,0,0,.74) 48%,rgba(0,0,0,.18) 72%,rgba(0,0,0,.05))}
-  .title-slide h1{max-width:19ch}
-  .title-slide .eyebrow{font-size:24px;line-height:1;margin-bottom:24px}
-  .title-slide .slide-content{justify-content:flex-end;padding-bottom:18vh;z-index:3}
-  .md-title-brand{position:absolute;top:52px;left:96px;z-index:4;width:132px;height:auto;opacity:.96}
-  .title-meta{position:absolute;left:var(--col-margin);bottom:var(--col-margin);z-index:3;
-    font-family:var(--font-mono);font-size:var(--type-xs);letter-spacing:var(--track-mono);
-    color:var(--text-secondary);text-transform:uppercase}
+  .title-slide .hero-photo{position:absolute;inset:0 0 0 auto;width:50%;height:100%;
+    object-fit:cover;object-position:center;z-index:1;opacity:1;
+    filter:saturate(1.02) contrast(1.02);pointer-events:none}
+  .title-slide::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:2;
+    background:rgba(255,255,255,.04)}
+  .title-slide h1{max-width:700px;font-size:108px;line-height:.95}
+  .title-slide .slide-content{justify-content:flex-end;padding:0 0 292px 64px;z-index:3}
+  .md-title-brand{position:absolute;left:64px;bottom:58px;z-index:4;width:255px;height:auto;opacity:.98}
+  .title-date{margin-top:50px;color:var(--micron-off-white);font-size:30px;line-height:1;font-weight:600}
   .accent-dot{display:none}
 
-  /* Section divider — full-bleed gradient, white type only */
-  .divider{background:var(--grad-hero)}
-  .divider.close{background:var(--grad-bright-3)}
+  /* Section divider — gradient must paint the 16:9 stage, not the viewport wrapper. */
+  .divider .slide-stage{background:var(--grad-hero)}
+  .divider.close .slide-stage{background:var(--grad-bright-3)}
+  .ov-thumb .clone.divider{background:var(--grad-hero)}
+  .ov-thumb .clone.divider.close{background:var(--grad-bright-3)}
   .divider h2{max-width:20ch}
 
   /* Comparison: the figure carries a reference point, not a lone hero number */
@@ -111,13 +107,52 @@
   .points li:first-child{border-top:0}
   .points .k{font-family:var(--font-mono);font-size:var(--type-xs);color:var(--text-secondary);
     letter-spacing:var(--track-mono);min-width:2.5ch}
+  .agenda-layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:5vw;align-items:start}
+  .agenda-list{border-top:var(--hairline);width:100%}
+  .agenda-item{display:grid;grid-template-columns:4.2rem 1fr 7rem;gap:1.2rem;align-items:center;
+    min-height:5.6rem;border-bottom:var(--hairline)}
+  .agenda-item span{font-family:var(--font-mono);font-size:var(--type-xs);letter-spacing:.1em;
+    text-transform:uppercase;color:var(--text-secondary)}
+  .agenda-item b{font-size:clamp(1.2rem,2vw,1.7rem);line-height:1.05;color:#fff}
+  .agenda-item em{font-style:normal;text-align:right;font-size:var(--type-xs);color:var(--text-secondary)}
+  .agenda-item.active{background:#121212}
+  .proof-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:1rem;min-height:31rem}
+  .proof-tile{position:relative;overflow:hidden;border:var(--hairline);background:#121212;padding:1.3rem;
+    display:flex;align-items:flex-end}
+  .proof-tile::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,#1a1a1a,#050505)}
+  .proof-tile.photo{grid-row:span 2}
+  .proof-tile.photo::before{background:url("assets/title-image.jpeg") center / cover no-repeat;opacity:.58}
+  .proof-tile.video{align-items:center;justify-content:center}
+  .proof-tile video{position:relative;width:9rem;height:9rem;object-fit:contain;mix-blend-mode:screen}
+  .proof-tile div,.proof-tile b,.proof-tile span{position:relative;z-index:1}
+  .proof-tile b{display:block;font-size:clamp(1.2rem,2vw,1.65rem);line-height:1.05;color:#fff}
+  .proof-tile span{display:block;margin-top:.45rem;font-size:var(--type-xs);line-height:1.25;color:var(--text-secondary)}
+  .hierarchy{display:grid;gap:.75rem;align-content:center;min-height:31rem}
+  .hierarchy div{height:4.8rem;margin-inline:auto;border:var(--hairline);background:#121212;display:grid;
+    place-items:center;font-size:clamp(1.2rem,2vw,1.65rem);font-weight:800;color:#fff}
+  .hierarchy div:nth-child(1){width:16rem;background:var(--micron-accent)}
+  .hierarchy div:nth-child(2){width:25rem}.hierarchy div:nth-child(3){width:34rem}
+  .hierarchy div:nth-child(4){width:43rem}.hierarchy div:nth-child(5){width:52rem;background:#080808}
+  .score-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+  .score-card{min-height:11rem;background:#121212;border:var(--hairline);padding:1.6rem;display:flex;
+    flex-direction:column;justify-content:space-between}
+  .score-card b{font-size:clamp(2.2rem,5vw,4.2rem);line-height:.95;color:#fff}
+  .score-card span{font-size:var(--type-xs);line-height:1.25;color:var(--text-secondary)}
+  .score-card.active{background:#262626}
+  .with-primary-icon .slide-content{padding-right:420px}
+  .exec-primary-icon{position:absolute;right:96px;top:126px;width:220px;height:220px;
+    object-fit:contain;opacity:.92;mix-blend-mode:screen;pointer-events:none;z-index:3}
 
-  .progress-bar{position:fixed;inset:0 0 auto 0;height:2px;background:var(--micron-accent);transform:scaleX(0);transform-origin:left;z-index:100;transition:transform .3s var(--ease-out-expo)}
-  .nav-dots{position:fixed;right:6px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;z-index:100}
-  .nav-dots button{width:44px;height:44px;border:0;background:transparent;cursor:pointer;padding:0;position:relative}
-  .nav-dots button::before{content:"";position:absolute;inset:0;margin:auto;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.28)}
-  .nav-dots button.active::before{background:var(--micron-accent)}
-  .nav-dots button:focus-visible{outline:2px solid var(--micron-accent);outline-offset:-9px;border-radius:8px}
+  .progress-bar{position:fixed;inset:0 0 auto 0;height:0;background:transparent;transform:scaleX(0);transform-origin:left;z-index:100;transition:transform .3s var(--ease-out-expo)}
+  .nav-dots{position:fixed;right:0;top:0;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);z-index:100;opacity:0;pointer-events:none}
+  .nav-dots button{width:1px;height:1px;border:0;background:transparent;padding:0;cursor:pointer}
+  .presentation-hotspot{position:fixed;top:0;right:0;z-index:120;display:flex;justify-content:flex-end;align-items:flex-start;width:330px;height:96px;padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) 0 0}
+  .presentation-controls{display:inline-flex;align-items:center;gap:10px;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .18s ease,transform .2s ease}
+  .presentation-hotspot:hover .presentation-controls,.presentation-hotspot:focus-within .presentation-controls{opacity:1;pointer-events:auto;transform:none}
+  .slide-progress-chip{display:inline-flex;align-items:center;min-height:40px;padding:0 13px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(0,0,0,.72);color:#fff;font-family:var(--font-mono);font-size:14px;line-height:1;letter-spacing:.08em;box-shadow:0 10px 28px rgba(0,0,0,.24);backdrop-filter:blur(10px)}
+  .present-toggle{display:inline-flex;align-items:center;gap:10px;min-height:40px;padding:0 14px 0 12px;border:1px solid rgba(15,23,42,.14);border-radius:999px;background:rgba(255,255,255,.92);color:#111827;cursor:pointer;font-family:var(--font-display);font-size:14px;font-weight:800;letter-spacing:0;text-transform:none;box-shadow:0 10px 28px rgba(15,23,42,.12);backdrop-filter:blur(10px);transition:border-color .2s ease,box-shadow .2s ease,color .2s ease,transform .2s ease}
+  .present-toggle svg{width:18px;height:18px;display:block;fill:currentColor}
+  .present-toggle:hover,.present-toggle:focus-visible{outline:none;color:var(--micron-accent);border-color:rgba(189,3,247,.55);box-shadow:0 14px 34px rgba(189,3,247,.16);transform:translateY(-1px)}
 
   /* Mandatory brand mark on non-title slides — one rule, never per slide */
   .slide:not(.title-slide) .slide-stage::after{
@@ -150,31 +185,54 @@
 <body>
 <div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
 <nav class="nav-dots" aria-label="Slide navigation"></nav>
+<div class="presentation-hotspot" aria-hidden="false">
+  <div class="presentation-controls">
+    <span class="slide-progress-chip" aria-live="polite">01 / 09</span>
+    <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+      <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+      <span>Present</span>
+    </button>
+  </div>
+</div>
 <main class="deck" tabindex="-1">
 
   <!-- 01 Title — approved photo treatment -->
   <section class="slide title-slide" data-slide-kind="cover">
     <img class="hero-photo" src="assets/title-image.jpeg" alt="" aria-hidden="true" decoding="async" />
-    <img class="md-title-brand" src="../_shared/micron-logo-white-tm-rgb.png" alt="Micron" width="132" height="34" decoding="async" />
     <div class="slide-content">
-      <p class="eyebrow reveal">Micron memory vision · 2026</p>
-      <h1 class="reveal">Memory that keeps pace with intelligence</h1>
+      <h1 class="reveal">About Micron</h1>
+      <p class="title-date reveal">May 2026</p>
     </div>
-    <div class="title-meta">Internal · 19 May 2026<span class="accent-dot"></span></div>
+    <img class="md-title-brand" src="../_shared/micron-logo-white-ia-rgb.png" alt="Micron Intelligence Accelerated" width="255" height="35" decoding="async" />
   </section>
 
-  <!-- 02 Section divider — full-bleed gradient, white headline only -->
+  <!-- 02 Agenda — black, hairline list, real content language -->
+  <section class="slide" data-slide-kind="agenda">
+    <div class="slide-content agenda-layout">
+      <div class="stack">
+        <p class="eyebrow reveal">Content</p>
+        <h2 class="reveal">Executive update flow</h2>
+        <p class="reveal" style="color:var(--text-secondary)">Orient the room before moving into numbers, market signals, and operating decisions.</p>
+      </div>
+      <div class="agenda-list reveal">
+        <div class="agenda-item active"><span>01</span><b>Financial results</b><em>covered</em></div>
+        <div class="agenda-item"><span>02</span><b>Market signal and priorities</b><em>review</em></div>
+        <div class="agenda-item"><span>03</span><b>Portfolio, roadmap, and constraints</b><em>decide</em></div>
+        <div class="agenda-item"><span>04</span><b>People, sustainability, and close</b><em>align</em></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 Section divider — full-bleed gradient, white headline only -->
   <section class="slide divider" data-slide-kind="section">
-    <span class="slide-coord">02 / 05</span>
     <div class="slide-content">
-      <p class="eyebrow reveal">The shift</p>
       <h2 class="reveal">AI demand is rewriting what memory has to do</h2>
     </div>
   </section>
 
-  <!-- 03 Key points — black, numbered hairline rows, no cards -->
-  <section class="slide" data-slide-kind="content">
-    <span class="slide-coord">03 / 05</span>
+  <!-- 04 Key points — black, numbered hairline rows, no cards -->
+  <section class="slide with-primary-icon" data-slide-kind="content">
+    <video class="exec-primary-icon reveal" src="../../../micron-icons/assets/primary/mp4/rev/ai.mp4" muted autoplay loop playsinline aria-hidden="true"></video>
     <div class="slide-content stack">
       <p class="eyebrow reveal">Three forces</p>
       <h2 class="reveal">Bandwidth, capacity, and power now move together</h2>
@@ -186,9 +244,26 @@
     </div>
   </section>
 
-  <!-- 04 KPI moment — single purple number -->
+  <!-- 05 Image / use-case grid — real image plus official icon, no purple glow tiles -->
+  <section class="slide" data-slide-kind="image-grid">
+    <div class="slide-content agenda-layout">
+      <div class="stack">
+        <p class="eyebrow reveal">Use case grid</p>
+        <h2 class="reveal">AI shows up across every operating surface</h2>
+        <p class="reveal" style="color:var(--text-secondary)">Pair one real visual asset with simple evidence tiles when the story spans multiple contexts.</p>
+      </div>
+      <div class="proof-grid reveal">
+        <div class="proof-tile photo"><div><b>Customer demos</b><span>Immersive scenarios and experience rooms</span></div></div>
+        <div class="proof-tile video"><video src="../../../micron-icons/assets/primary/mp4/rev/ai.mp4" muted autoplay loop playsinline aria-hidden="true"></video></div>
+        <div class="proof-tile"><div><b>Data center</b><span>Capacity, bandwidth, and power</span></div></div>
+        <div class="proof-tile"><div><b>Industrial</b><span>Latency-sensitive production systems</span></div></div>
+        <div class="proof-tile"><div><b>Devices</b><span>Local AI and responsive experiences</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 KPI moment — single purple number -->
   <section class="slide" data-slide-kind="data">
-    <span class="slide-coord">04 / 05</span>
     <div class="slide-content stack">
       <p class="eyebrow reveal">HBM, generation over generation</p>
       <h2 class="reveal">More bandwidth, at less energy per bit</h2>
@@ -200,11 +275,44 @@
     </div>
   </section>
 
-  <!-- 05 Closing — full-bleed gradient, white type only -->
+  <!-- 07 Hierarchy / architecture — plain editable geometry, one active layer -->
+  <section class="slide" data-slide-kind="architecture">
+    <div class="slide-content agenda-layout">
+      <div class="stack">
+        <p class="eyebrow reveal">Architecture view</p>
+        <h2 class="reveal">Memory hierarchy can be shown as a pyramid</h2>
+        <p class="reveal" style="color:var(--text-secondary)">Use simple geometry when the message is about levels, dependency, or sequencing.</p>
+      </div>
+      <div class="hierarchy reveal">
+        <div>HBM</div>
+        <div>Main memory</div>
+        <div>Expansion memory</div>
+        <div>Local SSD data cache</div>
+        <div>Networked data lake</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 Scorecard — compact metric wall -->
+  <section class="slide" data-slide-kind="scorecard">
+    <div class="slide-content agenda-layout">
+      <div class="stack">
+        <p class="eyebrow reveal">Sustainability scorecard</p>
+        <h2 class="reveal">Commitments read best as a compact metric wall</h2>
+        <p class="reveal" style="color:var(--text-secondary)">Large numbers, short labels, and charcoal cells keep accountability pages sharp.</p>
+      </div>
+      <div class="score-grid reveal">
+        <div class="score-card"><span>Long-term target</span><b>Net-zero</b><span>Scope 1 and 2 emissions</span></div>
+        <div class="score-card active"><span>Water conservation</span><b>75%</b><span>Water conserved through reuse and recycling</span></div>
+        <div class="score-card"><span>Waste diversion</span><b>95%</b><span>Reuse, recycle, or recover nonhazardous waste</span></div>
+        <div class="score-card"><span>Energy progress</span><b>100%</b><span>Renewable electricity in selected regions</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 Closing — full-bleed gradient, white type only -->
   <section class="slide divider close" data-slide-kind="close">
-    <span class="slide-coord">05 / 05</span>
     <div class="slide-content">
-      <p class="eyebrow reveal">Where this goes</p>
       <h2 class="reveal">Build the memory the next decade of AI is waiting for</h2>
     </div>
   </section>
@@ -226,6 +334,7 @@ function setupFixedStage(){
     if(slide.querySelector(":scope > .slide-stage"))return;
     const stage=document.createElement("div");
     stage.className="slide-stage";
+    slide.classList.forEach((name)=>{if(name!=="slide")stage.classList.add(name)});
     while(slide.firstChild)stage.appendChild(slide.firstChild);
     slide.appendChild(stage);
   });
@@ -239,16 +348,24 @@ class SlidePresentation {
     this.deck = document.querySelector(".deck");
     this.navDotsContainer = document.querySelector(".nav-dots");
     this.progressBar = document.querySelector(".progress-bar");
+    this.progressText = document.querySelector(".slide-progress-chip");
+    this.presentToggle = document.querySelector(".present-toggle");
     this.overview = document.getElementById("overview");
     this.setupNavDots(); this.setupIntersectionObserver(); this.setupKeyboardNav();
-    this.setupWheelNav(); this.setupTouchNav(); this.applySlide(0);
+    this.setupWheelNav(); this.setupTouchNav(); this.setupPresentationMode(); this.applySlide(0);
   }
   clamp(i){return Math.max(0,Math.min(this.slides.length-1,i))}
   applySlide(i){
     this.currentSlide=i;
+    document.body.dataset.slideIndex=String(i);
     this.slides.forEach((s,idx)=>{s.classList.toggle("active",idx===i);s.classList.toggle("visible",idx===i)});
     this.navDotsContainer.querySelectorAll("button").forEach((d,idx)=>{d.classList.toggle("active",idx===i);d.setAttribute("aria-current",idx===i?"true":"false")});
     if(this.progressBar)this.progressBar.style.transform=`scaleX(${(i+1)/this.slides.length})`;
+    if(this.progressText){
+      const label=`${String(i+1).padStart(2,"0")} / ${String(this.slides.length).padStart(2,"0")}`;
+      this.progressText.textContent=label;
+      this.progressText.setAttribute("aria-label",`Slide ${i+1} of ${this.slides.length}`);
+    }
   }
   goTo(i,opts={}){const n=this.clamp(i);if(this.locked&&!opts.immediate)return;
     this.applySlide(n);this.programmaticScroll=true;
@@ -268,6 +385,7 @@ class SlidePresentation {
   setupKeyboardNav(){document.addEventListener("keydown",(e)=>{
     if(e.key==="Escape"){e.preventDefault();this.toggleOverview();return}
     if(this.overviewOpen){if(e.key==="Tab")this.trapFocus(e);return}
+    if(e.key.toLowerCase()==="p"){e.preventDefault();this.requestPresent();return}
     if(["ArrowRight","ArrowDown","PageDown"," "].includes(e.key)){e.preventDefault();this.next()}
     else if(["ArrowLeft","ArrowUp","PageUp"].includes(e.key)){e.preventDefault();this.prev()}
     else if(e.key==="Home"){e.preventDefault();this.goTo(0)}
@@ -281,6 +399,8 @@ class SlidePresentation {
     window.addEventListener("touchend",(e)=>{if(this.overviewOpen)return;
       const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
       if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40)dx<0?this.next():this.prev()},{passive:true})}
+  setupPresentationMode(){this.presentToggle?.addEventListener("click",()=>this.requestPresent())}
+  requestPresent(){document.documentElement.requestFullscreen?.().catch(()=>{})}
   buildOverview(){this.overview.innerHTML="";
     const h=document.createElement("div");h.className="ov-head";
     h.innerHTML=`<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide+1).padStart(2,"0")} / ${String(this.slides.length).padStart(2,"0")}</span>`;

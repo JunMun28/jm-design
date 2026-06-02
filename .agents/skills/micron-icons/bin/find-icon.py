@@ -18,7 +18,7 @@ def load_manifest() -> dict:
     if not path.exists():
         raise SystemExit(f"Missing manifest: {path}. Run bin/extract-icons.py first.")
     data = json.loads(path.read_text())
-    if data.get("schema_version") != 1:
+    if data.get("schema_version") != 2:
         raise SystemExit(f"Unsupported manifest schema_version: {data.get('schema_version')}")
     return data
 
@@ -160,7 +160,7 @@ def main() -> int:
     parser.add_argument("--group")
     parser.add_argument("--style", choices=["pos", "rev"])
     parser.add_argument("--theme", choices=["micron-light", "micron-dark", "micron-dark-executive"])
-    parser.add_argument("--media", choices=["png", "mp4"], default="png")
+    parser.add_argument("--media", choices=["svg", "mp4"], default="svg")
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--format", choices=["path", "json", "html"], default="path")
     parser.add_argument("--decorative", action="store_true")

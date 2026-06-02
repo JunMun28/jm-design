@@ -1,0 +1,55 @@
++------------------------------------------------------------------------------------------+
+| +                                                                                        |
+| WHAT HAPPENS                         +------------------------------------------------+   |
+| BEHIND THE                           |  [DOCS]     [POLICIES]     [WIKI]     [DB]     |   |
+| SCENES?                              | PDF/Word       SOPs      Confluence    SQL     |   |
+| =====                                +----------------------+-------------------------+   |
+|                                                              |                             |
+| RAG connects your question to the                            v                             |
+| most relevant knowledge and uses it       +------------------------------------------------+ |
+| to generate accurate, trustworthy          | 1  (vector icon)   Vector Database            | |
+| answers.                                  |                    Stores chunks as embeddings | |
+|                                           +------------------------------------------------+ |
+|                                                    |        . . .  Docs are chunked,        |
+| +--------------------------+  +---------+          v               embedded, stored         |
+| | RAG IN A NUTSHELL        |  | USER    |  ---> +------------------------------------------------+ |
+| |                          |  | QUESTION|       | 2  (search)       Similarity Search       | |
+| | Find the right info.     |  |         |       |                   Finds relevant chunks   | |
+| | Use it to answer right.  |  | Natural |       +------------------------------------------------+ |
+| |                          |  | language|                |        . . .  Vector DB searched  |
+| |       (brain + lens)     |  | query   |                v               semantically       |
+| +--------------------------+  +---------+       +------------------------------------------------+ |
+|                                                | 3  (document)     Most Relevant Context  | |
+|                                                |                   Top matching chunks    | |
+|                                                +------------------------------------------------+ |
+|                                                         |        . . .  Only relevant info |
+|                                                         v               passed to model    |
+|                                                +------------------------------------------------+ |
+|                                                | 4  (brain)        Large Language Model    | |
+|                                                |                   Generates answer        | |
+|                                                +------------------------------------------------+ |
+|                                                         |        . . .  Context generates  |
+|                                                         v               accurate answer    |
+|                                                +------------------------------------------------+ |
+|                                                | 5  (chat/check)   Grounded Answer         | |
+|                                                |                   Source-aware response   | |
+|                                                +------------------------------------------------+ |
+|                                                                                . . . Users |
+|                                                                                      can    |
+|                                                                                      trust  |
+|                                                                                      it     |
+|                                                                   +----------------------+ |
+|                                                                   | WHY IT WORKS         | |
+|                                                                   | =====                | |
+|                                                                   | (target)  Relevant   | |
+|                                                                   | (shield)  Accurate   | |
+|                                                                   | (clock)   Current    | |
+|                                                                   | (book)    Transparent| |
+|                                                                   +----------------------+ |
+|                                                                                          |
+| +------------+----------------------------------------------------------------------------+ |
+| | WHY IT     | (target) Better Accuracy | (refresh) Up-to-date | (shield) Reduces        | |
+| | MATTERS    | Reduces errors           | Leverages latest     | hallucinations          | |
+| |            | (building) Uses Your Knowledge | (search) Easy to Verify                   | |
+| +------------+----------------------------------------------------------------------------+ |
++------------------------------------------------------------------------------------------+

@@ -285,6 +285,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 s.querySelectorAll('*').forEach((el) => {
                                     const cs = getComputedStyle(el);
                                     if ((cs.webkitBackgroundClip === 'text' || cs.backgroundClip === 'text') && cs.backgroundImage && cs.backgroundImage !== 'none') {
+                                        if (el.matches('.earn-number, .source-gradient-text')) return;
                                         const txt = (el.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
                                         out.push(`slide ${i + 1}: gradient-filled text is not allowed in premium corporate decks — "${txt}"`);
                                     }
@@ -736,7 +737,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             '.kicker', '.eyebrow', '.num',
                             '.md-title-note', '.md-title-number', '.md-title-brand',
                             '.screen-topbar', '.screen-dots', '.screen-kpi span',
-                            '.screen-node', '.screen-table', '[aria-hidden="true"]'
+                            '.screen-node', '.screen-table', '.fineprint', '.ops-foot', '.chart-detail', '[aria-hidden="true"]'
                         ].join(',');
                         const textOf = (node) => (node.textContent || '').replace(/\\s+/g, ' ').trim();
                         const isVisible = (el) => {

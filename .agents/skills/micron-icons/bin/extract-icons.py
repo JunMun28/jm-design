@@ -7,13 +7,13 @@ import argparse
 import json
 import re
 import shutil
-import sys
+import tempfile
 import zipfile
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 PRIMARY_PNG_ARCHIVE = "micron-primary-icons.original.zip"
 PRIMARY_MP4_ARCHIVE = "micron-primary-icons-animated.original.zip"
@@ -361,6 +361,23 @@ def copy_member(zf: zipfile.ZipFile, info: zipfile.ZipInfo, dest: Path) -> None:
         shutil.copyfileobj(src, out)
 
 
+def vectorize_png_member(zf: zipfile.ZipFile, info: zipfile.ZipInfo, dest: Path) -> None:
+    try:
+        import vtracer
+    except ImportError as error:
+        raise SystemExit(
+            "Missing Python package 'vtracer'. Install it before rebuilding Micron SVG icons: "
+            "python3 -m pip install vtracer"
+        ) from error
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        source_png = Path(tmp) / "source.png"
+        with zf.open(info, "r") as src, source_png.open("wb") as out:
+            shutil.copyfileobj(src, out)
+        vtracer.convert_image_to_svg_py(str(source_png), str(dest))
+
+
 def build_entry(
     *,
     set_name: str,
@@ -400,17 +417,17 @@ def build_entry(
 
 
 def add_fallbacks(entries: list[dict]) -> None:
-    png_by_key = {
+    svg_by_key = {
         (entry["base_id"], entry["style"]): entry["path"]
         for entry in entries
-        if entry["media"] == "png"
+        if entry["media"] == "svg"
     }
     for entry in entries:
         if entry["media"] != "mp4":
             continue
-        fallback = png_by_key.get((entry["base_id"], entry["style"]))
+        fallback = svg_by_key.get((entry["base_id"], entry["style"]))
         if fallback:
-            entry["fallback_png"] = fallback
+            entry["fallback_svg"] = fallback
 
 
 def validate_existing_output(output_dir: Path, force: bool) -> None:
@@ -441,9 +458,9 @@ def extract(source_dir: Path, output_dir: Path, force: bool) -> dict:
     source_archives = []
 
     archives = [
-        (PRIMARY_PNG_ARCHIVE, "primary", "png"),
+        (PRIMARY_PNG_ARCHIVE, "primary", "svg"),
         (PRIMARY_MP4_ARCHIVE, "primary", "mp4"),
-        (SECONDARY_ARCHIVE, "secondary", "png"),
+        (SECONDARY_ARCHIVE, "secondary", "svg"),
     ]
 
     for archive_name, archive_set, archive_media in archives:
@@ -464,8 +481,8 @@ def extract(source_dir: Path, output_dir: Path, force: bool) -> dict:
                         style, source_slug = parsed
                         canonical_slug = source_slug
                         category = primary_category(canonical_slug)
-                        media = "png"
-                        rel_path = f"assets/primary/png/{style}/{source_slug}.png"
+                        media = "svg"
+                        rel_path = f"assets/primary/svg/{style}/{source_slug}.svg"
                 elif archive_name == PRIMARY_MP4_ARCHIVE:
                     style, source_slug, anomaly = parse_primary_mp4(info.filename)
                     if style and source_slug:
@@ -483,14 +500,17 @@ def extract(source_dir: Path, output_dir: Path, force: bool) -> dict:
                     if parsed:
                         category, style, source_slug = parsed
                         canonical_slug = source_slug
-                        media = "png"
-                        rel_path = f"assets/secondary/{category}/png/{style}/{source_slug}.png"
+                        media = "svg"
+                        rel_path = f"assets/secondary/{category}/svg/{style}/{source_slug}.svg"
                 if not parsed:
                     skipped[f"unparsed:{archive_name}"] += 1
                     continue
 
                 clean_count += 1
-                copy_member(zf, info, output_dir.parent / rel_path)
+                if media == "svg":
+                    vectorize_png_member(zf, info, output_dir.parent / rel_path)
+                else:
+                    copy_member(zf, info, output_dir.parent / rel_path)
                 entry = build_entry(
                     set_name=archive_set,
                     category=category,

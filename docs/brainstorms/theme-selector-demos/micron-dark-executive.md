@@ -6,16 +6,15 @@ Use when: a senior audience needs the strategic story, not implementation detail
 
 ## Slide candidates
 
-### Slide 1 - Title / photo-led narrative
+### Slide 1 - Title / official split photo cover
 
 ```text
 ┌────────────────────────────────────────────────────────────┐
 │ AI memory roadmap                                          │
-│ Bandwidth, capacity, and reliability for the next platform │
-│ cycle                                                      │
+│ May 2026                                                   │
 │                                                            │
-│ [full-bleed dark memory / data-center title image]          │
-│ [Micron mark]                                               │
+│ [black title field left]      [cleanroom / fab photo right] │
+│ [Micron lockup bottom-left]                                │
 └────────────────────────────────────────────────────────────┘
 ```
 

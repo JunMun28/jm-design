@@ -1,230 +1,294 @@
-# Brainstorm File Template
+# Brainstorm HTML Template
 
-Save the file to `docs/brainstorms/YYYY-MM-DD-<topic>-deck.txt`. Use today's date; keep `<topic>` short and kebab-case (e.g., `github-copilot-for-everyone`, `q4-roadmap`, `wafer-yield-review`).
+Save the file to `docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.html`. Use
+today's date; keep `<topic>` short and kebab-case.
 
-## Section order
+The file is standalone HTML with inline CSS/JS. Copy
+`references/html-companion-skeleton.html` first. It is the canonical skeleton
+for the review + handoff artifact, not a loose design reference.
 
+## Section Order
+
+1. HEADER
+2. CORE IDEA
+3. SLIDE PANELS
+
+## Header
+
+Include:
+
+- `BRAINSTORM — NOT FINAL DECK`
+- Deck title
+
+Do not include a header note with audience, goal, review status, or other admin
+metadata. The page should feel like the deck content, not a project brief.
+
+In the HTML source comment, include a `DESIGN INTENT` block with one line per
+slide:
+
+`Slide NN — <layout signature>: <visible composition and key artifacts>`
+
+This keeps the visible page clean while preserving the internal layout contract
+for review and handoff.
+
+The `DESIGN INTENT` block comes from the internal professional design pass after
+the Phase 2 narrative arc is approved. Do not require or display these lines in
+the user-facing Proposed Arc.
+
+Each `DESIGN INTENT` line should capture the professional design choice, not
+just the component name:
+
+`Slide NN — <layout signature>: protagonist=<first eye stop>; scan=<3-5 stops>; encoding=<position/length/connection/grouping/contrast/order/size/annotation/state>; artifacts=<what is visible>`
+
+## Core Idea
+
+Show the deck's summary at the top:
+
+- Core idea: one short sentence
+- Proposal
+- Why it matters
+- What makes it credible
+
+Keep this visible and concise. Do not recreate the full intake notes.
+Use it as a compact review strip, not a second hero. The title slide carries
+the opening.
+
+For a confirmed **single-slide proposal**, the Core Idea strip may be even
+tighter:
+
+- Core idea: one short sentence.
+- Proposal: the program/mechanism.
+- Ask: the action or commitment requested.
+- Success: the behavior or output that proves progress.
+
+This keeps the brainstorm artifact aligned with the one-slide brief instead of
+inflating a crisp proposal into a mini deck.
+
+## Slide Panels
+
+Always include a title slide as Slide 01. It should show the deck title or
+proposal name, a one-line subtitle/ask, and optional scope. Do not use a bottom
+metadata row unless the user asks for it.
+
+For a single-slide proposal being handed to `html-slides`, the visible
+brainstorm panel should preserve the approved slide structure, for example:
+
+`Problem -> Program -> Manager ask -> Success measure`
+
+Do not add extra panels only to satisfy a generic slide count. The brainstorm
+can be a title panel plus one content panel, or a single content panel if the
+user explicitly asked for no title slide in the final output.
+
+Each slide panel must include:
+
+- Slide number and title
+- Headline
+- Visible body or artifact content
+- The internal `DESIGN INTENT` choice, rendered as a
+  full-fidelity monochrome preview
+- Image placeholder, if requested for that slide/topic
+- Closer, if useful
+
+Keep the DOM flat for Codex/browser annotation. Prefer:
+
+- `<section class="deck">` containing direct `<article class="slide-panel" data-slide="NN">` children.
+- Each slide article has one direct `<header class="slide-head">` and one
+  direct `<div class="preview">`.
+- Avoid anonymous wrapper divs around slide headings or slide groups. Name
+  necessary content groups (`mission-list`, `flowchart`, `decision-sheet`) so
+  annotations land on meaningful elements.
+
+Do not duplicate labels. If the outer slide title says the role, do not add an
+inner kicker that repeats it.
+Use hairlines, open spacing, symbolic visuals, precise labels, and typography.
+Avoid nested cards.
+If the panel has many vertical blocks, mark it dense and scale headline,
+placeholder, and scorecard sizes so no slide content clips.
+When a diagram explains the idea, make it a real slide in the arc, not a
+separate sample panel. Flowcharts are appropriate for process, journey, and
+workflow slides.
+
+Default to grayscale / monochrome in the brainstorm companion. Final color,
+typography, and theme belong to `html-slides`, but layout fidelity belongs here:
+the brainstorm should show the real composition, diagram topology, artifact
+shape, and information hierarchy the final builder is expected to preserve.
+
+## Layout Fidelity
+
+The brainstorm is **theme-less, not low-fidelity**. Do not hide behind abstract
+rectangles, generic placeholders, or simple title-plus-bullet panels when the
+content requires a richer visual.
+
+For every content slide, implement the internal `DESIGN INTENT` line:
+
+- A `technical infographic board` should show numbered mechanism zones,
+  symbolic artifacts such as matrices/equations/graphs, training-vs-inference
+  or state callouts, and a bottom payoff strip.
+- A `product mock` should show recognizable controls, prompt/output surfaces,
+  generated states, review/approval affordances, and placeholders only for
+  unavailable images.
+- A `workflow` should show the full path and active step, not one isolated
+  box.
+- A `decision cockpit` should show the decision surface: premise, proof,
+  risks, guardrails, owner, and next step.
+- A `data/chart/table` slide should show real axes, row/column structure,
+  labels, and sample values when sourced or clearly marked assumptions.
+
+Use inline SVG/CSS for complex static mechanism diagrams when exact placement
+matters. Use pinned Mermaid/D3/ECharts only when the renderer materially helps
+and a fallback is provided.
+
+## Professional Visual Choice
+
+Before writing slide HTML, run `references/presentation-design-decisioning.md`.
+The layout should be selected from the shape of the content:
+
+| Content shape | Preferred visual treatment |
+|---|---|
+| Comparison | Put options in the same field: matrix, contrast wall, before/after, or hairline split |
+| Sequence | Show the full path with an active step, timeline, workflow, journey, or loop |
+| Mechanism | Show parts and state changes with a technical infographic board, equation board, graph, or system diagram |
+| Relationship | Show nodes, zones, dependencies, hierarchy, or map position |
+| Evidence | Use the most readable chart/table/specimen, directly labeled |
+| Product state | Show the interface or artifact surface with real controls/states |
+| Decision | Show criteria, tradeoffs, owner, proof needed, guardrails, and next step |
+
+Every content slide should have:
+
+- **Visual protagonist:** the first object the eye lands on.
+- **Scan path:** 3-5 ordered stops, not scattered labels.
+- **Encoding:** how the content becomes visual: position, length, connection,
+  grouping, contrast, order, size, annotation, or state.
+- **Restraint:** what was intentionally removed so the slide looks designed,
+  not merely filled.
+
+## CDN Dependencies
+
+The brainstorm should stay standalone by default, but CDN libraries are allowed
+when they make a slide materially clearer or more interactive.
+
+Use this decision rule:
+
+| Need | Preferred approach |
+|---|---|
+| Static loop, arrow, process, or simple graph that needs exact art direction | Inline SVG/CSS |
+| Text-authored diagram with quick layout | Mermaid from CDN (recommended default for brainstorm flowcharts) |
+| Interactive node canvas, dragging, zooming, complex edges | Real React Flow (`@xyflow/react`) via a React/ESM setup |
+| Custom data-driven SVG with precise control | D3 from CDN |
+| Large directed graph auto-layout | ELK / Dagre with SVG |
+
+Rules:
+
+- Pin exact versions in CDN URLs. Do not use `latest`.
+- Prefer ESM CDNs for module imports, such as `esm.sh`, and package CDNs such
+  as `jsDelivr` or `UNPKG` when a package provides browser-ready files.
+- Record dependencies in an HTML comment: library, version, CDN URL, reason,
+  and fallback.
+- Mermaid is the first choice for flowcharts, measurement loops, sequence
+  diagrams, and simple graph layouts in the brainstorm artifact. Use an import
+  like `https://cdn.jsdelivr.net/npm/mermaid@<exact-version>/dist/mermaid.esm.min.mjs`,
+  call `mermaid.initialize({ startOnLoad: true })`, and keep node labels short
+  enough to read after auto-layout.
+- If using React Flow, actually import/render `@xyflow/react`; otherwise call
+  the pattern `node-edge loop`, not React Flow.
+- Keep a fallback: a static SVG, plain HTML version, or clear message if CDN
+  loading fails.
+
+Minimal Mermaid pattern:
+
+```html
+<div class="mermaid-panel" aria-label="Measurement loop">
+  <pre class="mermaid">
+flowchart LR
+  A["Join"] --> B["Repeat"] --> C["Finish"] --> D["Produce"] --> E["Improve"]
+  E -. review .-> A
+  </pre>
+  <div class="mermaid-fallback">Static fallback content here.</div>
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "base", flowchart: { useMaxWidth: true } });
+</script>
 ```
-1. HEADER box
-2. NARRATIVE ARC
-3. INTAKE STATUS
-4. DESIGN PRINCIPLES
-5. SHARED GRAMMAR (every content slide)
-6. SLIDE 01 — TITLE
-7. SLIDE 02 — ...
-...
-N. SLIDE NN — ...
-N+1. VISUAL VARIETY MAP
-N+2. RIGOR AUDIT (persuasion decks only)
-N+3. DESIGN INTENT (content-level only — no theme/tokens)
-N+4. CHANGES FROM PREVIOUS DRAFT
-N+5. END OF BRAINSTORM
+
+## Density Rules
+
+The brainstorm must reflect the resolved `Slide density` from intake:
+
+- **Sparse** — one claim, one visual or diagram, one closer. Do not pad with
+  extra bullets.
+- **Balanced** — headline plus 3–4 supporting points or one simple structured
+  visual.
+- **Dense executive** — condensed and information-rich. Prefer matrices,
+  operating models, scorecards, decision sheets, compact tables, journey maps,
+  or artifact strips. A dense slide should scan in about 10 seconds and support
+  about two minutes of discussion.
+- **Leave-behind dense** — self-contained, with clearer explanatory headings and
+  compact notes because no presenter may be present.
+
+"Compact" is ambiguous. It can mean concise/low-text or condensed/high-info.
+The intake must resolve this before the brainstorm is written.
+
+For dense executive slides, use structured information instead of prose. A
+workday/platform example should become a table or matrix such as:
+
+`App | Employee mission | Copilot skill practiced | Work artifact | Learning signal`
+
+## Strong-Slide Verification
+
+Before presenting the brainstorm, check every slide against this gate:
+
+| Check | Pass condition |
+|---|---|
+| Density match | Slide content matches the selected density level |
+| Slide job | Slide has one job: frame, model, example, proof, guardrail, decision, or ask |
+| Claim title | Content-slide title/headline makes a claim, not just a label |
+| Concrete content | At least one slide shows a workflow, artifact, decision frame, or example |
+| Information design | Dense content uses a matrix, scorecard, table, operating model, or other scannable structure |
+| Professional visual choice | Layout matches the content shape and has a clear protagonist, scan path, encoding, and restraint move |
+| Source honesty | Unsourced specifics are framed as proposal/ASSUMPTION, not proof |
+| Pushback coverage | The stated pushback or objection is answered explicitly |
+| Layout fidelity | The HTML visibly implements each internal `DESIGN INTENT` line at full structural fidelity |
+| Anti-boring design | Every content slide has a named visual job, adjacent slides avoid the same layout signature, and at least one slide shows an artifact, workflow, checklist, map, specimen, scorecard, mission board, or decision surface |
+
+Fix failures before presenting the file. Keep the visible page focused on slide
+content unless the user asks to see the audit; recording a concise audit as an
+HTML comment is acceptable for handoff.
+
+For the anti-boring design gate, use
+`references/strong-slide-design-checklist.md`. This is mandatory when a deck is
+about a product, platform, workflow, learning experience, executive decision,
+or any topic that could otherwise become traditional title-plus-bullets.
+
+## Independent Review Gate
+
+Before presenting the brainstorm HTML, run
+`references/subagent-review-verifier.md`.
+
+Record the result as an HTML comment:
+
+```html
+<!--
+  SUBAGENT REVIEW
+  Status: PASS / fixed findings / accepted risk / unavailable - inline fallback used
+  Reviewer summary:
+  - <finding or PASS>
+-->
 ```
 
-Use horizontal `─` rules (75 chars wide) to separate top-level sections. Box-drawing characters (`┌─┐│└─┘`) draw the slide frames.
+The review must happen after the HTML file exists. Fix P0/P1 findings before
+presenting unless the user explicitly accepts the risk.
 
-## Header box
+## Image Placeholders
 
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║  BRAINSTORM: <Deck Title>                                                   ║
-║  Audience  : <specific roles + technical level>                             ║
-║  Goal      : <one-line outcome the deck must produce>                       ║
-║  Product   : <subject — what we're presenting about>                        ║
-║  PresStyle : <keynote / compact / training / leave-behind async reading>   ║
-║  Theme     : TBD — chosen in html-slides  (or: STYLE NOTE if volunteered) ║
-║  Format    : <N slides · ~X min talk + Y min demo (if any)>                 ║
-║  Date      : YYYY-MM-DD                                                     ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-```
+When the user asks for photos or image placeholders, include a visible
+`.image-placeholder` block in the relevant slide panel. Label:
 
-## Narrative arc
+- what the image should show
+- asset status: `Provided`, `Placeholder`, or `Need source`
+- intended role: hero, supporting evidence, screenshot, product moment, etc.
 
-Write the **core thesis** in 1–3 short lines. Then a **story spine** —
-one question plus enough detail to explain why each slide exists.
+Do not add image placeholders when the user says no.
 
-```
-Core thesis:
-  <sentence>
-  <sentence>
-  <sentence>
-
-Story spine — one question + slide detail per slide:
-
-  01  TITLE          —  Why are we here?
-      Purpose        —  <why this slide exists>
-      Main point     —  <sentence audience should remember>
-      Evidence/demo  —  <source, demo beat, ASSUMPTION, or none>
-      Builds to      —  <how it hands off to the next slide>
-
-  02  <NAME>         —  <question this slide answers>
-      Purpose        —  ...
-      Main point     —  ...
-      Evidence/demo  —  ...
-      Builds to      —  ...
-```
-
-For **persuasion decks**, the arc carries two more lines, drawn from the
-Phase 1 evidence intake and confirmed by the user in the Phase 2 synthesis:
-
-```
-  Strongest objection : <the single most damaging true thing a skeptic says>
-  How the deck answers : <which slide(s) in the spine do the rebutting>
-```
-
-If no slide in the spine answers the objection, the arc is incomplete —
-add or repurpose a slide before drawing frames.
-
-## Intake status
-
-Record what was known vs assumed before any slides. This prevents a polished
-wireframe from laundering placeholder content into fact.
-
-```
-─────────────────────────────────────────────────────────────────────────────
-INTAKE STATUS
-─────────────────────────────────────────────────────────────────────────────
-
-Source status:
-  Provided / Exists but not provided / None
-
-Assumptions:
-  ASSUMPTION: <agent-proposed content the user explicitly accepted>
-  ASSUMPTION: <or "None">
-
-Pushback:
-  Informational deck — <none raised / concern captured verbatim>
-  Persuasion deck — <strongest objection captured verbatim>
-
-Demo pacing:
-  <none / demo outside slide flow / slide NN hands off to live demo>
-```
-
-## Design principles
-
-A bulleted manifesto. 4–10 short rules the deck commits to. Examples:
-
-- "One idea per slide. Nothing else."
-- "Periods are loud."
-- "Card budget for the entire deck: 1."
-- "No two adjacent slides share a layout signature."
-
-## Shared grammar
-
-A single ASCII frame showing the elements every content slide reuses (progress bar, kicker + underbar, H2 + accent, signature block, italic closer, footer). This documents what does NOT change across slides.
-
-## Per-slide block
-
-```
-─────────────────────────────────────────────────────────────────────────────
-  SLIDE 0N — TITLE OF SLIDE      (one-line layout signature in parens)
-─────────────────────────────────────────────────────────────────────────────
-
-  ┌────────────────────────────────────────────────────────────────────────┐
-  │ <progress bar at this slide's index>                                   │
-  │                                                                        │
-  │   0N — KICKER                                                          │
-  │   ───                                                                  │
-  │                                                                        │
-  │   Headline.                                                            │  ← H2 size · accent word
-  │   Second line.                                                         │
-  │                                                                        │
-  │   [ signature block — see references/design-vocabulary.md ]            │
-  │                                                                        │
-  │   One italic closer.                                                   │  ← .callout / .center-line / .closing
-  │                                                                        │
-  │   <Deck title>                                                  [logo] │
-  └────────────────────────────────────────────────────────────────────────┘
-
-  COPY     (~N words)
-    KICKER   <copy>
-    H2       <copy>                  (italic purple on accent word)
-    BODY     <copy>
-    CLOSER   <copy>
-
-  ARGUMENT
-    CLAIM     <the one thing this slide asserts>
-    EVIDENCE  <the proof — data, source, demonstrated result>
-    — or, for a non-argument slide —
-    ROLE      structural — no claim   (title · section · transition · close)
-
-  VISUAL   (the part that makes the frame come alive — theme-agnostic)
-    LAYOUT     <named layout signature from design-vocabulary.md, e.g.
-                "vertical hairline split" or "full-bleed stat">
-    PROTAGONIST <the one thing the eye lands on first and why>
-    FEEL       <one vivid sentence: the mood / drama / pacing the
-                composition should create — e.g. "a single number the size
-                of a fist, alone in white space, daring you to look away">
-    MOTION     <optional — how it enters / builds, if it matters>
-
-  TECHNIQUE
-    – <why this layout · what it teaches · what it avoids>
-
-  SOURCES (optional)
-    <citation lines if researched online>
-```
-
-The `ARGUMENT` block is **mandatory on every slide**. An argument slide
-states `CLAIM` + `EVIDENCE`. A structural slide states `ROLE: structural —
-no claim`. There is no third option: a content slide cannot omit the block,
-so a claim with no evidence cannot hide as "just a structural slide." If
-`EVIDENCE` would read "trust me" or be blank, the slide fails the Phase 3
-rigor audit — fix the deck, not the annotation.
-
-## Visual variety map
-
-```
-  Slide  Layout signature                            Card count
-  ───────────────────────────────────────────────────────────────
-  01     Two-col title · circular icon mark           0  (mark)
-  02     Vertical hairline split                      0
-  ...
-  ───────────────────────────────────────────────────────────────
-  Cards across the deck                              <total>
-```
-
-## Rigor audit (persuasion decks only)
-
-Run this on the drafted spine **before presenting the frames**, and print
-the result in the file like the variety map. Five checks, one line each —
-`PASS`, or the offending slide and the fix:
-
-```
-  Check                    Result
-  ───────────────────────────────────────────────────────────────────────
-  1 Claim w/o evidence     PASS  /  S04 asserts "2× faster" — no EVIDENCE
-  2 Objection unanswered   PASS  /  no slide rebuts "<the Phase 2 objection>"
-  3 Buried lede            PASS  /  core message first appears S05, want ≤S03
-  4 So-what slide          PASS  /  S06 conveys info, advances no claim
-  5 Unsourced specifics    PASS  /  S03 "40% of teams" has no SOURCES line
-  ───────────────────────────────────────────────────────────────────────
-  Verdict  <ship the frames>  /  <N fixes required before frames>
-```
-
-A non-PASS is not a style note — it is a hole in the argument. Fix the deck
-(add evidence, add a rebuttal slide, move the lede, cut the so-what slide,
-source the number), then re-run. Do not present frames with an open finding
-unless the user explicitly accepts the risk on the record.
-
-## Design intent (content-level only)
-
-Hierarchy · Density · Voice/tone · Pacing · what each slide's visual
-protagonist *is* (chart, quote, diagram) — not which theme renders it.
-
-Do **not** specify palette, hex values, typefaces, or a named theme here:
-the theme/template is chosen later in `html-slides`. Presentation style
-(keynote, compact executive briefing, training walkthrough, leave-behind /
-async reading deck) is allowed because it controls density and pacing. If the
-user volunteered a visual style, capture it as a single `STYLE NOTE:` line
-(verbatim) for the build skill to act on — don't expand it into a token spec.
-
-## Changes from previous draft
-
-The diff log. Group by:
-
-- **Layout** — the big structural moves
-- **Per-slide moves** — slide-by-slide bullet list
-- **Cut slides** / **New slides**
-- **Net result**
-
-Always present after a revision. This is the trust layer — the user can scan it instead of re-reading the whole file.
+Keep argument, source, and assumption thinking internal unless the user asks to
+see it. The companion is for reviewing the slide content and flow.

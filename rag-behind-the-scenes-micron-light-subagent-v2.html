@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="theme-light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>What Happens Behind the Scenes?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" />
+  <style>
+    :root {
+      --micron-black: #000000;
+      --micron-white: #ffffff;
+      --micron-off-white: #f0f0ee;
+      --micron-accent: #bd03f7;
+      --micron-accent-display: var(--micron-accent);
+      --font-display: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+      --font-body: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --scale-ratio: 1.333;
+      --col-count: 12;
+      --light-sheet: rgb(253, 251, 255);
+      --light-sheet-bottom: rgb(249, 247, 253);
+      --light-letterbox: rgb(241, 239, 247);
+      --light-panel: rgb(250, 247, 255);
+      --light-panel-soft: rgb(244, 239, 253);
+      --light-rule: rgb(214, 207, 228);
+      --light-track: rgb(232, 228, 238);
+      --ink: rgb(25, 23, 42);
+      --muted: rgb(92, 83, 113);
+      --quiet: rgb(127, 118, 145);
+      --hairline: 1px solid var(--light-rule);
+      --letterbox: var(--light-letterbox);
+      --soft-purple-wash: color-mix(in srgb, var(--micron-accent) 8%, var(--light-sheet));
+      --stage-width: 1600px;
+      --stage-height: 900px;
+      --stage-scale: 1;
+      --stage-scaled-width: 1600px;
+      --stage-scaled-height: 900px;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-normal: .6s;
+      --duration-fast: .25s;
+      --accent: var(--micron-accent);
+      --bg-primary: var(--micron-white);
+      --text-primary: var(--ink);
+      --text-secondary: var(--muted);
+      --overview-bg: rgb(247, 244, 252);
+      --overview-text: var(--ink);
+      --overview-muted: var(--muted);
+      --overview-line: rgba(25, 23, 42, .16);
+      --overview-card: rgba(255, 255, 255, .86);
+    }
+
+    @font-face {
+      font-family: "Micron Basis";
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: swap;
+      src: local("Micron Basis"), local("Arial");
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--letterbox);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.35;
+      scrollbar-width: none;
+    }
+    body::-webkit-scrollbar, .deck::-webkit-scrollbar, #overview::-webkit-scrollbar { display: none; }
+    button { font: inherit; }
+
+    .deck {
+      width: 100vw;
+      height: 100dvh;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+    }
+
+    .slide {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+      background: var(--letterbox);
+    }
+
+    .slide-stage {
+      container-type: inline-size;
+      container-name: deck-stage;
+      position: absolute;
+      left: calc((100vw - var(--stage-scaled-width)) / 2);
+      top: calc((100dvh - var(--stage-scaled-height)) / 2);
+      width: var(--stage-width);
+      height: var(--stage-height);
+      transform: scale(var(--stage-scale));
+      transform-origin: top left;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background:
+        linear-gradient(145deg,
+          color-mix(in srgb, var(--micron-white) 76%, var(--light-sheet)) 0 44%,
+          color-mix(in srgb, var(--micron-accent) 2.5%, var(--light-sheet-bottom)) 74%,
+          var(--light-sheet-bottom) 100%);
+      filter: drop-shadow(0 18px 60px color-mix(in srgb, var(--ink) 14%, transparent));
+    }
+
+    .slide:not(.title-slide) .slide-stage::before {
+      content: "";
+      position: absolute;
+      right: -330px;
+      bottom: -260px;
+      width: 860px;
+      height: 640px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .62;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(ellipse at center,
+          transparent 0 58px,
+          color-mix(in srgb, var(--micron-accent) 9%, transparent) 59px 60px,
+          transparent 61px 104px);
+    }
+
+    .slide:not(.title-slide) .slide-stage::after {
+      content: "";
+      position: absolute;
+      right: 50px;
+      bottom: 58px;
+      z-index: 0;
+      width: 112px;
+      height: 32px;
+      background: url(".agents/skills/html-slides/themes/_shared/micron-logo-black-tm-rgb.png") right bottom / contain no-repeat;
+      opacity: .84;
+      pointer-events: none;
+    }
+
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      padding: 70px 76px 66px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+    }
+    .slide.visible .reveal, #overview .reveal { opacity: 1; transform: none; }
+    .reveal:nth-child(2) { transition-delay: .08s; }
+    .reveal:nth-child(3) { transition-delay: .16s; }
+    .reveal:nth-child(4) { transition-delay: .24s; }
+
+    .title-slide .slide-stage {
+      background:
+        radial-gradient(circle at 76% 34%, color-mix(in srgb, var(--micron-accent) 16%, transparent), transparent 34%),
+        radial-gradient(circle at 88% 76%, rgba(105, 140, 255, .13), transparent 34%),
+        radial-gradient(circle at 58% 18%, rgba(255, 255, 255, .94), transparent 28%),
+        radial-gradient(circle at 92% 92%, rgba(255, 255, 255, .82), transparent 30%),
+        linear-gradient(135deg, rgb(255, 255, 255) 0 46%, rgb(251, 247, 255) 72%, rgb(245, 240, 252) 100%);
+    }
+    .title-slide .slide-stage::before,
+    .title-slide .slide-stage::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle,
+        color-mix(in srgb, var(--micron-accent) 25%, transparent) 0 2px,
+        transparent 2.4px);
+      background-size: 17px 17px;
+    }
+    .title-slide .slide-stage::before {
+      top: -36px;
+      right: -18px;
+      width: 420px;
+      height: 220px;
+      opacity: .58;
+      -webkit-mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+      mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+    }
+    .title-slide .slide-stage::after {
+      left: -36px;
+      bottom: 0;
+      width: 270px;
+      height: 270px;
+      opacity: .54;
+      -webkit-mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+      mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+    }
+
+    .title-grid {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 430px;
+      gap: 120px;
+      align-items: center;
+      height: 100%;
+    }
+    .kicker, .section-label {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--micron-accent);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 {
+      max-width: 790px;
+      margin-top: 28px;
+      font-size: 92px;
+      line-height: .95;
+      letter-spacing: 0;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .title-subtitle {
+      max-width: 690px;
+      margin-top: 34px;
+      font-size: 30px;
+      line-height: 1.3;
+      color: var(--muted);
+    }
+    .title-subtitle strong {
+      color: var(--ink);
+      font-weight: 800;
+    }
+    .title-visual {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 460px;
+      isolation: isolate;
+    }
+    .title-visual::before {
+      content: "";
+      position: absolute;
+      inset: 12px -12px 12px 36px;
+      z-index: -1;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--micron-accent) 12%, transparent), transparent 62%);
+      filter: blur(4px);
+    }
+    .title-icon {
+      width: 340px;
+      max-width: none;
+      height: auto;
+      display: block;
+      mix-blend-mode: multiply;
+    }
+    .title-footer {
+      position: absolute;
+      z-index: 3;
+      left: 76px;
+      right: 76px;
+      bottom: 42px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 20px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .title-footer-logo {
+      width: 116px;
+      height: auto;
+      max-height: none;
+      display: block;
+    }
+    .footer-rule {
+      height: 1px;
+      flex: 1;
+      background: var(--light-rule);
+    }
+
+    .rag-map .slide-content {
+      padding: 48px 54px 38px;
+      display: grid;
+      grid-template-columns: 420px 1fr 292px;
+      grid-template-rows: 128px 1fr 126px;
+      gap: 20px 24px;
+    }
+    .rag-intro {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 24px;
+      padding-top: 18px;
+    }
+    .rag-title {
+      font-size: 62px;
+      line-height: .94;
+      letter-spacing: 0;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .rag-title::after {
+      content: "";
+      display: block;
+      width: 118px;
+      height: 8px;
+      margin-top: 18px;
+      border-radius: 999px;
+      background: var(--micron-accent);
+    }
+    .rag-summary {
+      max-width: 355px;
+      font-size: 25px;
+      line-height: 1.36;
+      color: var(--muted);
+    }
+    .nutshell-card {
+      align-self: end;
+      min-height: 262px;
+      border: 1px solid color-mix(in srgb, var(--micron-accent) 24%, var(--light-rule));
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,.92), var(--soft-purple-wash));
+      box-shadow: 0 22px 54px rgba(25, 23, 42, .10);
+      padding: 26px;
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      grid-template-rows: auto 1fr;
+      column-gap: 20px;
+      overflow: hidden;
+    }
+    .nutshell-label {
+      grid-column: 1 / -1;
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .nutshell-lines {
+      align-self: center;
+      font-size: 26px;
+      line-height: 1.24;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .brain-lens {
+      align-self: center;
+      justify-self: end;
+      width: 126px;
+      height: 126px;
+    }
+
+    .source-strip {
+      grid-column: 2 / 4;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      align-self: stretch;
+    }
+    .source-card {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.86);
+      border: var(--hairline);
+      box-shadow: 0 10px 26px rgba(25, 23, 42, .055);
+    }
+    .source-chip, .step-chip, .proof-icon, .why-chip, .query-icon {
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--chip-color);
+      background:
+        radial-gradient(circle at 35% 24%, color-mix(in srgb, var(--chip-color) 24%, white), transparent 52%),
+        color-mix(in srgb, var(--chip-color) 10%, white);
+    }
+    .source-chip {
+      width: 54px;
+      height: 54px;
+    }
+    .icon {
+      width: 30px;
+      height: 30px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .source-name {
+      display: block;
+      font-size: 22px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .source-type {
+      display: block;
+      margin-top: 7px;
+      font-size: 20px;
+      line-height: 1.15;
+      color: var(--muted);
+    }
+
+    .query-card {
+      grid-column: 2;
+      grid-row: 2;
+      position: absolute;
+      left: 0;
+      top: 316px;
+      width: 246px;
+      min-height: 132px;
+      z-index: 4;
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--ink);
+      color: var(--micron-white);
+      box-shadow: 0 18px 46px rgba(25, 23, 42, .20);
+    }
+    .query-icon {
+      --chip-color: #32c8ff;
+      width: 48px;
+      height: 48px;
+      background: rgba(255,255,255,.11);
+    }
+    .query-title {
+      display: block;
+      font-size: 18px;
+      line-height: 1.05;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .query-detail {
+      display: block;
+      margin-top: 7px;
+      font-size: 18px;
+      line-height: 1.12;
+      color: rgba(255,255,255,.72);
+    }
+    .query-arrow {
+      display: none;
+    }
+    .query-arrow::after {
+      content: none;
+    }
+
+    .pipeline {
+      grid-column: 2;
+      grid-row: 2;
+      position: relative;
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding-left: 268px;
+      padding-bottom: 6px;
+    }
+    .pipeline::before {
+      content: "";
+      position: absolute;
+      left: 296px;
+      top: 18px;
+      bottom: 28px;
+      width: 4px;
+      border-radius: 999px;
+      background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--micron-accent) 40%, transparent),
+        color-mix(in srgb, #2563eb 26%, transparent),
+        color-mix(in srgb, #16a34a 24%, transparent),
+        color-mix(in srgb, #f97316 24%, transparent),
+        color-mix(in srgb, #7c3aed 28%, transparent));
+    }
+    .step {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 62px 58px minmax(0, 1fr);
+      align-items: center;
+      gap: 14px;
+      min-height: 78px;
+      padding: 12px 18px 12px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.90);
+      border: 1px solid color-mix(in srgb, var(--step-color) 18%, var(--light-rule));
+      box-shadow: 0 12px 26px rgba(25, 23, 42, .07);
+    }
+    .step-badge {
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      overflow: hidden;
+      background: var(--step-color);
+      color: var(--micron-white);
+      font: 800 25px/1 var(--font-display);
+      box-shadow: 0 10px 26px color-mix(in srgb, var(--step-color) 26%, transparent);
+    }
+    .step-chip {
+      width: 52px;
+      height: 52px;
+      --chip-color: var(--step-color);
+    }
+    .step-copy-title {
+      display: block;
+      font-size: 24px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .step-copy-detail {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      line-height: 1.18;
+      color: var(--muted);
+    }
+    .step-note {
+      display: none;
+    }
+    .step-note::before {
+      content: none;
+    }
+
+    .proof-rail {
+      grid-column: 3;
+      grid-row: 2;
+      align-self: stretch;
+      border-radius: 22px;
+      padding: 24px;
+      background: rgba(255,255,255,.88);
+      border: var(--hairline);
+      box-shadow: 0 18px 42px rgba(25, 23, 42, .08);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+    .proof-title {
+      font-size: 25px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .proof-title::after {
+      content: "";
+      display: block;
+      width: 68px;
+      height: 4px;
+      margin-top: 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--micron-accent) 80%, white);
+    }
+    .proof-list {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+    .proof-row {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+    .proof-icon {
+      width: 44px;
+      height: 44px;
+    }
+    .proof-keyword {
+      display: block;
+      font-size: 19px;
+      line-height: 1.06;
+      font-weight: 800;
+      color: var(--proof-color);
+    }
+    .proof-detail {
+      display: block;
+      margin-top: 4px;
+      font-size: 20px;
+      line-height: 1.18;
+      color: var(--muted);
+    }
+
+    .why-strip {
+      grid-column: 1 / 4;
+      grid-row: 3;
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 214px repeat(5, 1fr) 92px;
+      align-items: stretch;
+      overflow: hidden;
+      border-radius: 22px;
+      background: rgb(255, 255, 255);
+      border: 1px solid color-mix(in srgb, var(--ink) 10%, var(--light-rule));
+      box-shadow: 0 18px 42px rgba(25, 23, 42, .10);
+    }
+    .why-label {
+      position: relative;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 20px 22px;
+      background: var(--ink);
+      color: var(--micron-white);
+      font-size: 25px;
+      line-height: 1.04;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .why-label::after {
+      content: "";
+      position: absolute;
+      right: -26px;
+      top: -22px;
+      width: 58px;
+      height: 170px;
+      border-radius: 50%;
+      background: var(--micron-accent);
+      box-shadow: 0 0 34px rgba(189, 3, 247, .38);
+    }
+    .why-mark {
+      position: relative;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.6;
+    }
+    .why-label-text {
+      position: relative;
+      z-index: 2;
+      display: block;
+    }
+    .why-cell {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 18px 12px 18px 24px;
+      border-left: var(--hairline);
+      background: rgb(255, 255, 255);
+    }
+    .why-chip {
+      width: 44px;
+      height: 44px;
+    }
+    .why-cell-title {
+      display: block;
+      font-size: 17px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .why-cell-detail {
+      display: block;
+      margin-top: 5px;
+      font-size: 20px;
+      line-height: 1.15;
+      color: var(--muted);
+    }
+    .why-logo-safe {
+      background: rgb(255, 255, 255);
+      border-left: var(--hairline);
+      background-image: url(".agents/skills/html-slides/themes/_shared/micron-logo-black-tm-rgb.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 72px auto;
+    }
+
+    .nav-dots {
+      position: fixed;
+      z-index: 70;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      gap: 5px;
+      width: 32px;
+    }
+    .nav-dots button {
+      width: 32px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .nav-dots button::before {
+      content: "";
+      display: block;
+      width: 7px;
+      height: 7px;
+      margin: 5px auto;
+      border-radius: 999px;
+      background: rgba(25, 23, 42, .24);
+    }
+    .nav-dots button.active::before { background: var(--micron-accent); }
+    .progress-bar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 80;
+      height: 3px;
+      transform: scaleX(0);
+      transform-origin: left;
+      background: var(--micron-accent);
+      transition: transform var(--duration-fast) var(--ease-out-expo);
+    }
+    .presentation-hotspot {
+      position: fixed;
+      z-index: 90;
+      top: 0;
+      right: 0;
+      width: 190px;
+      height: 96px;
+      padding: 18px 18px 0 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+    }
+    .present-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 14px 0 12px;
+      border: 1px solid rgba(15, 23, 42, .14);
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .12);
+      transition: opacity .18s ease, transform .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .presentation-hotspot:hover .present-toggle,
+    .presentation-hotspot:focus-within .present-toggle {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+    .present-toggle svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .present-toggle:hover, .present-toggle:focus-visible {
+      outline: none;
+      color: var(--micron-accent);
+      border-color: color-mix(in srgb, var(--micron-accent) 55%, transparent);
+    }
+
+    #overview {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      overflow-y: auto;
+      padding: 44px;
+      background: var(--overview-bg);
+      color: var(--overview-text);
+      scrollbar-width: none;
+    }
+    #overview[aria-hidden="false"] { display: block; }
+    .ov-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      max-width: 1180px;
+      margin: 0 auto 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--overview-muted);
+    }
+    .ov-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+    }
+    .ov-card {
+      padding: 0;
+      border: 1px solid var(--overview-line);
+      border-radius: 10px;
+      background: var(--overview-card);
+      overflow: hidden;
+      cursor: pointer;
+      text-align: left;
+    }
+    .ov-card.active { border-color: var(--micron-accent); border-width: 2px; }
+    .ov-thumb {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--letterbox);
+    }
+    .ov-thumb .clone {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1600px;
+      height: 900px;
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .ov-thumb .clone.slide-stage {
+      left: 0 !important;
+      top: 0 !important;
+      filter: none !important;
+    }
+    .ov-label {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html, .deck { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .progress-bar, .present-toggle { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
+  <div class="presentation-hotspot" aria-hidden="false">
+    <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+      <span class="presentation-toggle-text">Present</span>
+    </button>
+  </div>
+
+  <main class="deck" tabindex="-1">
+    <section class="slide title-slide" data-slide-kind="cover">
+      <div class="slide-stage">
+        <div class="slide-content">
+          <div class="title-grid">
+            <div class="title-copy">
+              <p class="kicker reveal">RAG explained</p>
+              <h1 class="reveal">What happens behind the scenes?</h1>
+              <p class="title-subtitle reveal"><strong>Retrieval augmented generation</strong> connects a question to the right knowledge before the model answers.</p>
+            </div>
+            <div class="title-visual reveal" aria-hidden="true">
+              <img class="title-icon" src=".agents/skills/micron-icons/assets/primary/png/pos/ai.png" alt="" width="340" height="340" decoding="async" />
+            </div>
+          </div>
+        </div>
+        <div class="title-footer">
+          <img class="title-footer-logo" src=".agents/skills/html-slides/themes/_shared/micron-logo-black-tm-rgb.png" alt="Micron" width="116" height="28" decoding="async" />
+          <span class="footer-rule" aria-hidden="true"></span>
+          <span>Fresh micron-light generation</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide rag-map" data-slide-kind="rag pipeline">
+      <div class="slide-stage">
+        <div class="slide-content">
+          <aside class="rag-intro reveal">
+            <div>
+              <p class="section-label">01 — RAG flow</p>
+              <h2 class="rag-title">What happens behind the scenes?</h2>
+            </div>
+            <p class="rag-summary">RAG connects your question to the most relevant knowledge and uses it to generate accurate, trustworthy answers.</p>
+            <article class="nutshell-card" aria-label="RAG in a nutshell">
+              <div class="nutshell-label">RAG in a nutshell</div>
+              <p class="nutshell-lines">Find the right info.<br />Use it to answer right.</p>
+              <svg class="brain-lens" viewBox="0 0 140 140" aria-hidden="true">
+                <defs>
+                  <linearGradient id="lensGrad" x1="0" x2="1" y1="0" y2="1">
+                    <stop stop-color="#bd03f7" stop-opacity=".18" />
+                    <stop offset="1" stop-color="#32c8ff" stop-opacity=".16" />
+                  </linearGradient>
+                </defs>
+                <path d="M61 25c-11-7-27-1-30 12-13 2-20 16-13 27-8 10-3 26 10 30 2 15 19 23 32 15 13 8 30 0 32-15 13-4 18-20 10-30 7-11 0-25-13-27-3-13-19-19-30-12z" fill="url(#lensGrad)" stroke="#bd03f7" stroke-width="4" stroke-linejoin="round" />
+                <path d="M43 52c11-8 26-5 32 8M41 78c10 7 25 5 32-5M65 36c7 12 7 24 0 36" fill="none" stroke="#1b1730" stroke-width="4" stroke-linecap="round" />
+                <circle cx="91" cy="86" r="20" fill="rgba(255,255,255,.74)" stroke="#2044ff" stroke-width="5" />
+                <path d="M105 101l19 19" stroke="#2044ff" stroke-width="7" stroke-linecap="round" />
+              </svg>
+            </article>
+          </aside>
+
+          <div class="source-strip reveal" aria-label="Knowledge sources">
+            <article class="source-card" style="--chip-color:#2044ff">
+              <div class="source-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M9 4h10l5 5v19H9z" /><path d="M19 4v6h5M12 16h9M12 21h7" /></svg></div>
+              <div class="source-card-copy"><b class="source-name">Docs</b><span class="source-type">PDF / Word</span></div>
+            </article>
+            <article class="source-card" style="--chip-color:#00891c">
+              <div class="source-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M16 4l10 4v7c0 6-4 11-10 13C10 26 6 21 6 15V8z" /><path d="M11 16l3 3 7-8" /></svg></div>
+              <div class="source-card-copy"><b class="source-name">Policies</b><span class="source-type">SOPs</span></div>
+            </article>
+            <article class="source-card" style="--chip-color:#7c3aed">
+              <div class="source-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M7 6h13a5 5 0 0 1 5 5v15H10a3 3 0 0 1-3-3z" /><path d="M10 10h9M10 15h11M10 20h7" /></svg></div>
+              <div class="source-card-copy"><b class="source-name">Wiki</b><span class="source-type">Confluence</span></div>
+            </article>
+            <article class="source-card" style="--chip-color:#f97316">
+              <div class="source-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><ellipse cx="16" cy="8" rx="10" ry="4" /><path d="M6 8v16c0 2 4 4 10 4s10-2 10-4V8M6 16c0 2 4 4 10 4s10-2 10-4" /></svg></div>
+              <div class="source-card-copy"><b class="source-name">DB</b><span class="source-type">SQL</span></div>
+            </article>
+          </div>
+
+          <article class="query-card reveal" aria-label="User question">
+            <div class="query-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M7 23l-2 6 7-3a12 12 0 1 0-5-3z" /><path d="M12 15h8M12 19h5" /></svg></div>
+            <div class="query-copy"><b class="query-title">User question</b><span class="query-detail">Natural language query</span></div>
+          </article>
+          <div class="query-arrow reveal" aria-hidden="true"></div>
+
+          <div class="pipeline reveal" aria-label="RAG pipeline">
+            <article class="step" style="--step-color:#f97316">
+              <div class="step-badge">1</div>
+              <div class="step-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><ellipse cx="16" cy="8" rx="10" ry="4" /><path d="M6 8v16c0 2 4 4 10 4s10-2 10-4V8M6 16c0 2 4 4 10 4s10-2 10-4" /></svg></div>
+              <div class="step-copy"><b class="step-copy-title">Vector database</b><span class="step-copy-detail">Stores chunks as embeddings</span></div>
+              <div class="step-note">Docs are chunked, embedded, stored</div>
+            </article>
+            <article class="step" style="--step-color:#2044ff">
+              <div class="step-badge">2</div>
+              <div class="step-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><circle cx="14" cy="14" r="8" /><path d="M20 20l7 7M11 14h6" /></svg></div>
+              <div class="step-copy"><b class="step-copy-title">Similarity search</b><span class="step-copy-detail">Finds relevant chunks</span></div>
+              <div class="step-note">Vector DB searched semantically</div>
+            </article>
+            <article class="step" style="--step-color:#00891c">
+              <div class="step-badge">3</div>
+              <div class="step-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M9 4h10l5 5v19H9z" /><path d="M19 4v6h5M12 16h9M12 21h7" /></svg></div>
+              <div class="step-copy"><b class="step-copy-title">Most relevant context</b><span class="step-copy-detail">Top matching chunks</span></div>
+              <div class="step-note">Only relevant info passed to model</div>
+            </article>
+            <article class="step" style="--step-color:#f97316">
+              <div class="step-badge">4</div>
+              <div class="step-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M12 5c-4 1-6 4-6 8 0 3 2 5 4 6-1 5 3 8 7 6 4 2 8-1 7-6 2-1 4-3 4-6 0-4-2-7-6-8-3-2-7-2-10 0z" /><path d="M12 13h8M11 18h10" /></svg></div>
+              <div class="step-copy"><b class="step-copy-title">Large language model</b><span class="step-copy-detail">Generates answer</span></div>
+              <div class="step-note">Context guides the response</div>
+            </article>
+            <article class="step" style="--step-color:#7c3aed">
+              <div class="step-badge">5</div>
+              <div class="step-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M7 22l-2 6 7-3h11a4 4 0 0 0 4-4V9a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v12a4 4 0 0 0 2 1z" /><path d="M11 15l3 3 7-7" /></svg></div>
+              <div class="step-copy"><b class="step-copy-title">Grounded answer</b><span class="step-copy-detail">Source-aware response</span></div>
+              <div class="step-note">Users can trust it</div>
+            </article>
+          </div>
+
+          <aside class="proof-rail reveal" aria-label="Why it works">
+            <h3 class="proof-title">Why it works</h3>
+            <div class="proof-list">
+              <div class="proof-row" style="--proof-color:#2044ff;--chip-color:#2044ff">
+                <div class="proof-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" /><circle cx="16" cy="16" r="3" /><path d="M16 3v5M16 24v5M3 16h5M24 16h5" /></svg></div>
+                <div class="proof-row-copy"><b class="proof-keyword">Relevant</b><span class="proof-detail">Search narrows the knowledge first</span></div>
+              </div>
+              <div class="proof-row" style="--proof-color:#00891c;--chip-color:#00891c">
+                <div class="proof-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M16 4l10 4v7c0 6-4 11-10 13C10 26 6 21 6 15V8z" /><path d="M11 16l3 3 7-8" /></svg></div>
+                <div class="proof-row-copy"><b class="proof-keyword">Accurate</b><span class="proof-detail">Answer is anchored in retrieved facts</span></div>
+              </div>
+              <div class="proof-row" style="--proof-color:#f97316;--chip-color:#f97316">
+                <div class="proof-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M25 11a10 10 0 1 0 2 8M25 5v6h-6" /><path d="M16 10v7l5 3" /></svg></div>
+                <div class="proof-row-copy"><b class="proof-keyword">Current</b><span class="proof-detail">Fresh sources can be indexed and used</span></div>
+              </div>
+              <div class="proof-row" style="--proof-color:#7c3aed;--chip-color:#7c3aed">
+                <div class="proof-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M7 6h13a5 5 0 0 1 5 5v15H10a3 3 0 0 1-3-3z" /><path d="M10 11h9M10 16h11M10 21h7" /></svg></div>
+                <div class="proof-row-copy"><b class="proof-keyword">Transparent</b><span class="proof-detail">Context makes the answer easier to verify</span></div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="why-strip reveal" aria-label="Why RAG matters">
+            <div class="why-label">
+              <svg class="why-mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l12 13-12 13L4 16z" /><circle cx="16" cy="16" r="4" /></svg>
+              <span class="why-label-text">Why it matters</span>
+            </div>
+            <div class="why-cell" style="--chip-color:#2044ff">
+              <div class="why-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10" /><circle cx="16" cy="16" r="3" /></svg></div>
+              <div class="why-cell-copy"><b class="why-cell-title">Better accuracy</b><span class="why-cell-detail">Reduces errors</span></div>
+            </div>
+            <div class="why-cell" style="--chip-color:#f97316">
+              <div class="why-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M25 11a10 10 0 1 0 2 8M25 5v6h-6" /></svg></div>
+              <div class="why-cell-copy"><b class="why-cell-title">Up to date</b><span class="why-cell-detail">Leverages latest</span></div>
+            </div>
+            <div class="why-cell" style="--chip-color:#00891c">
+              <div class="why-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M16 4l10 4v7c0 6-4 11-10 13C10 26 6 21 6 15V8z" /><path d="M11 16l3 3 7-8" /></svg></div>
+              <div class="why-cell-copy"><b class="why-cell-title">Reduces hallucinations</b><span class="why-cell-detail">Grounds claims</span></div>
+            </div>
+            <div class="why-cell" style="--chip-color:#7c3aed">
+              <div class="why-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><path d="M6 24V9a3 3 0 0 1 3-3h17v20H9a3 3 0 0 1-3-2z" /><path d="M11 12h10M11 17h8" /></svg></div>
+              <div class="why-cell-copy"><b class="why-cell-title">Uses your knowledge</b><span class="why-cell-detail">Not generic memory</span></div>
+            </div>
+            <div class="why-cell" style="--chip-color:#2044ff">
+              <div class="why-chip" aria-hidden="true"><svg class="icon" viewBox="0 0 32 32"><circle cx="14" cy="14" r="8" /><path d="M20 20l7 7M11 14h6" /></svg></div>
+              <div class="why-cell-copy"><b class="why-cell-title">Easy to verify</b><span class="why-cell-detail">Trace back to context</span></div>
+            </div>
+            <div class="why-logo-safe" aria-hidden="true"></div>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav-dots" aria-label="Slide navigation"></nav>
+  <div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll(".slide"));
+        this.currentSlide = 0;
+        this.locked = false;
+        this.programmaticScroll = false;
+        this.overviewOpen = false;
+        this.lastFocus = null;
+        this.deck = document.querySelector(".deck");
+        this.navDotsContainer = document.querySelector(".nav-dots");
+        this.progressBar = document.querySelector(".progress-bar");
+        this.overview = document.getElementById("overview");
+        this.presentToggle = document.querySelector(".present-toggle");
+        this.setupFixedStage();
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.setupPresentationMode();
+        this.goTo(0, { immediate: true });
+      }
+      clamp(i) { return Math.max(0, Math.min(this.slides.length - 1, i)); }
+      setupFixedStage() {
+        const updateScale = () => {
+          const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+          document.documentElement.style.setProperty("--stage-scale", String(scale));
+          document.documentElement.style.setProperty("--stage-scaled-width", `${1600 * scale}px`);
+          document.documentElement.style.setProperty("--stage-scaled-height", `${900 * scale}px`);
+        };
+        this.updateStageScale = updateScale;
+        updateScale();
+        window.addEventListener("resize", updateScale, { passive: true });
+      }
+      setupNavDots() {
+        this.navDotsContainer.innerHTML = "";
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+          dot.addEventListener("click", () => this.goTo(i));
+          this.navDotsContainer.appendChild(dot);
+        });
+      }
+      applySlide(i) {
+        this.currentSlide = i;
+        this.slides.forEach((slide, idx) => {
+          slide.classList.toggle("active", idx === i);
+          slide.classList.toggle("visible", idx === i);
+        });
+        this.navDotsContainer.querySelectorAll("button").forEach((dot, idx) => {
+          dot.classList.toggle("active", idx === i);
+          dot.setAttribute("aria-current", idx === i ? "true" : "false");
+        });
+        this.progressBar.style.transform = `scaleX(${(i + 1) / this.slides.length})`;
+      }
+      goTo(i, options = {}) {
+        const next = this.clamp(i);
+        if (this.locked && !options.immediate) return;
+        this.applySlide(next);
+        this.programmaticScroll = true;
+        this.deck.scrollTo({ top: this.slides[next].offsetTop, left: 0, behavior: options.immediate ? "auto" : "smooth" });
+        if (!options.immediate) {
+          this.locked = true;
+          window.setTimeout(() => {
+            this.locked = false;
+            this.programmaticScroll = false;
+          }, 650);
+        } else {
+          requestAnimationFrame(() => { this.programmaticScroll = false; });
+        }
+      }
+      next() { this.goTo(this.currentSlide + 1); }
+      prev() { this.goTo(this.currentSlide - 1); }
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          if (this.programmaticScroll) return;
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) this.applySlide(this.slides.indexOf(entry.target));
+          });
+        }, { root: this.deck, threshold: .6 });
+        this.slides.forEach((slide) => observer.observe(slide));
+      }
+      requestPresent() {
+        document.documentElement.classList.add("presentation-mode");
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      }
+      setupPresentationMode() {
+        this.presentToggle?.addEventListener("click", (event) => {
+          event.preventDefault();
+          this.requestPresent();
+        });
+        document.addEventListener("fullscreenchange", () => {
+          document.documentElement.classList.toggle("presentation-mode", !!document.fullscreenElement);
+        });
+      }
+      setupKeyboardNav() {
+        document.addEventListener("keydown", (event) => {
+          const tag = event.target?.tagName;
+          if (tag === "INPUT" || tag === "TEXTAREA" || event.target?.isContentEditable) return;
+          if ((event.key === "p" || event.key === "P") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+            event.preventDefault();
+            this.requestPresent();
+            return;
+          }
+          if (event.key === "Escape") {
+            if (this.overviewOpen) {
+              event.preventDefault();
+              this.toggleOverview(false);
+              return;
+            }
+            if (document.fullscreenElement) return;
+            event.preventDefault();
+            this.toggleOverview(true);
+            return;
+          }
+          if (this.overviewOpen) {
+            if (event.key === "Tab") this.trapFocus(event);
+            return;
+          }
+          if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) {
+            event.preventDefault();
+            this.next();
+          } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) {
+            event.preventDefault();
+            this.prev();
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            this.goTo(0);
+          } else if (event.key === "End") {
+            event.preventDefault();
+            this.goTo(this.slides.length - 1);
+          }
+        });
+      }
+      setupWheelNav() {
+        let wheelAcc = 0;
+        let wheelTimer = null;
+        this.deck.addEventListener("wheel", (event) => {
+          if (this.overviewOpen) return;
+          event.preventDefault();
+          const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+          wheelAcc += delta;
+          if (Math.abs(wheelAcc) > 80) {
+            wheelAcc > 0 ? this.next() : this.prev();
+            wheelAcc = 0;
+          }
+          window.clearTimeout(wheelTimer);
+          wheelTimer = window.setTimeout(() => { wheelAcc = 0; }, 180);
+        }, { passive: false });
+      }
+      setupTouchNav() {
+        let startY = 0;
+        window.addEventListener("touchstart", (event) => {
+          startY = event.changedTouches[0].clientY;
+        }, { passive: true });
+        window.addEventListener("touchend", (event) => {
+          if (this.overviewOpen) return;
+          const dy = event.changedTouches[0].clientY - startY;
+          if (Math.abs(dy) > 40) dy < 0 ? this.next() : this.prev();
+        }, { passive: true });
+      }
+      buildOverview() {
+        this.overview.innerHTML = "";
+        const head = document.createElement("div");
+        head.className = "ov-head";
+        head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
+        this.overview.appendChild(head);
+        const grid = document.createElement("div");
+        grid.className = "ov-grid";
+        this.slides.forEach((slide, i) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+          card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+          const thumb = document.createElement("div");
+          thumb.className = "ov-thumb";
+          thumb.setAttribute("aria-hidden", "true");
+          const cloneSource = slide.querySelector(":scope > .slide-stage") || slide;
+          const clone = cloneSource.cloneNode(true);
+          clone.classList.add("clone", "visible");
+          clone.setAttribute("aria-hidden", "true");
+          clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+          thumb.appendChild(clone);
+          const label = document.createElement("div");
+          label.className = "ov-label";
+          label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind || "slide"}</span>`;
+          card.appendChild(thumb);
+          card.appendChild(label);
+          card.addEventListener("click", () => {
+            this.toggleOverview(false);
+            this.goTo(i);
+          });
+          grid.appendChild(card);
+        });
+        this.overview.appendChild(grid);
+        requestAnimationFrame(() => {
+          this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+            const clone = thumb.querySelector(".clone");
+            const scale = Math.min(thumb.clientWidth / 1600, thumb.clientHeight / 900);
+            clone.style.transform = `scale(${scale})`;
+          });
+        });
+      }
+      toggleOverview(force) {
+        this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+        if (this.overviewOpen) {
+          this.lastFocus = document.activeElement;
+          this.buildOverview();
+          this.overview.setAttribute("aria-hidden", "false");
+          this.overview.focus({ preventScroll: true });
+        } else {
+          this.overview.setAttribute("aria-hidden", "true");
+          this.lastFocus?.focus?.({ preventScroll: true });
+        }
+      }
+      trapFocus(event) {
+        const focusable = this.overview.querySelectorAll("button, [tabindex]:not([tabindex='-1'])");
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    window.presentation = new SlidePresentation();
+  </script>
+</body>
+</html>

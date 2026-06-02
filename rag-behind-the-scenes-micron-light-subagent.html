@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" class="theme-light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>What happens behind the scenes with RAG</title>
+  <style>
+    :root {
+      --micron-black: #000;
+      --micron-white: #fff;
+      --micron-off-white: #f0f0ee;
+      --micron-accent: #bd03f7;
+      --font-display: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+      --font-body: "Micron Basis", "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+      --scale-ratio: 1.333;
+      --col-count: 12;
+      --col-gutter: 24px;
+      --light-sheet: rgb(253, 251, 255);
+      --light-sheet-bottom: rgb(249, 247, 253);
+      --light-letterbox: rgb(241, 239, 247);
+      --light-panel: rgb(250, 247, 255);
+      --light-panel-soft: rgb(244, 239, 253);
+      --light-rule: rgb(214, 207, 228);
+      --light-track: rgb(232, 228, 238);
+      --ink: rgb(25, 23, 42);
+      --muted: rgb(92, 83, 113);
+      --quiet: rgb(127, 118, 145);
+      --hairline: 1px solid var(--light-rule);
+      --letterbox: var(--light-letterbox);
+      --soft-purple-wash: color-mix(in srgb, var(--micron-accent) 8%, var(--light-sheet));
+      --bg-primary: var(--micron-white);
+      --text-primary: var(--ink);
+      --text-secondary: var(--muted);
+      --accent: var(--micron-accent);
+      --duration-fast: .25s;
+      --duration-normal: .6s;
+      --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+      --stage-width: 1600px;
+      --stage-height: 900px;
+      --stage-scale: 1;
+      --stage-scaled-width: 1600px;
+      --stage-scaled-height: 900px;
+    }
+
+    @font-face {
+      font-family: "Micron Basis";
+      font-style: normal;
+      font-weight: 400 800;
+      font-display: swap;
+      src: local("Micron Basis");
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: var(--letterbox);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.35;
+      scrollbar-width: none;
+    }
+    body::-webkit-scrollbar, .deck::-webkit-scrollbar, #overview::-webkit-scrollbar { display: none; }
+
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      letter-spacing: 0;
+      line-height: .96;
+      color: var(--ink);
+    }
+
+    .progress-bar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 3px;
+      z-index: 80;
+      background: var(--micron-accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform var(--duration-fast) var(--ease-out-expo);
+    }
+
+    .deck {
+      position: relative;
+      height: 100dvh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+    .slide {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      overflow: hidden;
+      scroll-snap-align: start;
+    }
+    .slide-stage {
+      container-type: inline-size;
+      container-name: deck-stage;
+      position: absolute;
+      left: calc((100vw - var(--stage-scaled-width)) / 2);
+      top: calc((100dvh - var(--stage-scaled-height)) / 2);
+      width: var(--stage-width);
+      height: var(--stage-height);
+      transform: scale(var(--stage-scale));
+      transform-origin: top left;
+      overflow: hidden;
+      background:
+        linear-gradient(145deg,
+          color-mix(in srgb, var(--micron-white) 76%, var(--light-sheet)) 0 44%,
+          color-mix(in srgb, var(--micron-accent) 2.5%, var(--light-sheet-bottom)) 74%,
+          var(--light-sheet-bottom) 100%);
+      filter: drop-shadow(0 18px 60px color-mix(in srgb, var(--ink) 14%, transparent));
+    }
+    .slide:not(.title-slide) .slide-stage::before {
+      content: "";
+      position: absolute;
+      right: -330px;
+      bottom: -260px;
+      width: 860px;
+      height: 640px;
+      z-index: 0;
+      opacity: .72;
+      border-radius: 50%;
+      pointer-events: none;
+      background:
+        repeating-radial-gradient(ellipse at center,
+          transparent 0 58px,
+          color-mix(in srgb, var(--micron-accent) 10%, transparent) 59px 61px,
+          transparent 62px 96px);
+    }
+    .slide:not(.title-slide) .slide-stage::after {
+      content: "";
+      position: absolute;
+      right: 52px;
+      bottom: 58px;
+      z-index: 0;
+      width: 112px;
+      height: 32px;
+      background: url(".agents/skills/html-slides/themes/_shared/micron-logo-black-tm-rgb.png") right bottom / contain no-repeat;
+      opacity: .82;
+      pointer-events: none;
+    }
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      padding: 72px 76px 58px;
+    }
+
+    .title-slide .slide-stage {
+      background:
+        radial-gradient(circle at 78% 44%, color-mix(in srgb, var(--micron-accent) 17%, transparent) 0 20%, transparent 42%),
+        radial-gradient(circle at 92% 78%, color-mix(in srgb, #64b5ff 13%, transparent) 0 22%, transparent 47%),
+        radial-gradient(circle at 68% 18%, rgba(255, 255, 255, .88) 0 16%, transparent 36%),
+        radial-gradient(circle at 30% 90%, color-mix(in srgb, var(--micron-accent) 7%, transparent) 0 18%, transparent 40%),
+        radial-gradient(circle at 54% 58%, rgba(210, 224, 255, .46) 0 12%, transparent 32%),
+        linear-gradient(135deg, var(--micron-white) 0 46%, rgb(250, 246, 255) 74%, rgb(244, 238, 252) 100%);
+    }
+    .title-slide .slide-stage::before,
+    .title-slide .slide-stage::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, color-mix(in srgb, var(--micron-accent) 25%, transparent) 0 2px, transparent 2.4px);
+      background-size: 17px 17px;
+    }
+    .title-slide .slide-stage::before {
+      top: -36px;
+      right: -18px;
+      width: 420px;
+      height: 220px;
+      opacity: .58;
+      -webkit-mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+      mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+    }
+    .title-slide .slide-stage::after {
+      left: -36px;
+      bottom: 0;
+      width: 270px;
+      height: 270px;
+      opacity: .54;
+      -webkit-mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+      mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+    }
+    .title-slide .slide-content {
+      display: grid;
+      grid-template-columns: 740px 1fr;
+      gap: 110px;
+      align-items: center;
+      padding: 92px 112px 84px;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .title-copy h1 {
+      margin-top: 34px;
+      font-size: 92px;
+      font-weight: 800;
+      max-width: 720px;
+    }
+    .title-copy h1 em {
+      color: var(--micron-accent);
+      font-style: italic;
+    }
+    .title-copy p {
+      margin-top: 36px;
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 31px;
+      line-height: 1.25;
+    }
+    .title-meta {
+      margin-top: 58px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: var(--quiet);
+      font-family: var(--font-mono);
+      font-size: 16px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .title-meta img {
+      width: 118px;
+      height: auto;
+      max-height: none;
+    }
+    .title-visual {
+      position: relative;
+      min-height: 560px;
+      display: grid;
+      place-items: center;
+    }
+    .title-visual::before {
+      content: "";
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      background: var(--soft-purple-wash);
+      box-shadow: 0 24px 90px color-mix(in srgb, var(--micron-accent) 18%, transparent);
+    }
+    .title-visual img {
+      position: relative;
+      width: 380px;
+      height: 380px;
+      max-height: none;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .rag-map .slide-content {
+      display: grid;
+      grid-template-columns: 370px 560px 1fr;
+      grid-template-rows: 124px 535px 110px;
+      column-gap: 32px;
+      row-gap: 14px;
+      padding: 42px 58px 36px;
+    }
+    .map-intro {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      padding-top: 4px;
+    }
+    .map-intro h2 {
+      font-size: 61px;
+      font-weight: 800;
+      max-width: 340px;
+    }
+    .map-intro h2 em {
+      color: var(--micron-accent);
+      font-style: italic;
+    }
+    .map-intro > p {
+      font-size: 23px;
+      line-height: 1.32;
+      color: var(--muted);
+      max-width: 330px;
+    }
+    .nutshell {
+      margin-top: 10px;
+      padding: 22px 24px 20px;
+      min-height: 222px;
+      border: var(--hairline);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 72% 74%, color-mix(in srgb, var(--micron-accent) 12%, transparent) 0 34%, transparent 64%),
+        var(--micron-white);
+      box-shadow: 0 20px 50px color-mix(in srgb, var(--ink) 8%, transparent);
+    }
+    .nutshell h3 {
+      font-family: var(--font-mono);
+      font-size: 19px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .nutshell .two-lines {
+      margin-top: 28px;
+      display: grid;
+      gap: 10px;
+      font-size: 26px;
+      line-height: 1.12;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .mini-art {
+      margin-top: 26px;
+      height: 72px;
+    }
+
+    .source-strip {
+      grid-column: 2 / 4;
+      grid-row: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      align-self: stretch;
+    }
+    .source-card {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 18px;
+      border: var(--hairline);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .74);
+      box-shadow: 0 14px 34px color-mix(in srgb, var(--ink) 6%, transparent);
+    }
+    .chip {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      color: var(--chip);
+      background: color-mix(in srgb, var(--chip) 12%, white);
+    }
+    .chip svg { width: 29px; height: 29px; stroke-width: 2.1; }
+    .source-card b {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .source-card p > span {
+      display: block;
+      margin-top: 8px;
+      font-size: 18px;
+      color: var(--muted);
+    }
+
+    .pipeline {
+      grid-column: 2;
+      grid-row: 2;
+      position: relative;
+      display: grid;
+      gap: 13px;
+      align-content: stretch;
+      padding-left: 10px;
+    }
+    .pipeline::before {
+      content: "";
+      position: absolute;
+      top: 36px;
+      bottom: 34px;
+      left: 38px;
+      width: 3px;
+      background: linear-gradient(var(--micron-accent), color-mix(in srgb, var(--micron-accent) 18%, transparent));
+      border-radius: 999px;
+      opacity: .36;
+    }
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 64px 62px 1fr;
+      align-items: center;
+      gap: 16px;
+      min-height: 94px;
+      padding: 12px 18px 12px 18px;
+      border: var(--hairline);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, .84);
+      box-shadow: 0 16px 38px color-mix(in srgb, var(--ink) 6%, transparent);
+    }
+    .badge {
+      position: relative;
+      z-index: 1;
+      width: 56px;
+      height: 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--step-color);
+      color: white;
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1;
+      margin: 0;
+      overflow: hidden;
+      box-shadow: 0 10px 26px color-mix(in srgb, var(--step-color) 26%, transparent);
+    }
+    .step .chip {
+      --chip: var(--step-color);
+      margin: 0;
+    }
+    .step b {
+      display: block;
+      font-size: 25px;
+      line-height: 1.04;
+      color: var(--ink);
+    }
+    .step p > span {
+      display: block;
+      margin-top: 8px;
+      font-size: 19px;
+      color: var(--muted);
+    }
+    .note {
+      position: absolute;
+      right: -212px;
+      width: 188px;
+      color: var(--quiet);
+      font-size: 18px;
+      line-height: 1.2;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .note::before {
+      content: "";
+      height: 1px;
+      border-top: 2px dotted color-mix(in srgb, var(--micron-accent) 28%, var(--light-rule));
+    }
+    .step:nth-child(1) .note { top: 64px; }
+    .step:nth-child(2) .note { top: 64px; }
+    .step:nth-child(3) .note { top: 62px; }
+    .step:nth-child(4) .note { top: 62px; }
+
+    .proof-rail {
+      grid-column: 3;
+      grid-row: 2;
+      align-self: end;
+      margin-left: 210px;
+      margin-bottom: 2px;
+      padding: 18px 22px;
+      border-radius: 22px;
+      border: var(--hairline);
+      background: rgba(255, 255, 255, .88);
+      box-shadow: 0 20px 44px color-mix(in srgb, var(--ink) 7%, transparent);
+    }
+    .proof-rail h3 {
+      font-family: var(--font-mono);
+      font-size: 19px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .proof-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 13px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: var(--hairline);
+    }
+    .proof-row:first-of-type { border-top: 0; padding-top: 0; }
+    .proof-dot {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--proof);
+      background: color-mix(in srgb, var(--proof) 12%, white);
+    }
+    .proof-dot svg { width: 23px; height: 23px; }
+    .proof-row b {
+      display: block;
+      font-size: 21px;
+      line-height: 1;
+      color: var(--proof);
+    }
+    .proof-row p > span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.22;
+    }
+
+    .why-strip {
+      grid-column: 1 / 4;
+      grid-row: 3;
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 230px repeat(5, 1fr);
+      align-items: stretch;
+      overflow: hidden;
+      border-radius: 24px;
+      background: var(--micron-white);
+      border: var(--hairline);
+      box-shadow: 0 20px 46px color-mix(in srgb, var(--ink) 8%, transparent);
+    }
+    .why-label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 26px;
+      background: rgb(20, 16, 35);
+      color: white;
+      font-size: 24px;
+      line-height: 1.05;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .why-label::after {
+      content: "";
+      position: absolute;
+      right: -28px;
+      width: 58px;
+      height: 150px;
+      border-radius: 50%;
+      background: var(--micron-accent);
+      filter: blur(.2px);
+    }
+    .why-cell {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-content: center;
+      gap: 12px;
+      padding: 12px 14px 12px 26px;
+      border-left: var(--hairline);
+      background: rgba(255, 255, 255, .97);
+    }
+    .why-cell .chip {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+    }
+    .why-cell .chip svg { width: 23px; height: 23px; }
+    .why-cell b {
+      display: block;
+      font-size: 18px;
+      line-height: 1.08;
+      color: var(--ink);
+    }
+    .why-cell p > span {
+      display: block;
+      margin-top: 5px;
+      font-size: 17px;
+      line-height: 1.12;
+      color: var(--muted);
+    }
+
+    .icon { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity var(--duration-normal) var(--ease-out-expo), transform var(--duration-normal) var(--ease-out-expo);
+    }
+    .slide.visible .reveal { opacity: 1; transform: none; }
+    .reveal:nth-child(2) { transition-delay: .12s; }
+    .reveal:nth-child(3) { transition-delay: .22s; }
+    .reveal:nth-child(4) { transition-delay: .32s; }
+
+    .nav-dots {
+      position: fixed;
+      z-index: 90;
+      right: 14px;
+      top: 50%;
+      width: 32px;
+      transform: translateY(-50%);
+      display: grid;
+      gap: 4px;
+      place-items: center;
+    }
+    .nav-dots button {
+      width: 32px;
+      height: 18px;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .nav-dots button::before {
+      content: "";
+      display: block;
+      width: 7px;
+      height: 7px;
+      margin: auto;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--ink) 22%, transparent);
+      transition: transform .2s ease, background .2s ease;
+    }
+    .nav-dots button.active::before {
+      background: var(--micron-accent);
+      transform: scale(1.25);
+    }
+    .presentation-hotspot {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      width: 190px;
+      height: 96px;
+      padding: 18px 18px 0 0;
+    }
+    .present-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 14px 0 12px;
+      border: 1px solid rgba(15, 23, 42, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .92);
+      color: var(--ink);
+      cursor: pointer;
+      font: 800 14px/1 var(--font-display);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .12);
+      backdrop-filter: blur(10px);
+      transition: opacity .18s ease, transform .2s ease, color .2s ease, border-color .2s ease;
+    }
+    .presentation-hotspot:hover .present-toggle,
+    .presentation-hotspot:focus-within .present-toggle {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+    .present-toggle svg { width: 18px; height: 18px; fill: currentColor; }
+    .present-toggle:hover,
+    .present-toggle:focus-visible {
+      color: var(--micron-accent);
+      border-color: color-mix(in srgb, var(--micron-accent) 55%, transparent);
+      outline: none;
+    }
+
+    #overview {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      overflow-y: auto;
+      padding: 48px;
+      background: var(--letterbox);
+      color: var(--ink);
+    }
+    #overview[aria-hidden="false"] { display: block; }
+    .ov-head {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1180px;
+      margin: 0 auto 28px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .ov-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    .ov-card {
+      cursor: pointer;
+      overflow: hidden;
+      border: var(--hairline);
+      border-radius: 12px;
+      background: white;
+    }
+    .ov-card.active { border: 2px solid var(--micron-accent); }
+    .ov-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: white;
+    }
+    .ov-thumb .clone {
+      position: absolute;
+      left: 0 !important;
+      top: 0 !important;
+      width: 1600px !important;
+      height: 900px !important;
+      transform-origin: top left !important;
+      filter: none !important;
+      pointer-events: none;
+    }
+    .ov-thumb .clone .reveal { opacity: 1 !important; transform: none !important; }
+    .ov-label {
+      display: flex;
+      justify-content: space-between;
+      padding: 11px 14px;
+      font: 700 13px/1 var(--font-mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-doc" viewBox="0 0 24 24"><path class="icon" d="M7 3h7l4 4v14H7zM14 3v5h5M9 12h7M9 16h7"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path class="icon" d="M12 3l7 3v5c0 4.5-2.8 8.3-7 10-4.2-1.7-7-5.5-7-10V6zM9 12l2 2 4-5"/></symbol>
+    <symbol id="i-wiki" viewBox="0 0 24 24"><path class="icon" d="M4 6h7a3 3 0 0 1 3 3v10a3 3 0 0 0-3-3H4zM14 9a3 3 0 0 1 3-3h3v10h-3a3 3 0 0 0-3 3z"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><path class="icon" d="M5 6c0-2 14-2 14 0s-14 2-14 0ZM5 6v12c0 2 14 2 14 0V6M5 12c0 2 14 2 14 0"/></symbol>
+    <symbol id="i-vector" viewBox="0 0 24 24"><path class="icon" d="M5 18l5-12 4 9 2-4 3 7M8 18h12"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle class="icon" cx="11" cy="11" r="6"/><path class="icon" d="M16 16l4 4"/></symbol>
+    <symbol id="i-brain" viewBox="0 0 24 24"><path class="icon" d="M9 5a3 3 0 0 0-4 3 3 3 0 0 0 1 5 3 3 0 0 0 3 5M15 5a3 3 0 0 1 4 3 3 3 0 0 1-1 5 3 3 0 0 1-3 5M9 5v14M15 5v14M9 10h6M9 14h6"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path class="icon" d="M5 5h14v10H9l-4 4zM9 10h6M9 13h4"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle class="icon" cx="12" cy="12" r="8"/><circle class="icon" cx="12" cy="12" r="3"/><path class="icon" d="M12 2v3M22 12h-3M12 22v-3M2 12h3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle class="icon" cx="12" cy="12" r="8"/><path class="icon" d="M12 8v5l3 2"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><path class="icon" d="M5 21V4h10v17M15 9h4v12M8 8h2M8 12h2M8 16h2M13 8h2M13 12h2M13 16h2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path class="icon" d="M20 6L9 17l-5-5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path class="icon" d="M20 7v5h-5M4 17v-5h5M18 12a6 6 0 0 0-10-4.5L4 12M6 12a6 6 0 0 0 10 4.5L20 12"/></symbol>
+    <symbol id="i-light" viewBox="0 0 24 24"><path class="icon" d="M9 18h6M10 22h4M8 10a4 4 0 1 1 8 0c0 2-2 3-2.4 5H10.4C10 13 8 12 8 10Z"/></symbol>
+  </svg>
+
+  <div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
+  <nav class="nav-dots" aria-label="Slide navigation"></nav>
+  <div class="presentation-hotspot" aria-hidden="false">
+    <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+      <span class="presentation-toggle-text">Present</span>
+    </button>
+  </div>
+
+  <main class="deck" tabindex="-1">
+    <section class="slide title-slide" data-slide-kind="cover">
+      <div class="slide-content">
+        <div class="title-copy">
+          <div class="eyebrow reveal">RAG explainer</div>
+          <h1 class="reveal">What happens <em>behind the scenes?</em></h1>
+          <p class="reveal">RAG connects a natural-language question to the most relevant knowledge, then uses that context to answer with more trust.</p>
+          <div class="title-meta reveal">
+            <img src=".agents/skills/html-slides/themes/_shared/micron-logo-black-tm-rgb.png" alt="Micron" />
+            <span>Micron light system map</span>
+          </div>
+        </div>
+        <div class="title-visual reveal" aria-hidden="true">
+          <img src=".agents/skills/micron-icons/assets/primary/png/pos/ai.png" alt="" />
+        </div>
+      </div>
+    </section>
+
+    <section class="slide rag-map" data-slide-kind="content">
+      <div class="slide-content">
+        <aside class="map-intro reveal">
+          <div>
+            <div class="eyebrow">Behind the scenes</div>
+            <h2>RAG connects <em>question to knowledge.</em></h2>
+          </div>
+          <p>It finds the right information first, then gives the model just enough context to generate a grounded answer.</p>
+          <section class="nutshell" aria-label="RAG in a nutshell">
+            <h3>RAG in a nutshell</h3>
+            <div class="two-lines">
+              <span>Find the right info.</span>
+              <span>Use it to answer right.</span>
+            </div>
+            <svg class="mini-art" viewBox="0 0 260 88" aria-hidden="true">
+              <circle cx="82" cy="44" r="35" fill="rgba(189,3,247,.09)" stroke="rgba(189,3,247,.36)" />
+              <use href="#i-brain" x="52" y="14" width="60" height="60" color="#bd03f7" />
+              <circle cx="154" cy="39" r="24" fill="rgba(32,68,255,.08)" stroke="rgba(32,68,255,.38)" stroke-width="3" />
+              <path d="M173 58l35 22" stroke="#2044ff" stroke-width="8" stroke-linecap="round" />
+            </svg>
+          </section>
+        </aside>
+
+        <div class="source-strip reveal" aria-label="Knowledge sources">
+          <div class="source-card" style="--chip:#2044ff"><span class="chip"><svg><use href="#i-doc"/></svg></span><p><b>Docs</b><span>PDF / Word</span></p></div>
+          <div class="source-card" style="--chip:#00891c"><span class="chip"><svg><use href="#i-shield"/></svg></span><p><b>Policies</b><span>SOPs</span></p></div>
+          <div class="source-card" style="--chip:#7c3aed"><span class="chip"><svg><use href="#i-wiki"/></svg></span><p><b>Wiki</b><span>Confluence</span></p></div>
+          <div class="source-card" style="--chip:#f97316"><span class="chip"><svg><use href="#i-db"/></svg></span><p><b>DB</b><span>SQL</span></p></div>
+        </div>
+
+        <div class="pipeline reveal" aria-label="RAG pipeline">
+          <article class="step" style="--step-color:#bd03f7">
+            <span class="badge">1</span><span class="chip"><svg><use href="#i-vector"/></svg></span>
+            <p><b>Vector database</b><span>Stores chunks as embeddings</span></p>
+            <small class="note">Docs are chunked, embedded, stored</small>
+          </article>
+          <article class="step" style="--step-color:#2044ff">
+            <span class="badge">2</span><span class="chip"><svg><use href="#i-search"/></svg></span>
+            <p><b>Similarity search</b><span>Finds relevant chunks</span></p>
+            <small class="note">Vector DB searched semantically</small>
+          </article>
+          <article class="step" style="--step-color:#00891c">
+            <span class="badge">3</span><span class="chip"><svg><use href="#i-doc"/></svg></span>
+            <p><b>Most relevant context</b><span>Top matching chunks</span></p>
+            <small class="note">Only relevant info passed to model</small>
+          </article>
+          <article class="step" style="--step-color:#f97316">
+            <span class="badge">4</span><span class="chip"><svg><use href="#i-brain"/></svg></span>
+            <p><b>Large language model</b><span>Generates answer</span></p>
+            <small class="note">Context generates accurate answer</small>
+          </article>
+          <article class="step" style="--step-color:#7c3aed">
+            <span class="badge">5</span><span class="chip"><svg><use href="#i-chat"/></svg></span>
+            <p><b>Grounded answer</b><span>Source-aware response</span></p>
+          </article>
+        </div>
+
+        <aside class="proof-rail reveal" aria-label="Why it works">
+          <h3>Why it works</h3>
+          <div class="proof-row" style="--proof:#bd03f7"><span class="proof-dot"><svg><use href="#i-target"/></svg></span><p><b>Relevant</b><span>The system retrieves the closest knowledge first.</span></p></div>
+          <div class="proof-row" style="--proof:#00891c"><span class="proof-dot"><svg><use href="#i-shield"/></svg></span><p><b>Accurate</b><span>The answer is grounded in supplied context.</span></p></div>
+          <div class="proof-row" style="--proof:#2044ff"><span class="proof-dot"><svg><use href="#i-clock"/></svg></span><p><b>Current</b><span>Fresh sources can update the answer path.</span></p></div>
+          <div class="proof-row" style="--proof:#7c3aed"><span class="proof-dot"><svg><use href="#i-wiki"/></svg></span><p><b>Transparent</b><span>People can verify where the response came from.</span></p></div>
+        </aside>
+
+        <footer class="why-strip reveal" aria-label="Why it matters">
+          <div class="why-label"><svg width="42" height="42" viewBox="0 0 24 24"><use href="#i-target"/></svg><span>Why it matters</span></div>
+          <div class="why-cell" style="--chip:#bd03f7"><span class="chip"><svg><use href="#i-target"/></svg></span><p><b>Better accuracy</b><span>Reduces errors</span></p></div>
+          <div class="why-cell" style="--chip:#2044ff"><span class="chip"><svg><use href="#i-refresh"/></svg></span><p><b>Up-to-date</b><span>Leverages latest</span></p></div>
+          <div class="why-cell" style="--chip:#00891c"><span class="chip"><svg><use href="#i-shield"/></svg></span><p><b>Reduces hallucinations</b><span>Grounds claims</span></p></div>
+          <div class="why-cell" style="--chip:#f97316"><span class="chip"><svg><use href="#i-building"/></svg></span><p><b>Uses your knowledge</b><span>Connects internal sources</span></p></div>
+          <div class="why-cell" style="--chip:#7c3aed"><span class="chip"><svg><use href="#i-check"/></svg></span><p><b>Easy to verify</b><span>Source-aware path</span></p></div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+
+  <script>
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll(".slide"));
+        this.currentSlide = 0;
+        this.locked = false;
+        this.programmaticScroll = false;
+        this.overviewOpen = false;
+        this.deck = document.querySelector(".deck");
+        this.navDotsContainer = document.querySelector(".nav-dots");
+        this.progressBar = document.querySelector(".progress-bar");
+        this.overview = document.getElementById("overview");
+        this.presentationToggle = document.querySelector(".present-toggle");
+        this.setupFixedStage();
+        this.setupNavDots();
+        this.setupIntersectionObserver();
+        this.setupKeyboardNav();
+        this.setupWheelNav();
+        this.setupTouchNav();
+        this.setupPresentationMode();
+        this.goTo(0, { immediate: true });
+      }
+      setupFixedStage() {
+        this.slides.forEach((slide) => {
+          if (slide.querySelector(":scope > .slide-stage")) return;
+          const stage = document.createElement("div");
+          stage.className = "slide-stage";
+          while (slide.firstChild) stage.appendChild(slide.firstChild);
+          slide.appendChild(stage);
+        });
+        const updateScale = () => {
+          const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+          document.documentElement.style.setProperty("--stage-scale", scale.toFixed(5));
+          document.documentElement.style.setProperty("--stage-scaled-width", `${1600 * scale}px`);
+          document.documentElement.style.setProperty("--stage-scaled-height", `${900 * scale}px`);
+        };
+        updateScale();
+        window.addEventListener("resize", updateScale, { passive: true });
+      }
+      clamp(i) { return Math.max(0, Math.min(this.slides.length - 1, i)); }
+      applySlide(i) {
+        this.currentSlide = i;
+        this.slides.forEach((slide, idx) => {
+          slide.classList.toggle("active", idx === i);
+          slide.classList.toggle("visible", idx === i);
+        });
+        this.navDotsContainer.querySelectorAll("button").forEach((dot, idx) => {
+          dot.classList.toggle("active", idx === i);
+          dot.setAttribute("aria-current", idx === i ? "true" : "false");
+        });
+        this.progressBar.style.transform = `scaleX(${(i + 1) / this.slides.length})`;
+      }
+      setupNavDots() {
+        this.navDotsContainer.innerHTML = "";
+        this.slides.forEach((_, i) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+          dot.addEventListener("click", () => this.goTo(i));
+          this.navDotsContainer.appendChild(dot);
+        });
+      }
+      goTo(i, options = {}) {
+        const next = this.clamp(i);
+        if (this.locked && !options.immediate) return;
+        this.applySlide(next);
+        this.programmaticScroll = true;
+        this.deck.scrollTo({ left: 0, top: this.slides[next].offsetTop, behavior: options.immediate ? "auto" : "smooth" });
+        if (!options.immediate) {
+          this.locked = true;
+          window.setTimeout(() => { this.locked = false; this.programmaticScroll = false; }, 620);
+        } else {
+          requestAnimationFrame(() => { this.programmaticScroll = false; });
+        }
+      }
+      next() { this.goTo(this.currentSlide + 1); }
+      prev() { this.goTo(this.currentSlide - 1); }
+      setupIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+          if (this.programmaticScroll) return;
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) this.applySlide(this.slides.indexOf(entry.target));
+          });
+        }, { root: this.deck, threshold: .6 });
+        this.slides.forEach((slide) => observer.observe(slide));
+      }
+      requestPresent() { document.documentElement.requestFullscreen?.().catch(() => {}); }
+      setupPresentationMode() {
+        this.presentationToggle?.addEventListener("click", (event) => {
+          event.preventDefault();
+          this.requestPresent();
+        });
+      }
+      setupKeyboardNav() {
+        document.addEventListener("keydown", (event) => {
+          const target = event.target;
+          if (["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName) || target?.isContentEditable) return;
+          if ((event.key === "p" || event.key === "P") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+            event.preventDefault();
+            this.requestPresent();
+            return;
+          }
+          if (event.key === "Escape") {
+            if (this.overviewOpen) this.toggleOverview(false);
+            else if (!document.fullscreenElement) this.toggleOverview(true);
+            return;
+          }
+          if (this.overviewOpen) return;
+          if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(event.key)) { event.preventDefault(); this.next(); }
+          if (["ArrowLeft", "ArrowUp", "PageUp"].includes(event.key)) { event.preventDefault(); this.prev(); }
+          if (event.key === "Home") { event.preventDefault(); this.goTo(0); }
+          if (event.key === "End") { event.preventDefault(); this.goTo(this.slides.length - 1); }
+        });
+      }
+      setupWheelNav() {
+        let acc = 0;
+        let timer = null;
+        this.deck.addEventListener("wheel", (event) => {
+          if (this.overviewOpen) return;
+          event.preventDefault();
+          acc += Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+          if (Math.abs(acc) > 80) { acc > 0 ? this.next() : this.prev(); acc = 0; }
+          clearTimeout(timer);
+          timer = setTimeout(() => { acc = 0; }, 180);
+        }, { passive: false });
+      }
+      setupTouchNav() {
+        let startY = 0;
+        window.addEventListener("touchstart", (event) => { startY = event.changedTouches[0].clientY; }, { passive: true });
+        window.addEventListener("touchend", (event) => {
+          if (this.overviewOpen) return;
+          const dy = event.changedTouches[0].clientY - startY;
+          if (Math.abs(dy) > 42) dy < 0 ? this.next() : this.prev();
+        }, { passive: true });
+      }
+      buildOverview() {
+        this.overview.innerHTML = "";
+        const head = document.createElement("div");
+        head.className = "ov-head";
+        head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${this.currentSlide + 1} / ${this.slides.length}</span>`;
+        const grid = document.createElement("div");
+        grid.className = "ov-grid";
+        this.slides.forEach((slide, i) => {
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+          card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+          const thumb = document.createElement("div");
+          thumb.className = "ov-thumb";
+          const clone = slide.querySelector(":scope > .slide-stage").cloneNode(true);
+          clone.classList.add("clone", "visible");
+          slide.classList.forEach((className) => {
+            if (className !== "slide") clone.classList.add(className);
+          });
+          clone.setAttribute("aria-hidden", "true");
+          thumb.appendChild(clone);
+          const label = document.createElement("div");
+          label.className = "ov-label";
+          label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind}</span>`;
+          card.append(thumb, label);
+          card.addEventListener("click", () => { this.toggleOverview(false); this.goTo(i); });
+          grid.appendChild(card);
+        });
+        this.overview.append(head, grid);
+        requestAnimationFrame(() => {
+          this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+            const clone = thumb.querySelector(".clone");
+            const scale = Math.min(thumb.clientWidth / 1600, thumb.clientHeight / 900);
+            clone.style.transform = `scale(${scale})`;
+          });
+        });
+      }
+      toggleOverview(force) {
+        this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+        if (this.overviewOpen) {
+          this.buildOverview();
+          this.overview.setAttribute("aria-hidden", "false");
+          this.overview.focus({ preventScroll: true });
+        } else {
+          this.overview.setAttribute("aria-hidden", "true");
+        }
+      }
+    }
+    window.presentation = new SlidePresentation();
+  </script>
+</body>
+</html>
