@@ -1,0 +1,227 @@
+<!--
+  TITLE TEMPLATE: silk-wave   (demo source: .title-option-silk + initSilkWavesTitle)
+  Use for: roadmap, strategy, transformation stories. Visually dominant — use sparingly.
+  Runtime: Three.js (pinned). CSS silk/glow fallback if the module fails.
+  Read ./README.md for the shared cover contract.
+  Variant: silk-wave-purple.html (same shader, #BD03F7 colour stops).
+-->
+
+<!-- 1. SECTION (slide 1). Canvas wrapper is a direct child → lands in .slide-stage. -->
+<section class="slide title-slide title-silk" data-slide-kind="cover">
+  <div class="md-silk-wave" aria-hidden="true">
+    <canvas class="md-silk-canvas"></canvas>
+  </div>
+  <img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" />
+  <div class="md-title-content">
+    <p class="kicker reveal">[EYEBROW]</p>
+    <h1 class="reveal">[TITLE]</h1>
+    <p class="subtitle reveal">[SUBTITLE]</p>
+    <div class="md-accent-line reveal"></div>
+  </div>
+  <div class="md-title-note">[CONTEXT — audience · date · source]</div>
+  <div class="md-title-number">01 / Cover</div>
+</section>
+
+<!-- 2. STYLE (paste once into deck <style>). -->
+<style>
+  .title-silk .slide-stage{ background:#000;isolation:isolate; }
+  /* CSS-only fallback field. */
+  .title-silk .slide-stage::before{
+    content:"";position:absolute;inset:-2px -220px -2px -80px;z-index:1;
+    background:
+      radial-gradient(ellipse at 78% 48%, rgba(189,3,247,.72), transparent 28%),
+      radial-gradient(ellipse at 92% 34%, rgba(32,68,255,.78), transparent 36%),
+      repeating-linear-gradient(124deg, rgba(255,255,255,.09) 0 1px, transparent 1px 24px);
+    filter:saturate(1.15);
+  }
+  .title-silk .md-silk-wave{
+    position:absolute;inset:-2px -260px -2px -80px;overflow:hidden;z-index:1;
+    transform:scale(1.1);transform-origin:center;
+  }
+  .title-silk .md-silk-canvas{ width:100%;height:100%;display:block; }
+  /* Dark text-contrast overlay. */
+  .title-silk .slide-stage::after{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.90) 0%, rgba(0,0,0,.50) 40%, rgba(0,0,0,.02) 100%),
+      radial-gradient(circle at 76% 52%, transparent 0 42%, rgba(0,0,0,.20) 88%);
+  }
+  .title-silk .md-title-content{ max-width:820px; }
+  .title-silk .md-title-content h1{ max-width:760px;color:#fff; }
+  .title-silk .md-title-content .subtitle{ max-width:760px;color:var(--gray-e); }
+  .title-silk .md-title-brand,
+  .title-silk .md-title-content,
+  .title-silk .md-title-note,
+  .title-silk .md-title-number{ z-index:4; }
+</style>
+
+<!-- 3. SCRIPT (paste once, before window.presentation = new SlidePresentation()).
+     The purple variant reuses initSilkWaves() with a second selector + stops. -->
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+  function initSilkWaves(
+    selector = '.title-silk .md-silk-canvas',
+    colorStops = [
+      '#0d1326', '#162a52', '#401e7e', '#7c26aa',
+      '#632ed5', '#5237ff', '#8250ff', '#69a0ff'
+    ]
+  ) {
+    const canvas = document.querySelector(selector);
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const colors = colorStops.map((color) => new THREE.Color(color));
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(1600, 900) },
+      uSpeed: { value: 0.78 },
+      uScale: { value: 2.35 },
+      uDistortion: { value: 1.12 },
+      uCurve: { value: 0.82 },
+      uContrast: { value: 1.0 },
+      uRotation: { value: THREE.MathUtils.degToRad(-10) },
+      uOffsetX: { value: -0.72 },
+      uOffsetY: { value: -0.36 },
+      uBrightness: { value: 1.24 },
+      uOpacity: { value: 0.98 },
+      uComplexity: { value: 1.42 },
+      uFrequency: { value: 1.0 },
+      uC1: { value: colors[0] },
+      uC2: { value: colors[1] },
+      uC3: { value: colors[2] },
+      uC4: { value: colors[3] },
+      uC5: { value: colors[4] },
+      uC6: { value: colors[5] },
+      uC7: { value: colors[6] },
+      uC8: { value: colors[7] }
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      transparent: true,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position.xy, 0.0, 1.0);
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+
+        uniform float uTime;
+        uniform vec2 uResolution;
+        uniform float uSpeed;
+        uniform float uScale;
+        uniform float uDistortion;
+        uniform float uCurve;
+        uniform float uContrast;
+        uniform float uRotation;
+        uniform float uOffsetX;
+        uniform float uOffsetY;
+        uniform float uBrightness;
+        uniform float uOpacity;
+        uniform float uComplexity;
+        uniform float uFrequency;
+        uniform vec3 uC1;
+        uniform vec3 uC2;
+        uniform vec3 uC3;
+        uniform vec3 uC4;
+        uniform vec3 uC5;
+        uniform vec3 uC6;
+        uniform vec3 uC7;
+        uniform vec3 uC8;
+
+        varying vec2 vUv;
+
+        vec2 rotate2D(vec2 p, float angle) {
+          float s = sin(angle);
+          float c = cos(angle);
+          return vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+        }
+
+        void main() {
+          vec2 pos = vUv * uScale;
+          float aspect = uResolution.x / uResolution.y;
+          pos.x *= aspect;
+          pos.x += uOffsetX;
+          pos.y += uOffsetY;
+
+          vec2 center = vec2(aspect * 0.5 * uScale, 0.5 * uScale);
+          pos = rotate2D(pos - center, uRotation) + center;
+
+          float iterations = 10.0 + uComplexity * 10.0;
+          for (float i = 1.0; i < 30.0; i++) {
+            if (i > iterations) break;
+            float timeOffset = uTime * uSpeed * 0.1 * i;
+            float amp = 0.8 * uDistortion;
+            float shift = 0.3 * uCurve;
+            pos.x += amp / i * sin(i * pos.y + timeOffset + shift * i) + 1.6;
+            pos.y += (amp * 2.0) / i * sin(pos.x + timeOffset + shift * i + 1.6) - 0.8;
+          }
+
+          float wave = cos((pos.x + pos.y) * uFrequency) * 0.5 + 0.5;
+          vec3 finalColor = vec3(0.0);
+          if (wave < 0.15) {
+            finalColor = mix(uC1, uC2, wave * 6.667);
+          } else if (wave < 0.35) {
+            finalColor = mix(uC2, uC3, (wave - 0.15) * 5.0);
+          } else if (wave < 0.55) {
+            finalColor = mix(uC3, uC4, (wave - 0.35) * 5.0);
+          } else if (wave < 0.7) {
+            finalColor = mix(uC4, uC5, (wave - 0.55) * 6.667);
+          } else if (wave < 0.82) {
+            finalColor = mix(uC5, uC6, (wave - 0.7) * 8.333);
+          } else if (wave < 0.92) {
+            finalColor = mix(uC6, uC7, (wave - 0.82) * 10.0);
+          } else {
+            finalColor = mix(uC7, uC8, (wave - 0.92) * 12.5);
+          }
+
+          finalColor *= uBrightness;
+          float alpha = smoothstep(0.01, 1.0, pow(wave, 2.5 * uContrast)) * uOpacity;
+          gl_FragColor = vec4(finalColor, alpha);
+        }
+      `
+    });
+
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+
+    function resize() {
+      const width = Math.max(1, canvas.clientWidth || 1600);
+      const height = Math.max(1, canvas.clientHeight || 900);
+      renderer.setSize(width, height, false);
+      uniforms.uResolution.value.set(width, height);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    new ResizeObserver(resize).observe(canvas);
+
+    const start = performance.now();
+    renderer.setAnimationLoop(() => {
+      uniforms.uTime.value = (performance.now() - start) / 1000;
+      renderer.render(scene, camera);
+    });
+  }
+
+  window.initSilkWaves = initSilkWaves;
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', () => initSilkWaves());
+  } else {
+    initSilkWaves();
+  }
+</script>

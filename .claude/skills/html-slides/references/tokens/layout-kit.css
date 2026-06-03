@@ -1,0 +1,125 @@
+/* =============================================================
+   MICRON LAYOUT KIT — 12-column grid utilities
+   Depends on micron-tokens.css (--col-count, --col-gutter, --col-margin).
+   Use real spans instead of `repeat(auto-fit, ...)` so layouts feel
+   composed, not auto-filled. Asymmetric grids are the antidote to
+   the "three equal cards" AI-slide tell.
+
+   Usage:
+     <div class="grid12">
+       <h2 class="span-7">Headline</h2>
+       <aside class="span-4 start-9">Meta column</aside>
+       <div class="span-12 row-2 stack">Body band</div>
+     </div>
+   ============================================================= */
+
+.grid12 {
+    display: grid;
+    grid-template-columns: repeat(var(--col-count, 12), minmax(0, 1fr));
+    column-gap: var(--col-gutter);
+    row-gap: var(--space-5);
+    width: 100%;
+}
+
+/* Spans 1-12 */
+.span-1  { grid-column: span 1; }
+.span-2  { grid-column: span 2; }
+.span-3  { grid-column: span 3; }
+.span-4  { grid-column: span 4; }
+.span-5  { grid-column: span 5; }
+.span-6  { grid-column: span 6; }
+.span-7  { grid-column: span 7; }
+.span-8  { grid-column: span 8; }
+.span-9  { grid-column: span 9; }
+.span-10 { grid-column: span 10; }
+.span-11 { grid-column: span 11; }
+.span-12 { grid-column: span 12; }
+
+/* Explicit start positions 1-12 (for asymmetric layouts) */
+.start-1  { grid-column-start: 1; }
+.start-2  { grid-column-start: 2; }
+.start-3  { grid-column-start: 3; }
+.start-4  { grid-column-start: 4; }
+.start-5  { grid-column-start: 5; }
+.start-6  { grid-column-start: 6; }
+.start-7  { grid-column-start: 7; }
+.start-8  { grid-column-start: 8; }
+.start-9  { grid-column-start: 9; }
+.start-10 { grid-column-start: 10; }
+.start-11 { grid-column-start: 11; }
+.start-12 { grid-column-start: 12; }
+
+/* Row spans for vertical bands */
+.row-1 { grid-row: span 1; }
+.row-2 { grid-row: span 2; }
+.row-3 { grid-row: span 3; }
+
+/* Stacked content (vertical rhythm anchored on the 8px baseline) */
+.stack > * + * { margin-top: var(--space-3); }
+.stack-tight > * + * { margin-top: var(--space-2); }
+.stack-loose > * + * { margin-top: var(--space-5); }
+
+/* Inline (horizontal) flow */
+.inline-flow {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+}
+
+/* Eyebrow + slide-number registration marks */
+.eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    letter-spacing: var(--track-eyebrow);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.slide-coord {
+    position: absolute;
+    top: var(--space-5);
+    left: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    letter-spacing: var(--track-mono);
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.slide-coord::before { content: "// "; opacity: 0.5; }
+
+/* Hairline divider */
+.rule {
+    border: 0;
+    border-top: var(--hairline);
+    margin: var(--space-4) 0;
+}
+.theme-light .rule { border-top: var(--hairline-dark); }
+
+/* Corner registration marks (engineering-dark feel) */
+.regmark {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+    color: var(--text-secondary);
+    opacity: 0.5;
+}
+.regmark::before, .regmark::after {
+    content: "";
+    position: absolute;
+    background: currentColor;
+}
+.regmark::before { left: 0; top: 0; width: 100%; height: 1px; }
+.regmark::after  { left: 0; top: 0; width: 1px; height: 100%; }
+.regmark.tr { right: var(--space-5); top: var(--space-5); transform: rotate(90deg); }
+.regmark.bl { left: var(--space-5); bottom: var(--space-5); transform: rotate(-90deg); }
+.regmark.br { right: var(--space-5); bottom: var(--space-5); transform: rotate(180deg); }
+.regmark.tl { left: var(--space-5); top: var(--space-5); }
+
+/* Mobile collapse — grids fold to single column when slide canvas is narrow */
+@media (max-width: 720px) {
+    .grid12 > [class*="span-"]  { grid-column: 1 / -1; }
+    .grid12 > [class*="start-"] { grid-column-start: auto; }
+}

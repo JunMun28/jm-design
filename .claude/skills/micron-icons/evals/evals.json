@@ -1,0 +1,38 @@
+{
+  "skill_name": "micron-icons",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Find a Micron icon for a dark engineering slide about memory and storage performance. Return three deterministic candidates.",
+      "expected_output": "Uses the technical-capability group with micron-dark theme, returns rev SVG paths in stable order.",
+      "files": [],
+      "expectations": [
+        "The output uses bin/find-icon.py instead of browsing folders manually.",
+        "The output returns SVG assets by default.",
+        "The output uses rev style for micron-dark."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need a decorative Micron hero icon for a light title slide. Give me an HTML snippet.",
+      "expected_output": "Returns a decorative HTML snippet with local relative path and hidden decorative accessibility.",
+      "files": [],
+      "expectations": [
+        "The output uses --decorative for decorative HTML.",
+        "The output uses pos style for micron-light.",
+        "The output does not embed data URIs."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "The Micron icon zips changed. Rebuild the icon assets and verify the manifest counts.",
+      "expected_output": "Runs the extractor from source archives, converts static icons to SVG, and verifies expected counts.",
+      "files": [],
+      "expectations": [
+        "The output uses bin/extract-icons.py.",
+        "The output converts static PNG source files into SVG assets.",
+        "The output verifies primary SVG, primary MP4, and secondary SVG counts."
+      ]
+    }
+  ]
+}

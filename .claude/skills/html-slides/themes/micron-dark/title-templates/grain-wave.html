@@ -1,0 +1,182 @@
+<!--
+  TITLE TEMPLATE: grain-wave   (demo source: .title-option-grain + initGrainWaveTitle)
+  Use for: engineering reviews, systems topics, technical explainers.
+  Runtime: Three.js (pinned). CSS grain/glow fallback if the module fails.
+  Read ./README.md for the shared cover contract.
+-->
+
+<!-- 1. SECTION (slide 1). Canvas wrapper is a direct child → lands in .slide-stage. -->
+<section class="slide title-slide title-grain" data-slide-kind="cover">
+  <div class="md-grain-wave" aria-hidden="true">
+    <canvas class="md-grain-canvas"></canvas>
+  </div>
+  <img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" />
+  <div class="md-title-content">
+    <p class="kicker reveal">[EYEBROW]</p>
+    <h1 class="reveal">[TITLE]</h1>
+    <p class="subtitle reveal">[SUBTITLE]</p>
+    <div class="md-accent-line reveal"></div>
+  </div>
+  <div class="md-title-note">[CONTEXT — audience · date · source]</div>
+  <div class="md-title-number">01 / Cover</div>
+</section>
+
+<!-- 2. STYLE (paste once into deck <style>). -->
+<style>
+  .title-grain .slide-stage{ background:#02030a;isolation:isolate; }
+  /* CSS-only fallback field. */
+  .title-grain .slide-stage::before{
+    content:"";position:absolute;inset:0;z-index:1;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.58) 42%, rgba(0,0,0,.18)),
+      radial-gradient(circle at 76% 48%, rgba(189,3,247,.42), transparent 26%),
+      repeating-linear-gradient(112deg, rgba(255,255,255,.07) 0 1px, transparent 1px 32px);
+  }
+  .title-grain .md-grain-wave{ position:absolute;inset:0;overflow:hidden;z-index:1; }
+  .title-grain .md-grain-canvas{ position:absolute;inset:0;width:100%;height:100%;display:block; }
+  /* Dark text-contrast overlay over the canvas. */
+  .title-grain .slide-stage::after{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(0,0,0,.88) 0%, rgba(0,0,0,.58) 42%, rgba(0,0,0,.18) 100%),
+      radial-gradient(circle at 78% 45%, transparent 0 26%, rgba(0,0,0,.42) 68%);
+  }
+  .title-grain .md-title-content{ max-width:850px; }
+  .title-grain .md-title-content h1{ max-width:760px;color:#fff; }
+  .title-grain .md-title-content .subtitle{ max-width:760px;color:var(--gray-e); }
+  .title-grain .md-title-brand,
+  .title-grain .md-title-content,
+  .title-grain .md-title-note,
+  .title-grain .md-title-number{ z-index:4; }
+</style>
+
+<!-- 3. SCRIPT (paste once, before window.presentation = new SlidePresentation()). -->
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js';
+
+  function initGrainWave() {
+    const canvas = document.querySelector('.title-grain .md-grain-canvas');
+    if (!canvas) return;
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const uniforms = {
+      uTime: { value: 0 },
+      uResolution: { value: new THREE.Vector2(1600, 900) },
+      uSpeed: { value: 0.32 },
+      uWaveCount: { value: 34 },
+      uWaveAmplitude: { value: 0.92 },
+      uWaveFrequency: { value: 4.6 },
+      uLineThickness: { value: 0.12 },
+      uGrainIntensity: { value: 18 },
+      uStartColor: { value: new THREE.Color('#2044ff') },
+      uEndColor: { value: new THREE.Color('#bd03f7') },
+      uBackgroundColor: { value: new THREE.Color('#02030a') },
+      uBrightness: { value: 0.92 },
+      uSpeedVariation: { value: 0.005 },
+      uWaveWidth: { value: 3.4 },
+      uScale: { value: 0.62 }
+    };
+
+    const material = new THREE.ShaderMaterial({
+      uniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = vec4(position.xy, 0.0, 1.0);
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        uniform float uTime;
+        uniform vec2 uResolution;
+        uniform float uSpeed;
+        uniform float uWaveCount;
+        uniform float uWaveAmplitude;
+        uniform float uWaveFrequency;
+        uniform float uLineThickness;
+        uniform float uGrainIntensity;
+        uniform vec3 uStartColor;
+        uniform vec3 uEndColor;
+        uniform vec3 uBackgroundColor;
+        uniform float uBrightness;
+        uniform float uSpeedVariation;
+        uniform float uWaveWidth;
+        uniform float uScale;
+        varying vec2 vUv;
+
+        float generateNoise(vec2 position) {
+          return fract(sin(dot(position, vec2(12.9898, 78.233))) * 43758.5453);
+        }
+
+        float applyGrain(vec2 position) {
+          return (generateNoise(position) * 2.0 - 1.0) / 256.0;
+        }
+
+        vec3 calculateWaveLine(vec2 coord, float animSpeed, float horizontalScale, vec3 color) {
+          float waveOffset = sin(uTime * animSpeed + coord.x * horizontalScale * uWaveFrequency) * uWaveAmplitude;
+          float edgeFalloff = smoothstep(1.0, 0.0, abs(coord.x));
+          coord.y += waveOffset * edgeFalloff;
+
+          float lineIntensity = smoothstep(uLineThickness, 0.0, abs(coord.y));
+          float yFade = smoothstep(1.0, 0.2, abs(coord.y));
+          float xFade = smoothstep(1.0, 0.3, abs(coord.x));
+          return color * lineIntensity * yFade * xFade;
+        }
+
+        void main() {
+          vec2 coord = vUv * 2.0 - 1.0;
+          coord.x *= uResolution.x / uResolution.y;
+          coord /= uScale;
+          coord.x /= uWaveWidth;
+          coord.x -= 0.32;
+
+          vec3 waveColor = vec3(0.0);
+          for (float i = 0.0; i <= 50.0; i += 1.0) {
+            if (i >= uWaveCount) break;
+            float progress = i / uWaveCount * 2.0;
+            float lineSpeed = uSpeed + progress * uSpeedVariation;
+            vec3 lineColor = mix(uStartColor, uEndColor, i / uWaveCount);
+            waveColor += calculateWaveLine(coord, lineSpeed, progress, lineColor);
+          }
+
+          waveColor *= uBrightness;
+          float waveIntensity = clamp(length(waveColor), 0.0, 1.0);
+          waveColor += vec3(applyGrain(coord) * uGrainIntensity * waveIntensity);
+          vec3 finalColor = uBackgroundColor + waveColor;
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `
+    });
+
+    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+
+    function resize() {
+      const width = Math.max(1, canvas.clientWidth || 1600);
+      const height = Math.max(1, canvas.clientHeight || 900);
+      renderer.setSize(width, height, false);
+      uniforms.uResolution.value.set(width, height);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    new ResizeObserver(resize).observe(canvas);
+
+    const start = performance.now();
+    renderer.setAnimationLoop(() => {
+      uniforms.uTime.value = (performance.now() - start) / 1000;
+      renderer.render(scene, camera);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initGrainWave);
+  } else {
+    initGrainWave();
+  }
+</script>

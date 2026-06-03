@@ -1,0 +1,11 @@
+{
+  "eval_id": 2,
+  "eval_name": "consistency-final",
+  "prompt": "Run a third HTML-to-PPTX conversion for /Users/wongjunmun/development/ai-development/jm-design/random-executive-update-micron-dark-executive.html and verify it remains stable.",
+  "assertions": [
+    "The third PPTX contains exactly 18 slides.",
+    "All full-slide image placement checks pass.",
+    "All embedded image comparisons pass.",
+    "The final run has no blank or cropped captures in the contact sheet."
+  ]
+}

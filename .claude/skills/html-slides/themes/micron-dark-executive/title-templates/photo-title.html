@@ -1,0 +1,89 @@
+<!--
+  TITLE TEMPLATE: photo-title
+  Theme: micron-dark-executive only.
+  Asset source: themes/micron-dark-executive/assets/title-image.jpeg
+-->
+
+<section class="slide title-slide title-photo" data-slide-kind="cover">
+  <div class="slide-content">
+    <img class="md-title-hero-image" src="assets/micron-dark-title-image.jpeg" alt="" aria-hidden="true" decoding="async" />
+    <div class="md-title-content">
+      <h1 class="reveal">[TITLE]</h1>
+      <p class="md-title-date reveal">[DATE OR CONTEXT]</p>
+    </div>
+    <img class="md-title-brand" src="assets/micron-logo-white-ia-rgb.png" alt="Micron Intelligence Accelerated" width="255" height="35" decoding="async" />
+  </div>
+</section>
+
+<style>
+  .title-photo .slide-stage,
+  .title-photo .slide-content {
+    background: #000;
+  }
+
+  .title-photo .slide-content {
+    position: relative;
+  }
+
+  .md-title-hero-image {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 50%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 1;
+    opacity: 1;
+    filter: saturate(1.02) contrast(1.02);
+    pointer-events: none;
+  }
+
+  .title-photo .slide-content::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    z-index: 2;
+    background: rgba(255, 255, 255, .04);
+    pointer-events: none;
+  }
+
+  .title-photo .md-title-brand,
+  .title-photo .md-title-content {
+    z-index: 4;
+  }
+
+  .title-photo .md-title-content {
+    position: absolute;
+    left: 64px;
+    bottom: 292px;
+    max-width: 690px;
+  }
+
+  .title-photo .md-title-content h1 {
+    color: #fff;
+    font-size: 108px;
+    line-height: .95;
+    letter-spacing: -.025em;
+    max-width: 700px;
+  }
+
+  .title-photo .md-title-date {
+    margin-top: 50px;
+    color: #f0f0ee;
+    font-size: 30px;
+    line-height: 1;
+    font-weight: 600;
+  }
+
+  .title-photo .md-title-brand {
+    position: absolute;
+    left: 64px;
+    bottom: 58px;
+    width: 255px;
+    height: auto;
+    opacity: .98;
+  }
+</style>

@@ -1,0 +1,1458 @@
+{
+  "passed": true,
+  "summary": {
+    "passed": 130,
+    "failed": 0,
+    "total": 130,
+    "pass_rate": 1.0
+  },
+  "pptx": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/random-executive-update-micron-dark-executive.pptx",
+  "manifest": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/manifest.json",
+  "contact_sheet": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/contact-sheet.png",
+  "expectations": [
+    {
+      "text": "PPTX file exists",
+      "passed": true,
+      "evidence": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/random-executive-update-micron-dark-executive.pptx"
+    },
+    {
+      "text": "Manifest has captured slides",
+      "passed": true,
+      "evidence": "18 slides in manifest"
+    },
+    {
+      "text": "PPTX slide count equals captured slide count",
+      "passed": true,
+      "evidence": "pptx=18 captured=18"
+    },
+    {
+      "text": "Presentation slide size matches manifest",
+      "passed": true,
+      "evidence": "presentation=(12192000, 6858000) manifest=(12192000, 6858000)"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 1: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 1: ppt/media/image-1-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 1: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 1: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 1: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 1: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 1: variance_sum=12468.67 sampled_colors=3911"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 2: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 2: ppt/media/image-2-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 2: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 2: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 2: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 2: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 2: variance_sum=10564.80 sampled_colors=446"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 3: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 3: ppt/media/image-3-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 3: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 3: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 3: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 3: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 3: variance_sum=4356.88 sampled_colors=205"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 4: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 4: ppt/media/image-4-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 4: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 4: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 4: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 4: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 4: variance_sum=2159.47 sampled_colors=862"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 5: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 5: ppt/media/image-5-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 5: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 5: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 5: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 5: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 5: variance_sum=4016.82 sampled_colors=210"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 6: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 6: ppt/media/image-6-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 6: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 6: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 6: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 6: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 6: variance_sum=5564.17 sampled_colors=1351"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 7: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 7: ppt/media/image-7-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 7: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 7: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 7: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 7: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 7: variance_sum=5407.76 sampled_colors=210"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 8: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 8: ppt/media/image-8-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 8: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 8: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 8: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 8: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 8: variance_sum=5425.80 sampled_colors=221"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 9: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 9: ppt/media/image-9-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 9: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 9: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 9: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 9: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 9: variance_sum=5363.76 sampled_colors=205"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 10: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 10: ppt/media/image-10-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 10: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 10: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 10: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 10: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 10: variance_sum=7647.08 sampled_colors=260"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 11: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 11: ppt/media/image-11-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 11: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 11: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 11: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 11: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 11: variance_sum=6928.23 sampled_colors=357"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 12: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 12: ppt/media/image-12-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 12: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 12: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 12: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 12: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 12: variance_sum=6109.25 sampled_colors=216"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 13: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 13: ppt/media/image-13-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 13: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 13: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 13: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 13: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 13: variance_sum=6720.46 sampled_colors=335"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 14: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 14: ppt/media/image-14-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 14: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 14: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 14: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 14: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 14: variance_sum=5665.94 sampled_colors=277"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 15: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 15: ppt/media/image-15-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 15: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 15: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 15: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 15: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 15: variance_sum=5244.21 sampled_colors=207"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 16: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 16: ppt/media/image-16-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 16: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 16: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 16: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 16: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 16: variance_sum=5102.18 sampled_colors=218"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 17: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 17: ppt/media/image-17-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 17: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 17: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 17: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 17: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 17: variance_sum=6118.07 sampled_colors=216"
+    },
+    {
+      "text": "Slide contains exactly one image",
+      "passed": true,
+      "evidence": "slide 18: 1 image(s)"
+    },
+    {
+      "text": "Slide image relationship resolves to media file",
+      "passed": true,
+      "evidence": "slide 18: ppt/media/image-18-1.png"
+    },
+    {
+      "text": "Slide image starts at x=0 y=0",
+      "passed": true,
+      "evidence": "slide 18: off={'x': 0, 'y': 0}"
+    },
+    {
+      "text": "Slide image fills the full slide",
+      "passed": true,
+      "evidence": "slide 18: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+    },
+    {
+      "text": "Embedded image dimensions match browser screenshot",
+      "passed": true,
+      "evidence": "slide 18: source=(3200, 1800) embedded=(3200, 1800)"
+    },
+    {
+      "text": "Embedded image matches browser screenshot pixels",
+      "passed": true,
+      "evidence": "slide 18: mean_delta=0.0000 rms=0.0000"
+    },
+    {
+      "text": "Embedded image is not blank or near-empty",
+      "passed": true,
+      "evidence": "slide 18: variance_sum=7116.20 sampled_colors=216"
+    }
+  ],
+  "slides": [
+    {
+      "index": 1,
+      "kind": "cover",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-001.png",
+      "target": "ppt/media/image-1-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 1: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 1: ppt/media/image-1-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 1: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 1: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 1: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 1: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 1: variance_sum=12468.67 sampled_colors=3911"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "kind": "earnings",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-002.png",
+      "target": "ppt/media/image-2-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 2: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 2: ppt/media/image-2-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 2: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 2: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 2: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 2: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 2: variance_sum=10564.80 sampled_colors=446"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "kind": "agenda",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-003.png",
+      "target": "ppt/media/image-3-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 3: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 3: ppt/media/image-3-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 3: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 3: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 3: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 3: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 3: variance_sum=4356.88 sampled_colors=205"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "kind": "section",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-004.png",
+      "target": "ppt/media/image-4-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 4: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 4: ppt/media/image-4-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 4: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 4: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 4: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 4: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 4: variance_sum=2159.47 sampled_colors=862"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "kind": "message",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-005.png",
+      "target": "ppt/media/image-5-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 5: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 5: ppt/media/image-5-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 5: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 5: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 5: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 5: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 5: variance_sum=4016.82 sampled_colors=210"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "kind": "image-grid",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-006.png",
+      "target": "ppt/media/image-6-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 6: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 6: ppt/media/image-6-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 6: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 6: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 6: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 6: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 6: variance_sum=5564.17 sampled_colors=1351"
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "kind": "priorities",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-007.png",
+      "target": "ppt/media/image-7-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 7: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 7: ppt/media/image-7-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 7: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 7: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 7: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 7: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 7: variance_sum=5407.76 sampled_colors=210"
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "kind": "signals",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-008.png",
+      "target": "ppt/media/image-8-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 8: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 8: ppt/media/image-8-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 8: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 8: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 8: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 8: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 8: variance_sum=5425.80 sampled_colors=221"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "kind": "comparison",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-009.png",
+      "target": "ppt/media/image-9-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 9: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 9: ppt/media/image-9-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 9: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 9: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 9: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 9: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 9: variance_sum=5363.76 sampled_colors=205"
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "kind": "chart",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-010.png",
+      "target": "ppt/media/image-10-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 10: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 10: ppt/media/image-10-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 10: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 10: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 10: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 10: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 10: variance_sum=7647.08 sampled_colors=260"
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "kind": "pie-chart",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-011.png",
+      "target": "ppt/media/image-11-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 11: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 11: ppt/media/image-11-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 11: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 11: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 11: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 11: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 11: variance_sum=6928.23 sampled_colors=357"
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "kind": "roadmap",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-012.png",
+      "target": "ppt/media/image-12-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 12: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 12: ppt/media/image-12-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 12: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 12: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 12: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 12: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 12: variance_sum=6109.25 sampled_colors=216"
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "kind": "portfolio",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-013.png",
+      "target": "ppt/media/image-13-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 13: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 13: ppt/media/image-13-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 13: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 13: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 13: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 13: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 13: variance_sum=6720.46 sampled_colors=335"
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "kind": "architecture",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-014.png",
+      "target": "ppt/media/image-14-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 14: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 14: ppt/media/image-14-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 14: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 14: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 14: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 14: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 14: variance_sum=5665.94 sampled_colors=277"
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "kind": "map",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-015.png",
+      "target": "ppt/media/image-15-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 15: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 15: ppt/media/image-15-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 15: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 15: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 15: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 15: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 15: variance_sum=5244.21 sampled_colors=207"
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "kind": "team",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-016.png",
+      "target": "ppt/media/image-16-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 16: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 16: ppt/media/image-16-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 16: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 16: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 16: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 16: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 16: variance_sum=5102.18 sampled_colors=218"
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "kind": "scorecard",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-017.png",
+      "target": "ppt/media/image-17-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 17: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 17: ppt/media/image-17-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 17: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 17: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 17: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 17: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 17: variance_sum=6118.07 sampled_colors=216"
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "kind": "close",
+      "source": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-2/repeatability-check/screenshots/slide-018.png",
+      "target": "ppt/media/image-18-1.png",
+      "passed": true,
+      "checks": [
+        {
+          "text": "Slide contains exactly one image",
+          "passed": true,
+          "evidence": "slide 18: 1 image(s)"
+        },
+        {
+          "text": "Slide image relationship resolves to media file",
+          "passed": true,
+          "evidence": "slide 18: ppt/media/image-18-1.png"
+        },
+        {
+          "text": "Slide image starts at x=0 y=0",
+          "passed": true,
+          "evidence": "slide 18: off={'x': 0, 'y': 0}"
+        },
+        {
+          "text": "Slide image fills the full slide",
+          "passed": true,
+          "evidence": "slide 18: ext={'cx': 12192000, 'cy': 6858000} expected=(12192000, 6858000)"
+        },
+        {
+          "text": "Embedded image dimensions match browser screenshot",
+          "passed": true,
+          "evidence": "slide 18: source=(3200, 1800) embedded=(3200, 1800)"
+        },
+        {
+          "text": "Embedded image matches browser screenshot pixels",
+          "passed": true,
+          "evidence": "slide 18: mean_delta=0.0000 rms=0.0000"
+        },
+        {
+          "text": "Embedded image is not blank or near-empty",
+          "passed": true,
+          "evidence": "slide 18: variance_sum=7116.20 sampled_colors=216"
+        }
+      ]
+    }
+  ]
+}

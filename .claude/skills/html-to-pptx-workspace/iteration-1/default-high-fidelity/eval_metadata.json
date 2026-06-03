@@ -1,0 +1,11 @@
+{
+  "eval_id": 0,
+  "eval_name": "default-high-fidelity",
+  "prompt": "Convert /Users/wongjunmun/development/ai-development/jm-design/random-executive-update-micron-dark-executive.html to a high-fidelity PPTX using the html-to-pptx skill.",
+  "assertions": [
+    "The PPTX contains exactly 18 slides.",
+    "Each PPTX slide contains exactly one full-slide image placed at x=0 and y=0.",
+    "The embedded images match the captured browser screenshots with mean pixel delta at or below 1.",
+    "The validation report passes and the contact sheet has no blank slides."
+  ]
+}

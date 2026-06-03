@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Playful — example</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body { scroll-snap-type: y mandatory; overflow-y: auto; }
+  .slide {
+    min-height: 100vh; min-height: 100dvh;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--col-gap);
+    padding: clamp(48px, 6vw, 96px) var(--margin-outer);
+    box-sizing: border-box; position: relative;
+  }
+  .panel { grid-column: 2 / span 9; align-self: center; }
+  .slide.title-slide h1 { font-size: var(--title-size); margin: 1rem 0; }
+  .slide:not(.title-slide) h2 { font-size: var(--headline-size); margin: 0 0 1rem; }
+
+  .blob { position: absolute; border: 2px solid var(--ink); border-radius: 50%; box-shadow: var(--shadow-chunky); }
+  .blob.a { right: 8%; top: 12%; width: 140px; height: 140px; background: var(--accent); transform: rotate(8deg); }
+  .blob.b { right: 18%; bottom: 14%; width: 90px; height: 90px; background: var(--accent-2); }
+  .blob.c { left: 6%; bottom: 10%; width: 110px; height: 110px; background: var(--accent-4); }
+
+  .nav-dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 50; }
+  .nav-dots button {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 2px solid var(--ink); background: var(--bg);
+    padding: 0; cursor: pointer; transition: background 200ms ease-out, transform 200ms ease-out;
+  }
+  .nav-dots button[aria-current="true"] { background: var(--accent); transform: scale(1.2); }
+  .nav-dots button:focus-visible { outline: 2px solid var(--accent-4); outline-offset: 4px; }
+
+  .progress { position: fixed; left: 0; top: 0; height: 3px; background: var(--accent); width: 0%; z-index: 60; transition: width 200ms ease-out; }
+
+  #overview {
+    position: fixed; inset: 0; background: var(--bg);
+    padding: var(--margin-outer); display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    overflow: auto; z-index: 100;
+  }
+  #overview[aria-hidden="true"] { display: none; }
+  .ov-card {
+    border: 2px solid var(--ink); border-radius: var(--radius); padding: 0; cursor: pointer;
+    background: var(--bg); box-shadow: var(--shadow-chunky);
+    color: var(--ink); text-align: left; font-family: var(--font-body);
+    transition: transform 150ms ease-out; overflow: hidden;
+  }
+  .ov-card:hover, .ov-card:focus-visible { transform: translateY(-2px); outline: none; }
+  .ov-thumb { aspect-ratio: 16 / 9; overflow: hidden; position: relative; background: var(--bg); border-bottom: 2px solid var(--ink); }
+  .ov-thumb .clone { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+  .ov-thumb-title { position: absolute; left: 0.75rem; bottom: 0.75rem; max-width: 80%; font-weight: 900; font-size: 1rem; color: var(--ink); background: var(--accent-3); border: 2px solid var(--ink); border-radius: 999px; padding: 0.2rem 0.55rem; }
+  .ov-label { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; font-size: 0.8rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    .ov-card:hover, .ov-card:focus-visible { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<section class="slide title-slide" data-slide-kind="cover" data-title="Hi.">
+  <div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+  <div class="panel">
+    <span class="sticker">Workshop / 2026</span>
+    <h1><span class="accent">Hi.</span></h1>
+    <p>A specimen deck for the playful theme. Bright, friendly, ready to start the day.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="What this theme is for">
+  <div class="panel card">
+    <h2>For <span class="accent-2">workshops</span>, kickoffs, onboarding.</h2>
+    <p>Use playful when the goal is to energise the room, not inform a board. The deck carries the warmth so the speaker can carry the substance.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="One accent per slide">
+  <div class="panel">
+    <h2><span class="accent-4">One</span> accent per slide.</h2>
+    <p>Rotate across the deck: coral, teal, sunshine, grape. Never all four on the same slide.</p>
+  </div>
+</section>
+
+<section class="slide" data-title="End">
+  <div class="panel">
+    <span class="sticker">that's it</span>
+    <h2>Have fun.</h2>
+  </div>
+</section>
+
+<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+
+<script>
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.dots = document.getElementById('navDots');
+    this.progress = document.getElementById('progress');
+    this.overview = document.getElementById('overview');
+    this.index = 0;
+    this.buildDots(); this.buildOverview(); this.bind(); this.update();
+  }
+  buildDots() {
+    this.slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      b.addEventListener('click', () => this.goTo(i));
+      this.dots.appendChild(b);
+    });
+  }
+  buildOverview() {
+    this.slides.forEach((s, i) => {
+      const c = document.createElement('button');
+      c.className = 'ov-card';
+      c.setAttribute('aria-label', `Slide ${i + 1}: ${s.dataset.title || ''}`);
+      const thumb = document.createElement('div');
+      thumb.className = 'ov-thumb';
+      const clone = s.cloneNode(true);
+      clone.classList.add('clone');
+      thumb.appendChild(clone);
+      const thumbTitle = document.createElement('div');
+      thumbTitle.className = 'ov-thumb-title';
+      thumbTitle.textContent = s.dataset.title || `Slide ${i + 1}`;
+      thumb.appendChild(thumbTitle);
+      const label = document.createElement('div');
+      label.className = 'ov-label';
+      label.innerHTML = `<strong>${String(i + 1).padStart(2, '0')}</strong><span>${s.dataset.title || ''}</span>`;
+      c.append(thumb, label);
+      c.addEventListener('click', () => { this.toggleOverview(false); this.goTo(i); });
+      this.overview.appendChild(c);
+    });
+    requestAnimationFrame(() => this.scaleOverviewThumbs());
+  }
+  scaleOverviewThumbs() {
+    this.overview.querySelectorAll('.ov-thumb').forEach((thumb) => {
+      const clone = thumb.querySelector('.clone');
+      const rect = this.slides[0].getBoundingClientRect();
+      clone.style.width = `${rect.width}px`;
+      clone.style.height = `${rect.height}px`;
+      clone.style.transform = `scale(${thumb.clientWidth / rect.width})`;
+    });
+  }
+  bind() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') this.toggleOverview(this.overview.getAttribute('aria-hidden') === 'true');
+      if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); this.goTo(this.index + 1); }
+      if (['ArrowUp','ArrowLeft'].includes(e.key)) { e.preventDefault(); this.goTo(this.index - 1); }
+    });
+    window.addEventListener('scroll', () => {
+      const i = this.slides.findIndex(s => s.getBoundingClientRect().top >= -1);
+      if (i >= 0 && i !== this.index) { this.index = i; this.update(); }
+    }, { passive: true });
+  }
+  goTo(i, { immediate = false } = {}) {
+    i = Math.max(0, Math.min(this.slides.length - 1, i));
+    this.index = i;
+    this.slides[i].scrollIntoView({ behavior: immediate ? 'instant' : 'smooth', block: 'start' });
+    this.update();
+  }
+  toggleOverview(open) { this.overview.setAttribute('aria-hidden', open ? 'false' : 'true'); }
+  update() {
+    this.dots.querySelectorAll('button').forEach((d, i) => d.setAttribute('aria-current', i === this.index ? 'true' : 'false'));
+    this.progress.style.width = `${((this.index + 1) / this.slides.length) * 100}%`;
+  }
+}
+window.presentation = new SlidePresentation();
+</script>
+</body>
+</html>

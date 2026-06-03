@@ -1,0 +1,4 @@
+Theme: micron-dark-executive (stable)
+Screenshots: /Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-1/default-high-fidelity/source-html-verify-screenshots
+
+exit_code=0

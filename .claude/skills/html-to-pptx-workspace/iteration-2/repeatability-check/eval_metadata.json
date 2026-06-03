@@ -1,0 +1,11 @@
+{
+  "eval_id": 1,
+  "eval_name": "repeatability-check",
+  "prompt": "Repeat the HTML-to-PPTX conversion for /Users/wongjunmun/development/ai-development/jm-design/random-executive-update-micron-dark-executive.html and compare the validator result with iteration 1.",
+  "assertions": [
+    "The second PPTX contains exactly 18 slides.",
+    "The second run passes the same package and pixel validation checks.",
+    "The converter manifest records the capture dimensions and scale.",
+    "The contact sheet is generated for review."
+  ]
+}

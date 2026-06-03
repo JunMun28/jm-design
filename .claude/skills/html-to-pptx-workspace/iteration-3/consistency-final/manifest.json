@@ -1,0 +1,203 @@
+{
+  "tool": "html-to-pptx",
+  "version": 1,
+  "createdAt": "2026-06-02T15:44:52.969Z",
+  "input": "/Users/wongjunmun/development/ai-development/jm-design/random-executive-update-micron-dark-executive.html",
+  "inputUrl": "file:///Users/wongjunmun/development/ai-development/jm-design/random-executive-update-micron-dark-executive.html",
+  "output": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/random-executive-update-micron-dark-executive.pptx",
+  "workdir": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final",
+  "viewport": {
+    "width": 1600,
+    "height": 900,
+    "scale": 2
+  },
+  "pptx": {
+    "slideWidthIn": 13.333333,
+    "slideHeightIn": 7.4999998125,
+    "slideWidthEmu": 12192000,
+    "slideHeightEmu": 6858000
+  },
+  "slideCount": 18,
+  "slides": [
+    {
+      "index": 1,
+      "kind": "cover",
+      "title": "Executive update preview",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-001.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "7f9e6fc5d0136b8fa1f73d2360ce715103ad0a118df30010362d8e0682c6318c"
+    },
+    {
+      "index": 2,
+      "kind": "earnings",
+      "title": "Financial results",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-002.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "c719b64332b4a0c927194338119303087bc47bef8a04939bf4d19b9db6acb674"
+    },
+    {
+      "index": 3,
+      "kind": "agenda",
+      "title": "Executive update flow",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-003.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "75f750987fd6807ada3baba82d2513671604d74c5b58d47e8ef4c4f28262e31f"
+    },
+    {
+      "index": 4,
+      "kind": "section",
+      "title": "Operating readout",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-004.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "fabc55322db8b1197d7e91e96d2aaebcd1f85b12d4457e808254e18d1565672a"
+    },
+    {
+      "index": 5,
+      "kind": "message",
+      "title": "The next quarter is about disciplined focus",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-005.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "40788db5306d9b4147d9718ce9ffce31f5e1dad1dd45ae22bc0be579329d5d69"
+    },
+    {
+      "index": 6,
+      "kind": "image-grid",
+      "title": "AI shows up across every operating surface",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-006.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "9782d6fe4e2aa4b65b10d796acda29e89c50ad4727ff5b11c20601a1bad44086"
+    },
+    {
+      "index": 7,
+      "kind": "priorities",
+      "title": "Four workstreams carry the update",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-007.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "382bfcfb4b56924ede216837a3f3fdc3b2f386297e45efa038b1f8b6879e4375"
+    },
+    {
+      "index": 8,
+      "kind": "signals",
+      "title": "AI demand keeps the memory conversation elevated",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-008.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "ce19d40bb7bfbf8aa87e323d464da1d7d66227a05299b021ecc8e61fb2969b74"
+    },
+    {
+      "index": 9,
+      "kind": "comparison",
+      "title": "Leadership choice is about sequencing, not ambition",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-009.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "bbbbc137ea549afd7e4bd77e36c425f3d202f6864b2cba0927c63273249eaf2d"
+    },
+    {
+      "index": 10,
+      "kind": "chart",
+      "title": "One constraint deserves the active state",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-010.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "4ce9517a03602cc2bdaffa0afcb78e6ca215afba82429ae5e9de5a3ab8085dd1"
+    },
+    {
+      "index": 11,
+      "kind": "pie-chart",
+      "title": "Decision time is concentrated in one workstream",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-011.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "017d22dd44dabffd8ec238fe38daa0803b925299c431fac9546103f2978fa1f6"
+    },
+    {
+      "index": 12,
+      "kind": "roadmap",
+      "title": "A compact operating rhythm keeps choices moving",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-012.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "9648fd11b89b25e3473185283cb832676ffca155ce52fb9a71e70fb9adab3d5d"
+    },
+    {
+      "index": 13,
+      "kind": "portfolio",
+      "title": "Keep core execution and future bets visibly separate",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-013.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "d473c4ca1e49cc8520180c9c9ad7cdf0c3a54e40cadc74c3aafa1fd95fff0220"
+    },
+    {
+      "index": 14,
+      "kind": "architecture",
+      "title": "Memory hierarchy can be shown as a pyramid",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-014.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "c5c3ef453d59d60886747b0292d250c64c8cf8bdd723f0a690cc994fb3b78948"
+    },
+    {
+      "index": 15,
+      "kind": "map",
+      "title": "Focus the discussion on exposure, not noise",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-015.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "55f272dd93fb60c4d9f7f92382b48efd6bc8d0c2b53327b5177262d2340ff139"
+    },
+    {
+      "index": 16,
+      "kind": "team",
+      "title": "Leadership alignment keeps the operating loop clear",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-016.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "3c6b3d83941e415f0ef9abd474e9742eee6cf890d00a74d32158fa138c414311"
+    },
+    {
+      "index": 17,
+      "kind": "scorecard",
+      "title": "Commitments read best as a compact metric wall",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-017.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "a4a43c74120ba163788b7c6580b289c29f606d6aacd7596d33a83df6f92500c9"
+    },
+    {
+      "index": 18,
+      "kind": "close",
+      "title": "The ask is simple: align on the active constraint, assign owners, and bring back only material movement.",
+      "hasStage": true,
+      "screenshot": "/Users/wongjunmun/development/ai-development/jm-design/.agents/skills/html-to-pptx-workspace/iteration-3/consistency-final/screenshots/slide-018.png",
+      "width": 3200,
+      "height": 1800,
+      "sha256": "2cb0d7af5264bb2690ef61005c2b1e5d1e5a6f29944ac21d2014dcf72be7a7dc"
+    }
+  ]
+}

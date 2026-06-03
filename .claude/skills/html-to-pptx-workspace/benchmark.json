@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "skill_name": "html-to-pptx",
+    "timestamp": "2026-06-02T23:46:00+08:00",
+    "evals_run": ["0", "1", "2"],
+    "runs_per_configuration": 1
+  },
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": { "mean": 1.0, "stddev": 0.0 },
+      "time_seconds": { "mean": 9.3, "stddev": 0.8 }
+    },
+    "delta": {
+      "pass_rate": "0",
+      "time_seconds": "0"
+    }
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "eval_name": "default-high-fidelity",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": { "pass_rate": 1.0, "passed": 130, "total": 130, "time_seconds": 10.1, "errors": 0 },
+      "expectations": [
+        { "text": "The PPTX contains exactly 18 slides.", "passed": true, "evidence": "validation-report.json: slide_count=18" },
+        { "text": "Each slide uses one full-slide image.", "passed": true, "evidence": "validation-report.json: all slide image count, offset, and extent checks passed" },
+        { "text": "Embedded images match browser screenshots.", "passed": true, "evidence": "validation-report.json: all mean pixel deltas <= 1" }
+      ]
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "repeatability-check",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": { "pass_rate": 1.0, "passed": 130, "total": 130, "time_seconds": 8.5, "errors": 0 },
+      "expectations": [
+        { "text": "The PPTX contains exactly 18 slides.", "passed": true, "evidence": "validation-report.json: slide_count=18" },
+        { "text": "The run passes package and pixel validation.", "passed": true, "evidence": "validation-report.json: 130/130 checks passed" },
+        { "text": "Screenshots match iteration 1 hashes.", "passed": true, "evidence": "screenshot-sha256.sorted.txt matches iteration 1 after normalization" }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "consistency-final",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": { "pass_rate": 1.0, "passed": 130, "total": 130, "time_seconds": 9.4, "errors": 0 },
+      "expectations": [
+        { "text": "The PPTX contains exactly 18 slides.", "passed": true, "evidence": "validation-report.json: slide_count=18" },
+        { "text": "The final run passes package and pixel validation.", "passed": true, "evidence": "validation-report.json: 130/130 checks passed" },
+        { "text": "Screenshots remain stable across all three runs.", "passed": true, "evidence": "normalized screenshot hashes match iterations 1, 2, and 3" }
+      ]
+    }
+  ],
+  "notes": [
+    "All three generated PPTX files validated with 18 slides and 130/130 checks.",
+    "The meaningful visual artifacts, the browser screenshots embedded into PPTX, were byte-identical across all three runs after normalized hash comparison.",
+    "The PPTX files themselves have different package hashes because Office metadata/timestamps differ between generated files."
+  ]
+}

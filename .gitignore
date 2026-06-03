@@ -7,6 +7,5 @@ tmp/
 node_modules/
 .playwright-mcp/
 .impeccable/critique/
-.claude/
 .agents/skills/html-to-pptx-workspace/
 micron-about-dark.original.pptx
