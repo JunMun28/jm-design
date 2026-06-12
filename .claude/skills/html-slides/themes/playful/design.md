@@ -4,6 +4,8 @@ Bright primaries, fat geometric type, oversized stickers and shapes. Friendly, w
 
 Reference lineage: MailChimp marketing era, Notion onboarding, Duolingo branding, Memphis-design echoes.
 
+Headline rule: playful tone, serious titles — every content-slide headline still states the takeaway as a full sentence, never a bare topic label (see SKILL.md Non-Negotiables).
+
 ## When to choose this theme
 
 - Workshops, kickoffs, onboarding decks.

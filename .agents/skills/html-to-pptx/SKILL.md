@@ -146,6 +146,13 @@ If subagents are not available, run the same validator steps inline and say that
 
 ## Review Checklist
 
+Precondition — converting an html-slides deck: confirm the source deck passed
+`html-slides/scripts/verify.py` and, for executive decks, that its final-deck
+content review recorded `FINAL DECK REVIEW: PASS` (or accepted-risk). If
+neither happened, run those gates first, or state plainly in the final
+response that the PPTX packages an unverified deck. Conversion fidelity
+cannot fix content that was never reviewed.
+
 Inspect the contact sheet before calling the conversion done:
 
 - No slide is blank, cropped, or missing.

@@ -5,7 +5,7 @@ The scaffold is intentionally conservative: title slide first, three content
 slides, canonical navigation, ESC overview, reduced-motion support, and the
 theme tokens required by `themes/themes.json`.
 
-For micron-dark-executive it emits the single approved photo title template and copies
+For micron-dark it emits the single approved photo title template and copies
 the theme-owned photo asset into the generated deck assets.
 """
 
@@ -22,13 +22,12 @@ from pathlib import Path
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = SKILL_ROOT / "themes" / "themes.json"
 SHARED_ASSETS = SKILL_ROOT / "themes" / "_shared"
-MICRON_DARK_EXECUTIVE_ASSETS = SKILL_ROOT / "themes" / "micron-dark-executive" / "assets"
+MICRON_DARK_ASSETS = SKILL_ROOT / "themes" / "micron-dark" / "assets"
 MICRON_ICONS_ASSETS = SKILL_ROOT.parent / "micron-icons" / "assets"
-WAFER_PORTAL_TEMPLATE = SKILL_ROOT / "themes" / "micron-dark" / "title-templates" / "wafer-portal.html"
 
 
 THEME_CSS = {
-    "micron-dark-executive": """
+    "micron-dark": """
 :root{--micron-black:#000;--micron-white:#fff;--micron-accent:#bd03f7;--font-display:"Micron Basis",Arial,sans-serif;--font-body:var(--font-display);--font-mono:ui-monospace,Menlo,monospace;--scale-ratio:1.333;--col-count:12;--bg:#000;--ink:#fff;--muted:#bfbfbf;--accent:var(--micron-accent);--panel:#121212;--line:rgba(255,255,255,.16);--stage:#000}
 body{background:#000;color:var(--ink);font-family:var(--font-body)}
 .slide{background:var(--stage)}
@@ -48,74 +47,6 @@ body{background:#000;color:var(--ink);font-family:var(--font-body)}
 .title-photo .slide-content::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;z-index:2;background:rgba(255,255,255,.04)}
 .title-photo .md-title-brand,.title-photo .md-title-content{z-index:4}
 .exec-primary-icon{position:absolute;right:96px;top:126px;width:220px;height:220px;object-fit:contain;opacity:.9;mix-blend-mode:screen;pointer-events:none}
-""",
-    "micron-dark": """
-:root{--micron-black:#000;--micron-white:#fff;--micron-accent:#bd03f7;--micron-cyan:#32c8ff;--micron-blue:#2044ff;--micron-warm:#ff9f1a;--micron-rose:#f43163;--font-display:"Micron Basis",Arial,sans-serif;--font-body:var(--font-display);--font-mono:ui-monospace,Menlo,monospace;--scale-ratio:1.333;--col-count:12;--bg:#000;--ink:#fff;--muted:#bfbfbf;--accent:var(--micron-accent);--panel:#101010;--line:rgba(255,255,255,.14);--stage:#050505}
-body{background:#050505;color:var(--ink);font-family:var(--font-body)}
-.slide{background:var(--stage)}
-.slide:not(.title-slide)::after{content:"MICRON";position:absolute;right:38px;bottom:28px;color:rgba(255,255,255,.72);font:800 13px/1 var(--font-mono);letter-spacing:.18em}
-.footer{display:none}
-.panel{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
-.editorial-ops-title{background:#010101}
-.editorial-ops-title::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.58;background:radial-gradient(circle at 72% 46%,rgba(189,3,247,.12),transparent 27%)}
-.editorial-ops-title::after{content:"";position:absolute;inset:84px 64px 190px;z-index:0;pointer-events:none;border-top:1px solid rgba(255,255,255,.18);border-bottom:1px solid rgba(255,255,255,.16);opacity:.5}
-.editorial-ops-title .slide-content{position:relative;z-index:2;justify-content:flex-start;padding:50px 56px 138px}
-.ops-meta{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;margin-bottom:clamp(24px,3.5vw,44px);padding:14px 0;border-top:1px solid rgba(255,255,255,.20);border-bottom:1px solid rgba(255,255,255,.22);font:700 20px/1 var(--font-mono);letter-spacing:.10em;text-transform:uppercase;color:var(--muted)}
-.editorial-spread{display:grid;grid-template-columns:minmax(0,.82fr) minmax(240px,.92fr);gap:clamp(36px,6vw,80px);align-items:center}
-.editorial-copy h1{font-size:clamp(48px,5.7vw,74px);line-height:.92;max-width:10ch;text-shadow:0 8px 24px rgba(255,255,255,.10)}
-.editorial-copy .subtitle{margin-top:18px;max-width:24ch;color:#fff;font-size:24px;line-height:1.2}
-.ops-note{margin-top:18px;max-width:30ch;color:var(--muted);font-size:24px}
-.ops-note::before{content:"";display:block;width:48px;height:3px;margin-bottom:18px;background:var(--accent)}
-.editorial-rule{display:none}
-.section-label{display:inline-flex;align-items:center;gap:10px;width:max-content;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.2);font:700 24px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.section-label::before{content:"";width:8px;height:8px;background:var(--accent)}
-.metric-strip{position:absolute;left:44px;right:44px;bottom:24px;z-index:3;display:grid;grid-template-columns:.72fr .82fr .72fr 1.74fr;gap:0;padding:14px 42px 16px;border:1px solid rgba(255,255,255,.18);border-bottom-color:rgba(189,3,247,.42);background:rgba(3,6,10,.48);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
-.editorial-ops-title .metric-strip.reveal{transform:none}
-.metric{border-top:0;padding-top:0}
-.metric+.metric{border-left:1px solid rgba(255,255,255,.28);padding-left:52px}
-.metric b{display:block;font-size:clamp(32px,3vw,46px);line-height:1;color:#fff}
-.metric span{display:block;margin-top:8px;font:700 20px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.metric:last-child b{font-size:clamp(24px,2.25vw,32px);white-space:nowrap}
-.icon-slot{--signal-label:"Operating signal";--signal-shell-size:min(330px,90%);display:grid;place-items:center;min-height:340px;position:relative;overflow:visible;background:transparent;border:0}
-.icon-slot::before{content:"";position:absolute;width:var(--signal-shell-size);aspect-ratio:1;border-radius:50%;border:1px dotted rgba(255,255,255,.24);box-shadow:inset 0 0 0 20px rgba(115,118,140,.13),inset 0 0 0 44px rgba(0,0,0,.52)}
-.icon-slot::after{content:var(--signal-label);position:absolute;left:50%;bottom:16px;transform:translateX(-50%);min-width:260px;padding:9px 16px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.38);font:700 18px/1 var(--font-mono);letter-spacing:.24em;text-align:center;text-transform:uppercase;color:#ff8cff}
-.icon-slot:has(.micron-icon-video)::before{display:none}
-.icon-slot:has(.micron-icon-video)::after{display:none}
-.micron-icon-video{display:block;width:min(78%,420px);height:min(78%,420px);object-fit:contain;background:transparent;mix-blend-mode:screen;filter:brightness(1.12) contrast(1.08) saturate(1.08)}
-.signal-layout{display:grid;grid-template-columns:.82fr 1.18fr;gap:64px;align-items:end}
-.big-metric{font-size:clamp(86px,11vw,140px);line-height:.82;letter-spacing:-.06em;font-weight:800;color:var(--accent)}
-.slide[data-slide-kind="evidence"] h2{font-size:52px;max-width:18ch}
-.evidence-board{display:grid;gap:0;border-top:1px solid var(--line)}
-.evidence-row{display:grid;grid-template-columns:110px minmax(0,1fr) 86px;gap:18px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);background:transparent}
-.evidence-row b{font-size:28px;color:#fff}
-.evidence-row span{font:700 20px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.evidence-row strong{font:700 24px/1 var(--font-mono);text-align:right;color:#fff}
-.evidence-row.active{border-bottom-color:rgba(255,140,255,.56)}
-.title-silk-purple .slide-stage{background:#000;isolation:isolate}
-.title-silk-purple .slide-content{position:relative;z-index:2;justify-content:center;padding:96px}
-.title-silk-purple .slide-content::before{content:"";position:absolute;inset:-2px -220px -2px -80px;z-index:0;background:radial-gradient(ellipse at 78% 48%,rgba(189,3,247,.80),transparent 28%),radial-gradient(ellipse at 92% 34%,rgba(189,3,247,.55),transparent 36%),repeating-linear-gradient(124deg,rgba(255,255,255,.09) 0 1px,transparent 1px 24px);filter:saturate(1.15);pointer-events:none}
-.title-silk-purple .slide-content::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.90) 0%,rgba(0,0,0,.48) 40%,rgba(0,0,0,.02) 100%),radial-gradient(circle at 76% 52%,transparent 0 44%,rgba(0,0,0,.16) 88%)}
-.title-silk-purple .md-silk-wave{position:absolute;inset:-2px -260px -2px -80px;overflow:hidden;z-index:0;transform:scale(1.1);transform-origin:center}
-.title-silk-purple .md-silk-canvas-purple{width:100%;height:100%;display:block}
-.title-silk-purple .md-title-brand{position:absolute;top:46px;left:96px;z-index:5;width:126px;height:auto;opacity:.94}
-.title-silk-purple .md-title-content{position:relative;z-index:4;max-width:820px}
-.title-silk-purple .md-title-content .kicker{color:#BD03F7;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:17px;margin-bottom:16px}
-.title-silk-purple .md-title-content h1{font-size:72px;line-height:1.02;font-weight:800;max-width:760px;color:#fff}
-.title-silk-purple .md-title-content .subtitle{font-size:24px;line-height:1.35;color:#e6e6e6;max-width:760px;margin-top:18px}
-.title-silk-purple .md-accent-line{width:84px;height:7px;background:#BD03F7;border-radius:999px;margin-top:28px;box-shadow:0 0 22px rgba(168,85,247,.42)}
-.title-silk-purple .md-title-note{position:absolute;left:96px;bottom:38px;z-index:5;font-size:15px;color:#8c8c8c}
-.title-silk-purple .md-title-number{position:absolute;right:34px;bottom:28px;z-index:5;font-size:13px;color:rgba(255,255,255,.45);letter-spacing:.04em;font-family:var(--font-mono)}
-.title-wafer .slide-stage{background:radial-gradient(circle at 72% 45%,rgba(189,3,247,.24),transparent 34%),radial-gradient(circle at 92% 12%,rgba(255,140,255,.15),transparent 26%),#000;isolation:isolate}
-.title-wafer .slide-stage::before{display:none}
-.title-wafer .md-wafer-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;pointer-events:none}
-.title-wafer .md-title-brand{position:absolute;top:46px;left:96px;z-index:5;width:126px;height:auto;opacity:.94}
-.title-wafer .md-title-content{position:relative;z-index:4;max-width:820px}
-.title-wafer .md-title-content .kicker{color:#BD03F7;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:17px;margin-bottom:16px}
-.title-wafer .md-title-content h1{font-size:72px;line-height:1.02;font-weight:800;max-width:760px;color:#fff}
-.title-wafer .md-title-content .subtitle{font-size:24px;line-height:1.35;color:#e6e6e6;max-width:760px;margin-top:18px}
-.title-wafer .md-accent-line{width:84px;height:7px;background:#BD03F7;border-radius:999px;margin-top:28px;box-shadow:0 0 22px rgba(168,85,247,.42)}
-.title-wafer .md-title-note{position:absolute;left:96px;bottom:38px;z-index:5;font-size:15px;color:#8c8c8c}
-@media (max-width:760px){.editorial-ops-title .slide-content{padding:32px 22px 40px}.ops-meta{display:block;font-size:13px;margin-bottom:28px}.ops-meta span+span{display:block;margin-top:10px}.editorial-spread,.signal-layout{display:block}.section-label{font-size:20px}.icon-slot{display:none}.editorial-copy h1{font-size:46px;max-width:8ch}.editorial-copy .subtitle{font-size:22px;max-width:16ch}.ops-note{font-size:18px}.metric-strip{display:none}.big-metric{font-size:78px}.slide[data-slide-kind="evidence"] h2{font-size:42px}.evidence-row{grid-template-columns:82px minmax(0,1fr) 70px;padding:14px 0}.evidence-row b{font-size:20px}}
 """,
     "micron-light": """
 :root{--micron-black:#000;--micron-white:#fff;--micron-accent:#bd03f7;--font-display:"Micron Basis",Arial,sans-serif;--font-body:var(--font-display);--font-mono:ui-monospace,Menlo,monospace;--scale-ratio:1.333;--col-count:12;--bg:#fff;--ink:#0f172a;--muted:#475569;--accent:var(--micron-accent);--panel:#fff;--line:#d0d7de;--stage:#fff}
@@ -197,16 +128,16 @@ p,li{color:var(--muted);max-width:64ch;font-size:24px}
 .driver.active{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 13%,transparent),transparent 76%)}
 .mini-chart{min-height:240px;display:flex;align-items:end;gap:16px;padding:24px;border:1px solid var(--line);background:var(--panel)}
 .bar{flex:1;min-height:36px;background:color-mix(in srgb,var(--accent) 45%,var(--panel));position:relative}
-html[data-theme="micron-dark-executive"] .driver-grid{padding:22px;border:1px solid rgba(189,3,247,.42);background:#121212;gap:22px}
-html[data-theme="micron-dark-executive"] .driver-list{border-top-color:rgba(255,255,255,.18)}
-html[data-theme="micron-dark-executive"] .driver{border-bottom-color:rgba(255,255,255,.14)}
-html[data-theme="micron-dark-executive"] .driver span{color:#bfbfbf}
-html[data-theme="micron-dark-executive"] .driver.active{background:rgba(255,255,255,.06);box-shadow:none}
-html[data-theme="micron-dark-executive"] .mini-chart{border-color:rgba(189,3,247,.42);background:#121212}
-html[data-theme="micron-dark-executive"] .bar{background:#6f6f6f;box-shadow:none}
-html[data-theme="micron-dark-executive"] .bar:nth-child(4){background:#bd03f7;box-shadow:0 0 20px rgba(189,3,247,.26)}
-html[data-theme="micron-dark-executive"] .progress-bar{height:0;background:transparent}
-html[data-theme="micron-dark-executive"] .nav-dots{width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}
+html[data-theme="micron-dark"] .driver-grid{padding:22px;border:1px solid rgba(189,3,247,.42);background:#121212;gap:22px}
+html[data-theme="micron-dark"] .driver-list{border-top-color:rgba(255,255,255,.18)}
+html[data-theme="micron-dark"] .driver{border-bottom-color:rgba(255,255,255,.14)}
+html[data-theme="micron-dark"] .driver span{color:#bfbfbf}
+html[data-theme="micron-dark"] .driver.active{background:rgba(255,255,255,.06);box-shadow:none}
+html[data-theme="micron-dark"] .mini-chart{border-color:rgba(189,3,247,.42);background:#121212}
+html[data-theme="micron-dark"] .bar{background:#6f6f6f;box-shadow:none}
+html[data-theme="micron-dark"] .bar:nth-child(4){background:#bd03f7;box-shadow:0 0 20px rgba(189,3,247,.26)}
+html[data-theme="micron-dark"] .progress-bar{height:0;background:transparent}
+html[data-theme="micron-dark"] .nav-dots{width:1px;height:1px;overflow:hidden;clip-path:inset(50%);opacity:0;pointer-events:none}
 .bar:nth-child(1){height:58%}.bar:nth-child(2){height:72%}.bar:nth-child(3){height:46%}.bar:nth-child(4){height:82%}.bar:nth-child(5){height:64%}
 .bar::after{content:attr(data-label);position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);font:700 20px/1 var(--font-mono);color:var(--muted)}
 .plan-lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
@@ -353,7 +284,7 @@ function setupFixedStages(){{
 setupFixedStages();
 """
 
-MICRON_DARK_EXECUTIVE_TITLE_TEMPLATE = {
+MICRON_DARK_TITLE_TEMPLATE = {
     "id": "photo-title",
     "class": "title-photo",
     "visual": '<img class="md-title-hero-image" src="assets/micron-dark-title-image.jpeg" alt="" aria-hidden="true" decoding="async" />',
@@ -385,20 +316,19 @@ def slide(kind: str, body: str, title: bool = False, extra_class: str = "") -> s
     return f'<section class="{klass}" data-slide-kind="{kind}"><div class="slide-content">{body}</div></section>'
 
 
-def pick_micron_dark_executive_title_template(value: str | None) -> str | None:
+def pick_micron_dark_title_template(value: str | None) -> str | None:
     if value in (None, "", "default", "random", "photo-title"):
         return "photo-title"
     raise SystemExit(
-        "micron-dark-executive has one title template: photo-title. "
-        "Use micron-dark for wafer, divider, grain, silk, or screen-stack title templates."
+        "micron-dark has one approved title template: photo-title."
     )
 
 
 def build_title_slide(title: str, theme: str, title_template: str | None) -> str:
     safe_title = esc(title)
-    if theme == "micron-dark-executive":
-        pick_micron_dark_executive_title_template(title_template)
-        template = MICRON_DARK_EXECUTIVE_TITLE_TEMPLATE
+    if theme == "micron-dark":
+        pick_micron_dark_title_template(title_template)
+        template = MICRON_DARK_TITLE_TEMPLATE
         return slide(
             "cover",
             f"""
@@ -411,23 +341,6 @@ def build_title_slide(title: str, theme: str, title_template: str | None) -> str
 """,
             title=True,
             extra_class=template["class"],
-        )
-    if theme == "micron-dark":
-        return slide(
-            "cover",
-            f"""
-<canvas class="md-wafer-canvas" aria-hidden="true"></canvas>
-<img class="md-title-brand" src="assets/micron-logo-white-tm-rgb.png" alt="Micron" width="126" height="32" decoding="async" />
-<div class="md-title-content">
-  <p class="kicker reveal">FY26 operating review</p>
-  <h1 class="reveal">{safe_title}</h1>
-  <p class="subtitle reveal">Recovery is real, but the constraint moved downstream.</p>
-  <div class="md-accent-line reveal"></div>
-</div>
-<div class="md-title-note">wafer-portal · mock operating data</div>
-""",
-            title=True,
-            extra_class="title-wafer",
         )
     return slide(
         "cover",
@@ -446,110 +359,8 @@ def build_title_slide(title: str, theme: str, title_template: str | None) -> str
     )
 
 
-def build_micron_dark_sections(title: str, theme: str, slides: int, title_template: str | None) -> list[str]:
-    sections = [
-        build_title_slide(title, theme, title_template),
-        slide(
-            "signal",
-            """
-<p class="section-label reveal">Situation 01</p>
-<div class="signal-layout">
-  <div class="reveal">
-    <div class="big-metric">94.8%</div>
-    <p class="subtitle">Final electrical yield is back above the recovery floor, but still 1.2 pts under release target.</p>
-  </div>
-  <div class="board-kpis reveal">
-    <div class="board-kpi"><b>+1.6</b><span>w/w yield pts</span></div>
-    <div class="board-kpi"><b>3</b><span>lots below guardband</span></div>
-    <div class="board-kpi"><b>18h</b><span>queue exposure</span></div>
-    <div class="board-kpi"><b>96.0</b><span>release target</span></div>
-  </div>
-</div>
-<div class="footer">situation readout - mock data</div>
-""",
-        ),
-        slide(
-            "evidence",
-            """
-<p class="section-label reveal">Constraint 02</p>
-<h2 class="reveal">The bottleneck moved from litho drift to final test fallout</h2>
-<div class="driver-grid reveal">
-  <div class="driver-list">
-    <div class="driver"><span>W-3</span><b>Litho CD drift</b><em>-2.8 pts</em></div>
-    <div class="driver"><span>W-2</span><b>Etch chamber matching</b><em>-1.4 pts</em></div>
-    <div class="driver active"><span>Now</span><b>Final test bin 7A</b><em>-2.0 pts</em></div>
-    <div class="driver"><span>Next</span><b>Probe retest queue</b><em>18h risk</em></div>
-  </div>
-  <div class="mini-chart">
-    <div class="bar" data-label="Mon"></div>
-    <div class="bar" data-label="Tue"></div>
-    <div class="bar" data-label="Wed"></div>
-    <div class="bar" data-label="Thu"></div>
-    <div class="bar" data-label="Fri"></div>
-  </div>
-</div>
-<div class="footer">active constraint highlighted</div>
-""",
-        ),
-        slide(
-            "plan",
-            """
-<p class="section-label reveal">Operating plan 03</p>
-<h2 class="reveal">Three workstreams, one control room, daily exit criteria</h2>
-<div class="plan-lanes reveal">
-  <div class="lane"><div class="num">01</div><h3>Recipe freeze</h3><ul><li>Hold non-critical edits for 48h</li><li>Lock metrology recipe version</li><li>Publish exception owner</li></ul></div>
-  <div class="lane"><div class="num">02</div><h3>Test containment</h3><ul><li>Isolate bin 7A lots</li><li>Retest golden sample</li><li>Compare handler drift</li></ul></div>
-  <div class="lane"><div class="num">03</div><h3>Queue recovery</h3><ul><li>Pull probe capacity forward</li><li>Clear 18h queue exposure</li><li>Review at 07:30 daily</li></ul></div>
-</div>
-<div class="footer">90-day recovery cadence</div>
-""",
-        ),
-        slide(
-            "risk",
-            """
-<p class="section-label reveal">Risk controls 04</p>
-<h2 class="reveal">Do not trade yield recovery for hidden reliability debt</h2>
-<div class="risk-matrix reveal">
-  <div class="risk"><strong>Release gate</strong><p>No lot exits containment until bin 7A retest delta is below 0.3 pts for two shifts.</p></div>
-  <div class="risk"><strong>Customer protection</strong><p>Ship plan prioritises committed mix first; upside lots stay behind the quality wall.</p></div>
-</div>
-<div class="footer">guardrails before acceleration</div>
-""",
-        ),
-        slide(
-            "decision",
-            """
-<p class="section-label reveal">Decision 05</p>
-<h2 class="reveal">Approve the sprint, protect capacity, review the result Friday</h2>
-<div class="decision-board reveal">
-  <div class="decision-item"><span>Approve</span><b>48h recipe-change hold</b><em>Ops + PE</em></div>
-  <div class="decision-item"><span>Move</span><b>12 probe-hours into recovery lane</b><em>Manufacturing</em></div>
-  <div class="decision-item"><span>Watch</span><b>Bin 7A retest delta and queue age</b><em>Daily 07:30</em></div>
-</div>
-<div class="footer">decision surface</div>
-""",
-        ),
-    ]
-    while len(sections) < slides:
-        n = len(sections) + 1
-        sections.append(
-            slide(
-                "content",
-                f"""
-<p class="kicker reveal">{n:02d} - extra</p>
-<h2 class="reveal">Additional editorial ops slide {n}</h2>
-<div class="panel reveal"><p>Use one large headline, one official Micron icon or evidence visual, and one clear decision.</p></div>
-<div class="footer">generated scaffold</div>
-""",
-            )
-        )
-    return sections[:slides]
-
-
 def build_sections(title: str, theme: str, slides: int, title_template: str | None) -> list[str]:
     if theme == "micron-dark":
-        return build_micron_dark_sections(title, theme, slides, title_template)
-    if theme == "micron-dark-executive":
         sections = [
             build_title_slide(title, theme, title_template),
             slide(
@@ -712,24 +523,11 @@ def build_sections(title: str, theme: str, slides: int, title_template: str | No
 
 def build_html(title: str, theme: str, slides: int, title_template: str | None = None) -> str:
     css = THEME_CSS[theme] + BASE_CSS
-    if theme == "micron-dark":
-        css = BASE_CSS + THEME_CSS[theme]
     js = JS
     module_script = ""
-    if theme in {"micron-dark", "micron-dark-executive"}:
+    if theme == "micron-dark":
         css += MICRON_DARK_FIXED_STAGE_CSS
         js = fixed_stage_js(1600, 900) + JS
-    if theme == "micron-dark":
-        template = WAFER_PORTAL_TEMPLATE.read_text()
-        match = re.search(r'<script type="module">(.*?)</script>', template, re.S)
-        if not match:
-            raise SystemExit("wafer-portal.html is missing its required Three.js module script")
-        module_body = match.group(1).strip()
-        module_body = module_body.replace(
-            "renderer.render(scene, camera);",
-            'renderer.render(scene, camera);\n      canvas.dataset.titleShaderReady = "true";\n      window.__waferPortalReady = true;',
-        )
-        module_script = f'  <script type="module">\n{module_body}\n  </script>\n'
     if theme == "guided-learning":
         css += GUIDED_LEARNING_FIXED_STAGE_CSS
         js = fixed_stage_js(1280, 720) + JS
@@ -766,7 +564,7 @@ def build_html(title: str, theme: str, slides: int, title_template: str | None =
 
 
 def copy_theme_assets(output: Path, theme: str) -> None:
-    if theme not in {"micron-dark", "micron-dark-executive"}:
+    if theme != "micron-dark":
         return
     assets_dir = output.parent / "assets"
     assets_dir.mkdir(parents=True, exist_ok=True)
@@ -774,21 +572,12 @@ def copy_theme_assets(output: Path, theme: str) -> None:
         SHARED_ASSETS / "micron-logo-white-tm-rgb.png",
         assets_dir / "micron-logo-white-tm-rgb.png",
     )
-    if theme != "micron-dark-executive":
-        if theme == "micron-dark":
-            icon_target = assets_dir / "primary" / "mp4" / "rev"
-            icon_target.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(
-                MICRON_ICONS_ASSETS / "primary" / "mp4" / "rev" / "wafer.mp4",
-                icon_target / "wafer.mp4",
-            )
-        return
     shutil.copy2(
         SHARED_ASSETS / "micron-logo-white-ia-rgb.png",
         assets_dir / "micron-logo-white-ia-rgb.png",
     )
     shutil.copy2(
-        MICRON_DARK_EXECUTIVE_ASSETS / "title-image.jpeg",
+        MICRON_DARK_ASSETS / "title-image.jpeg",
         assets_dir / "micron-dark-title-image.jpeg",
     )
     icon_target = assets_dir / "primary" / "mp4" / "rev"
@@ -809,7 +598,7 @@ def main() -> int:
     parser.add_argument(
         "--title-template",
         default=None,
-        help="Micron dark defaults to wafer-portal. For micron-dark-executive: photo-title only.",
+        help="micron-dark has one approved title template: photo-title.",
     )
     parser.add_argument("--list-themes", action="store_true")
     args = parser.parse_args()

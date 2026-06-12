@@ -518,6 +518,11 @@
   </style>
 </head>
 <body>
+  <!--
+    DESIGN INTENT
+    Slide 01 - title slide: protagonist={{FIRST_EYE_STOP}}; scan={{SCAN_STOPS}}; encoding={{ENCODING}}; artifacts={{VISIBLE_ARTIFACTS}}
+    {{DESIGN_INTENT_LINES_FOR_REMAINING_SLIDES}}
+  -->
   <main>
     <header>
       <p class="eyebrow">BRAINSTORM - NOT FINAL DECK</p>
@@ -539,6 +544,7 @@
     <section class="deck" aria-label="Deck structure">
       <p class="structure-label">Deck structure</p>
         <article class="slide-panel" data-slide="01" aria-labelledby="slide-01-title">
+          <!-- ARGUMENT - ROLE: structural - no claim -->
           <header class="slide-head">
             <p class="eyebrow">Slide 01</p>
             <h2 id="slide-01-title">Title</h2>
@@ -550,6 +556,14 @@
           </div>
         </article>
 
+        <!--
+          Every added slide panel starts with its ARGUMENT comment, directly
+          inside article.slide-panel, before header.slide-head. Two forms only:
+            argument slide:   ARGUMENT - CLAIM: {{ONE_SENTENCE_CLAIM}} | EVIDENCE: {{DATA_DEMO_SOURCE}} | SOURCES: {{ORIGIN_OR_ASSUMPTION}}
+            structural slide: ARGUMENT - ROLE: structural - no claim
+          An unreplaced {{...}} placeholder counts as blank EVIDENCE - a failed
+          slide. See references/template.md - ARGUMENT Comment Format.
+        -->
         {{MORE_SLIDE_PANELS}}
     </section>
   </main>

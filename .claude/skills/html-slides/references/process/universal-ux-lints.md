@@ -48,6 +48,18 @@ Rules that apply to every theme. Theme-specific palette, gradient, and logo rule
 | Sequential heading levels | `h1` on title slide; `h2` for slide headings; `h3` for sub-blocks | Skip levels for styling reasons |
 | One `h1` per deck | Title slide owns the only `h1` | Every slide an `h1` |
 
+## Content quality
+
+| Rule | Do | Don't | Mechanically checked? |
+|---|---|---|---|
+| Action titles | Full-sentence assertion stating the takeaway, key number on data slides | "Overview", "Q3 results", titles about the template | Yes — `verify.py` flags bare-label/template-meta titles (fails on `require_assertion_titles` themes) |
+| Titles tell the story | Read the printed "Title storyline" in order; it must retell the argument and the ask | Titles only a presenter can connect | Partly — `verify.py` prints the storyline; you judge it (Skim test) |
+| Body word budget | ≤90 words/slide (60 executive, ×1.5 standalone) | Cramming; shrinking text to fit | Yes — `verify.py` counts visible non-chrome body words |
+| Element budgets | ≤6 list items, ≤6 repeated cards, ≤10 code lines, ≤3 exhibits | 9-bullet lists, card walls | Yes — `verify.py` fails over-budget groups |
+| Charts carry their proof | ≥2 visible values/axis digits + adjacent takeaway ≥5 words | Decorative valueless charts | Yes — naked-chart lint; takeaway is NOTE (live) / fail (standalone) |
+| Illustrative data declares itself | `data-illustrative="true"` + visible "Illustrative" tag | Placeholder numbers styled as real data | Yes — `verify.py` fails unlabeled placeholders |
+| Answer first (decision decks) | `data-deck-kind="decision"` + executive-summary slide 2 | Burying the ask on the last slide | Yes on `require_executive_summary_slide` themes |
+
 ## What this file is not
 
 - It is **not** a chart selection guide — see `references/runtime/svg-charts.md`.

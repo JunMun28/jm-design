@@ -250,6 +250,8 @@ Before presenting the brainstorm, check every slide against this gate:
 | Pushback coverage | The stated pushback or objection is answered explicitly |
 | Layout fidelity | The HTML visibly implements each internal `DESIGN INTENT` line at full structural fidelity |
 | Anti-boring design | Every content slide has a named visual job, adjacent slides avoid the same layout signature, and at least one slide shows an artifact, workflow, checklist, map, specimen, scorecard, mission board, or decision surface |
+| Horizontal logic | Read only the slide titles, in order: they retell the argument from context to recommendation, with no duplicate claims and no gaps; for decision decks the ask appears in the first two titles |
+| Grouping discipline | Every group of zones/steps/bullets/cards names one cutting dimension, holds 2–5 non-overlapping items of one rhetorical type, and uses an explicit "Out of scope"/"Other" instead of silently dropping content |
 
 Fix failures before presenting the file. Keep the visible page focused on slide
 content unless the user asks to see the audit; recording a concise audit as an
@@ -259,6 +261,56 @@ For the anti-boring design gate, use
 `references/strong-slide-design-checklist.md`. This is mandatory when a deck is
 about a product, platform, workflow, learning experience, executive decision,
 or any topic that could otherwise become traditional title-plus-bullets.
+
+## ARGUMENT Comment Format
+
+Every slide panel carries exactly one `ARGUMENT` comment, placed directly
+inside its `article.slide-panel` before the `header.slide-head`. Two forms,
+no third:
+
+- Argument slide:
+  `<!-- ARGUMENT - CLAIM: <one sentence> | EVIDENCE: <data/demo/source> | SOURCES: <origin or ASSUMPTION> -->`
+- Structural slide (title, section, transition, close):
+  `<!-- ARGUMENT - ROLE: structural - no claim -->`
+
+A blank or "trust me" `EVIDENCE` is a failed slide. The format is fixed so a
+reviewer (or a script) can grep for `ARGUMENT -` and audit every slide
+mechanically. The canonical skeleton ships placeholder `ARGUMENT` comments;
+an unreplaced placeholder counts as blank `EVIDENCE`.
+
+## Rigor Audit
+
+Persuasion decks run this five-check audit after the strong-slide verification
+and before the independent review gate. Informational decks skip the audit but
+still carry the `ARGUMENT` comment on every slide.
+
+1. **Claim without evidence** — any argument slide whose `EVIDENCE` is blank or
+   hand-wavy.
+2. **Objection unanswered** — no slide rebuts the Phase 2 strongest objection.
+3. **Buried lede** — for decision decks and dense-executive density, the core
+   message and the ask are not on slide 2; for other decks, the core message is
+   not a single sentence by slide ≤3.
+4. **So-what slide** — a slide that conveys information, advances no claim, and
+   is not structural.
+5. **Unsourced specifics** — a stat, quote, or causal claim with no `SOURCES`.
+
+Print the result in the brainstorm HTML as a comment:
+
+```html
+<!--
+  RIGOR AUDIT
+  1 Claim without evidence: PASS
+  2 Objection unanswered: PASS
+  3 Buried lede: PASS
+  4 So-what slide: PASS
+  5 Unsourced specifics: FAIL - slide 04 adoption stat has no SOURCES line
+-->
+```
+
+A non-PASS is a hole in the argument, not a style note. Fix the deck (add
+evidence, add a rebuttal slide, move the lede, cut the so-what slide, source
+the number) and re-run. Do not present the HTML with an open finding unless
+the user explicitly accepts the risk on the record.
 
 ## Independent Review Gate
 

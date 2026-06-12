@@ -37,3 +37,15 @@ maintained in exactly one place.
   (`html-slides`, `pptx`) consume the canonical brainstorm HTML directly.
 - Structural slides now require an explicit `Role: structural — no claim`
   marker so a missing-evidence slide cannot hide as non-argumentative.
+
+## Amendment (2026-06-12): answer-first for decision decks
+
+The buried-lede rigor check was tightened from "core message by slide ≤3" to
+answer-first (BLUF / Minto): decision decks and dense-executive density must
+state the core message and the ask on slide 2. An answer-first arc row
+(Decision -> Status -> Change -> Implications) is now the default when the
+intake Goal is decision or approval, and the arc table gained an SCQA
+"Opening discipline" note. The five-check rigor audit and the canonical
+`ARGUMENT` comment format now live in `references/template.md` (sections
+"Rigor Audit" and "ARGUMENT Comment Format"), resolving the previously
+dangling pointers from SKILL.md and iteration-patterns.md.

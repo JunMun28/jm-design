@@ -410,6 +410,47 @@
           "description": "If the user accepts agent-proposed content, the skill records it as ASSUMPTION unless the user supplied the facts or wording"
         }
       ]
+    },
+    {
+      "id": 11,
+      "name": "persuasion-rigor-path-budget-approval",
+      "prompt": "I need a deck to get budget approval from our VP of Engineering for rolling out an internal AI code-review tool. She is skeptical about AI tooling. I have results from a 3-week pilot with one team (review turnaround dropped from 26h to 9h), but no company-wide data yet.",
+      "expected_output": "Skill classifies the deck as persuasion (Goal = decision/approval), runs the two-part evidence intake, records the VP's strongest objection verbatim, proposes an answer-first arc with the ask on slide 2, and produces a brainstorm HTML where every panel carries an ARGUMENT comment, every stat carries SOURCES or ASSUMPTION, the five-check rigor audit is printed as a RIGOR AUDIT comment with all PASS (or user-waived findings), and the titles-only read-through retells the argument and the ask.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "classifies_persuasion_and_runs_evidence_intake",
+          "description": "The deck is classified as a persuasion deck from Goal = decision/approval, and the sharpened two-part evidence intake is asked one question at a time: hardest evidence first, then the strongest objection"
+        },
+        {
+          "name": "captures_objection_verbatim",
+          "description": "The skeptical VP's strongest objection is captured verbatim during intake, not paraphrased into something weaker"
+        },
+        {
+          "name": "synthesis_includes_stress_test_lines",
+          "description": "The Phase 2 synthesis includes both 'Strongest objection' and 'How the deck answers it' lines, and the named rebutting slide actually exists in the proposed arc"
+        },
+        {
+          "name": "answer_first_arc_for_decision_deck",
+          "description": "The proposed arc is answer-first: the core message and the budget ask appear on slide 2, and the closing slide restates rather than introduces the ask"
+        },
+        {
+          "name": "argument_block_on_every_panel",
+          "description": "Every slide panel in the brainstorm HTML carries an ARGUMENT comment - either CLAIM + EVIDENCE + SOURCES or ROLE: structural - with no blank or placeholder EVIDENCE"
+        },
+        {
+          "name": "rigor_audit_printed_and_resolved",
+          "description": "The five-check RIGOR AUDIT comment is printed in the brainstorm HTML and every check is PASS or explicitly accepted by the user on the record"
+        },
+        {
+          "name": "partial_evidence_not_inflated",
+          "description": "The single-team pilot result is presented with its scope stated (one team, 3 weeks); missing company-wide data is framed as a proposal or ASSUMPTION, never invented or generalized into proof"
+        },
+        {
+          "name": "titles_only_readthrough_performed",
+          "description": "The titles-only read-through check is performed: the slide titles read in order retell the argument and the ask, with no duplicate claims or gaps"
+        }
+      ]
     }
   ]
 }

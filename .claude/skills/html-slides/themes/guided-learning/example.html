@@ -14,6 +14,15 @@
     transition: none !important;
   }
 }
+#overview { position: fixed; inset: 0; z-index: 1000; display: none; overflow: auto; padding: clamp(24px, 4vw, 60px); background: #ECEAF4; }
+#overview[aria-hidden="false"] { display: block; }
+.ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.ov-card { cursor: pointer; padding: 0; text-align: left; border: 1px solid rgba(43, 33, 24, 0.2); border-radius: 12px; background: #fff; overflow: hidden; font: inherit; }
+.ov-card:focus-visible { outline: 2px solid #BD03F7; outline-offset: 2px; }
+.ov-thumb { aspect-ratio: 16 / 9; overflow: hidden; position: relative; background: #fff; }
+.ov-thumb .clone { position: absolute; left: 0; top: 0; transform-origin: top left; pointer-events: none; }
+.ov-label { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; font-size: 13px; color: #2B2118; }
+#overview .reveal { opacity: 1; transform: none; }
 </style>
 </head>
 <body class="tpl-course-module">
@@ -309,6 +318,54 @@ setupFixedStage();
       if (event.key.toLowerCase() === "r") setReveal(!group.classList.contains("is-revealed"));
     });
   });
+})();
+</script>
+<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll(".deck .slide"));
+  const overview = document.getElementById("overview");
+  if (!slides.length || !overview) return;
+
+  const scale = () => overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+    const clone = thumb.querySelector(".clone");
+    clone.style.width = "1280px";
+    clone.style.height = "720px";
+    clone.style.transform = `scale(${thumb.clientWidth / 1280})`;
+  });
+  const toggle = (open) => {
+    const willOpen = typeof open === "boolean" ? open : overview.getAttribute("aria-hidden") === "true";
+    overview.setAttribute("aria-hidden", willOpen ? "false" : "true");
+    if (willOpen) requestAnimationFrame(scale);
+  };
+
+  const grid = document.createElement("div");
+  grid.className = "ov-grid";
+  slides.forEach((slide, i) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "ov-card";
+    card.setAttribute("aria-label", `Go to slide ${i + 1}: ${slide.dataset.title || ""}`);
+    const thumb = document.createElement("div");
+    thumb.className = "ov-thumb";
+    const source = slide.querySelector(":scope > .slide-stage") || slide;
+    const clone = source.cloneNode(true);
+    clone.classList.add("clone");
+    clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+    clone.querySelectorAll("button, a, [tabindex]").forEach((el) => el.setAttribute("tabindex", "-1"));
+    thumb.appendChild(clone);
+    const label = document.createElement("div");
+    label.className = "ov-label";
+    label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.title || ""}</span>`;
+    card.append(thumb, label);
+    card.addEventListener("click", () => { toggle(false); location.hash = `#/${i + 1}`; });
+    grid.appendChild(card);
+  });
+  overview.appendChild(grid);
+
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(); });
+  window.addEventListener("resize", () => { if (overview.getAttribute("aria-hidden") === "false") scale(); });
 })();
 </script>
 </body></html>

@@ -19,7 +19,6 @@ brand assets belong in theme assets or a separate skill.
    polarity:
    - `micron-light` -> `pos`
    - `micron-dark` -> `rev`
-   - `micron-dark-executive` -> `rev`
 5. Use `--format html` when you need a snippet.
 6. Use `--decorative` for decorative HTML snippets so accessibility is correct.
 

@@ -8,8 +8,8 @@ sheet, not a web page.
 
 Use this when:
 
-- The theme requires it. **`micron-dark-executive`** uses it for
-  boardroom / executive decks. **`micron-light` mandates a fixed stage but
+- The theme requires it. **`micron-dark`** uses it for
+  premium dark decks. **`micron-light` mandates a fixed stage but
   does NOT use this bare overlay** — it uses the richer `.slide-stage` +
   container-query model in `themes/micron-light/design.md` §8 (this overlay
   is only its minimum fallback). Read that §8 before building a

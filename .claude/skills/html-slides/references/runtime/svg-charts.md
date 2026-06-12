@@ -140,6 +140,30 @@ than a tiny static primitive.
 | Flow / process | Sankey | Chord | ECharts Sankey or React Flow for node/edge workflows | Caption the top flow; viewers can't trace ribbons at slide distance |
 | Anomaly highlight | Line with marked points | Scatter with annotation | ECharts | Annotate the anomaly with a label, not just colour |
 
+## Scale integrity
+
+A chart that distorts scale lies faster than text ever could. Hard rules:
+
+1. **Bar/column value axes start at zero.** A truncated bar axis exaggerates
+   differences; if the deltas only read on a truncated axis, use a line chart
+   or state the delta as a number instead.
+2. **Non-zero line-chart baselines are allowed** only with visible axis range
+   labels, so the zoom is declared.
+3. **No dual y-axes.** Two scales on one plot invite false correlation —
+   split into two stacked charts sharing the x-axis.
+4. **Comparable charts share identical ranges**, or carry a visible
+   annotation saying the scales differ.
+5. **No 3D, ever.** Depth distorts area and adds nothing.
+6. Sort category bars by value (not alphabetically) unless the order is
+   itself meaningful (time, process stage).
+7. Distinguish actual vs plan vs forecast by stroke/fill style plus a label,
+   never by color alone (IBCS-style notation).
+8. **The chart's message is a sentence.** The slide headline (or the chart's
+   adjacent takeaway) states what the chart proves, with the key number —
+   never just the metric name. `verify.py` fails charts with no adjacent
+   takeaway in standalone decks and flags naked charts (no visible values)
+   everywhere.
+
 Decision rules:
 
 - ≤ 6 data points → use a number, sentence, or small table instead of a chart.

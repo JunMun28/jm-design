@@ -447,11 +447,30 @@ Choose the arc based on the goal:
 | ---------------------------------------------- | ------------------------ | ------------------------------------------------------------------ |
 | Hook -> Frame -> Mechanism -> Example -> CTA   | Explaining a new concept | Title -> what is X -> how it works -> real example -> what to do   |
 | Problem -> Tension -> Solution -> Proof -> Ask | Pitching anything        | Title -> problem -> why hard -> approach -> evidence -> ask        |
-| Status -> Change -> Implications -> Decision   | Executive update         | Title -> where we are -> what changed -> what it means -> decision |
+| Decision -> Status -> Change -> Implications   | Decision/approval ask (answer-first; default when Goal is decision or approval) | Title -> decision/ask -> where we are -> what changed -> what it means |
+| Status -> Change -> Implications -> Decision   | Executive update (no decision pending) | Title -> where we are -> what changed -> what it means -> decision |
 | Before -> After -> Bridge                      | Selling a transformation | Title -> today -> future -> how to get there                       |
 | Five chapters                                  | Workshops, deep dives    | Each chapter is 2-3 slides with transitions                        |
 
 If none fit, propose a custom arc and explain the logic.
+
+**Opening discipline (SCQA).** Whatever the arc, the first 2–3 slides cover:
+Situation (context no one in the room disputes), Complication (the change or
+problem — use the user's verbatim intake wording), and the Answer (the core
+message). Label these roles in the arc's `Purpose:` lines. For decision decks
+the Answer is the ask itself, stated on slide 2 — the evidence comes after,
+and the closing slide restates the ask, never introduces it.
+
+**Grouping discipline (MECE).** When writing the key takeaways and the arc's
+sections or per-slide groups:
+
+- Name the single classifying dimension in one phrase ("3 sections, cut by
+  pipeline stage" / "4 takeaways, cut by stakeholder").
+- Probe every pair for overlap; if two items could swap content, re-cut.
+- Use an explicit "Out of scope" line instead of silently dropping content a
+  bucket doesn't fit.
+- Cap sibling groups at 2–5 items of one rhetorical type — do not mix causes,
+  actions, and findings in one list.
 
 ### Slide count guidance
 
@@ -657,6 +676,15 @@ the rigor audit below.
    named visual job, adjacent slides avoid repeated layout signatures, and at
    least one slide shows a concrete artifact, workflow, checklist, map,
    specimen, scorecard, mission board, or decision surface.
+11. **Horizontal logic — titles-only read-through** — read only the slide
+   titles, in order. They must retell the argument from context to
+   recommendation, with no duplicate claims and no gaps; for decision decks
+   the ask appears in the first two titles. If a listener could not retell
+   the story from the titles alone, retitle before presenting.
+12. **Grouping discipline (MECE)** — every group of zones/steps/bullets/cards
+   names one cutting dimension, holds 2–5 non-overlapping items of one
+   rhetorical type, and uses an explicit "Out of scope"/"Other" instead of
+   silently dropping content.
 
 If any check fails, fix the brainstorm before showing it. Summarize the result
 briefly in chat; keep the visible HTML focused on slide content unless the user
@@ -698,7 +726,9 @@ the file:
 1. **Claim without evidence** — any argument slide whose `EVIDENCE` is blank or
    hand-wavy.
 2. **Objection unanswered** — no slide rebuts the Phase 2 strongest objection.
-3. **Buried lede** — the core message is not a single sentence by slide ≤3.
+3. **Buried lede** — for decision decks and dense-executive density, the core
+   message and the ask are not on slide 2; for other decks, the core message is
+   not a single sentence by slide ≤3.
 4. **So-what slide** — a slide that conveys information, advances no claim, and
    is not structural.
 5. **Unsourced specifics** — a stat, quote, or causal claim with no `SOURCES`.
@@ -795,7 +825,11 @@ rigor audit):
    it and logged in CHANGES.
 2. Confirm delivery format with the user (html / pdf / pptx).
 3. Invoke the builder skill, passing the brainstorm HTML path as input:
-   `html-slides` for HTML decks, the `pptx` skill for editable Office output.
+   `html-slides` for HTML decks. For `.pptx` delivery, still build with
+   `html-slides` (so the deck passes verify.py and the final-deck review),
+   then convert with `html-to-pptx` — `--mode layered` keeps the text
+   editable. Use the `pptx` skill directly only when editing an existing
+   `.pptx` or working inside a user-provided template.
 
 The build skill should not need to ask framing questions or re-derive content.
 The brainstorm HTML decided all of it. If the build skill finds a gap, that is a
@@ -874,7 +908,8 @@ Never:
 - [ ] Phase 3: density and strong-slide verification passed, including density
       match, slide job, claim title, concrete content, information design,
       professional visual choice, source honesty, pushback coverage, layout
-      fidelity, and anti-boring design
+      fidelity, anti-boring design, horizontal logic (titles-only
+      read-through), and grouping discipline (MECE)
 - [ ] Phase 3: independent subagent review completed and all P0/P1 findings
       fixed, waived by the user, or explicitly recorded as unavailable inline
       fallback
@@ -884,5 +919,6 @@ Never:
 - [ ] Phase 5: brainstorm HTML is current, CHANGES logged, delivery format
       confirmed
 
-When all boxes are checked, invoke `html-slides` (or `pptx`) with the brainstorm
-HTML path.
+When all boxes are checked, invoke `html-slides` with the brainstorm HTML
+path. PPTX delivery converts the gated HTML deck afterwards via
+`html-to-pptx` (`--mode layered` for editable output).

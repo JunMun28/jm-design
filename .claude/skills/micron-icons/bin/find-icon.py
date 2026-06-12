@@ -159,7 +159,7 @@ def main() -> int:
     parser.add_argument("--category")
     parser.add_argument("--group")
     parser.add_argument("--style", choices=["pos", "rev"])
-    parser.add_argument("--theme", choices=["micron-light", "micron-dark", "micron-dark-executive"])
+    parser.add_argument("--theme", choices=["micron-light", "micron-dark"])
     parser.add_argument("--media", choices=["svg", "mp4"], default="svg")
     parser.add_argument("--limit", type=int, default=1)
     parser.add_argument("--format", choices=["path", "json", "html"], default="path")

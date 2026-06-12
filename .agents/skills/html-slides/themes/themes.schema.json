@@ -120,7 +120,34 @@
         "forbid_selectors": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "forbid_visible_accent_rgb": { "type": ["string", "null"] },
+        "forbid_visible_accent_name": { "type": ["string", "null"] },
+        "require_title_template_selector": { "type": ["string", "null"] },
+        "require_title_shader_ready": { "type": "boolean" },
+        "title_icon_fallback_pattern": { "type": ["string", "null"] },
+        "require_title_mesh_background": { "type": "boolean" },
+        "require_assertion_titles": {
+          "type": "boolean",
+          "description": "Headline-assertion lint failures block (true) or are advisory NOTES (false). Bare-label and template-meta titles are the target."
+        },
+        "max_title_words": { "type": ["integer", "null"], "minimum": 4 },
+        "max_body_words_per_slide": {
+          "type": ["integer", "null"],
+          "minimum": 10,
+          "description": "Visible non-chrome body words per content slide (headlines, exhibits, code excluded). ~60 for executive themes, ~90 universal."
+        },
+        "max_list_items": { "type": ["integer", "null"], "minimum": 1 },
+        "max_sibling_cards": { "type": ["integer", "null"], "minimum": 1 },
+        "max_code_lines": { "type": ["integer", "null"], "minimum": 1 },
+        "max_exhibits_per_slide": { "type": ["integer", "null"], "minimum": 1 },
+        "require_chart_takeaway": { "type": "boolean" },
+        "forbid_naked_charts": { "type": "boolean" },
+        "require_executive_summary_slide": {
+          "type": "boolean",
+          "description": "Decision decks (data-deck-kind=\"decision\") must mark slide 2 data-slide-kind=\"executive-summary\"."
+        },
+        "standalone_budget_multiplier": { "type": ["number", "null"], "minimum": 1 }
       }
     }
   }

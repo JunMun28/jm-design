@@ -22,7 +22,6 @@ SECONDARY_ARCHIVE = "micron-secondary-icons.original.zip"
 THEME_STYLE_DEFAULTS = {
     "micron-light": "pos",
     "micron-dark": "rev",
-    "micron-dark-executive": "rev",
 }
 
 PRIMARY_CATEGORIES = {

@@ -14,6 +14,14 @@ license: Proprietary. LICENSE.txt has complete terms
 | Edit or create from template | Read [editing.md](editing.md) |
 | Create from scratch | Read [pptxgenjs.md](pptxgenjs.md); use PPTXGenJS, not PowerPoint automation |
 
+> **New decks in this workspace: prefer the gated HTML pipeline.** Build with
+> the `html-slides` skill (mechanical content lints + final-deck review), then
+> convert with `html-to-pptx` — `--mode layered` keeps text editable. Use this
+> skill directly when editing an existing `.pptx`, working inside a
+> user-provided template, or when the user explicitly asks for native PPTX
+> authoring. When you do author directly, the Content Guardrails below are
+> mandatory — they replace the lints the HTML pipeline would have run.
+
 ---
 
 ## Reading Content
@@ -151,6 +159,37 @@ Choose colors that match your topic — don't default to generic blue. Use these
 
 ---
 
+## Content Guardrails (Required for new decks)
+
+These mirror the html-slides content gates. A beautiful deck that says
+nothing fails review.
+
+1. **Action titles.** Every content-slide title is a full-sentence assertion
+   stating the takeaway — a claim someone could dispute, with a verb. Never a
+   topic label ("Q3 results", "Overview") and never a sentence about the
+   slide itself. Data slides carry the key number in the title. Target ≤12
+   words. Covers and section dividers are exempt.
+2. **Skim test.** Write all titles first (dot-dash storyboard) and read them
+   in order: they must retell the argument and the ask without the bodies.
+   For decision decks, the recommendation appears by slide 2 and the closing
+   slide restates it with decision + owner + date.
+3. **One idea per slide, budgeted.** ≤6 bullets per list, ≤6 cards per grid,
+   ~50 body words ideal (hard cap ~90; ~60 for executive decks), ≤3 exhibits
+   per slide. If it busts a budget, split the slide.
+4. **MECE groups.** Every group of bullets/cards names one cutting dimension,
+   holds 2–5 non-overlapping items of one rhetorical type, and uses an
+   explicit "Other" instead of silently dropping content.
+5. **Chart integrity.** Bar axes start at zero; no dual y-axes; no 3D; sorted
+   bars; comparable charts share scales. Every chart shows its values and
+   sits next to a one-line takeaway saying what it proves. A chart whose
+   number you cannot name is decoration — cut it.
+6. **Source honesty.** Never invent stats, quotes, or logos. Illustrative
+   numbers are visibly labeled "Illustrative". Every numeral traces to user
+   material or is labeled.
+
+Record the storyboard (titles list) before building, and re-check items 1–6
+against the rendered slide images during Visual QA below.
+
 ## QA (Required)
 
 **Assume there are problems. Your job is to find them.**
@@ -195,6 +234,13 @@ Look for:
 - Low-contrast icons (e.g., dark icons on dark backgrounds without a contrasting circle)
 - Text boxes too narrow causing excessive wrapping
 - Leftover placeholder content
+
+Also check content quality:
+- Titles that are bare topic labels ("Overview", "Results") instead of full-sentence takeaways
+- Read the titles in order: do they retell the argument and the ask? Name where the storyline breaks
+- Slides arguing two or more separate points, or crowded past ~90 words
+- Charts with no visible values or no adjacent takeaway stating what they prove
+- A decision deck with no clear ask (decision + owner + date)
 
 For each slide, list issues or areas of concern, even if minor.
 

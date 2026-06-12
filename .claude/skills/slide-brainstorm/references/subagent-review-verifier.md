@@ -40,9 +40,13 @@ Review this brainstorm HTML:
 <absolute-or-repo-relative-path>
 
 Relevant references:
-- .agents/skills/slide-brainstorm/references/template.md
-- .agents/skills/slide-brainstorm/references/strong-slide-design-checklist.md
-- .agents/skills/slide-brainstorm/references/design-vocabulary.md
+- .claude/skills/slide-brainstorm/references/template.md
+- .claude/skills/slide-brainstorm/references/strong-slide-design-checklist.md
+- .claude/skills/slide-brainstorm/references/design-vocabulary.md
+
+Step 0: confirm you could read all three reference files above. If any is
+unreadable, report PATH FAILURE as a P0 finding and stop — do not review
+without the references.
 
 Known intake facts:
 - Audience: <role + technicality>
@@ -78,6 +82,19 @@ Check:
 12. Any unclear decision ask, weak close, or missing next action.
 13. Any likely overflow, tiny text, inaccessible scan path, or confusing visual
    hierarchy.
+14. Any content-slide title that is a bare label ("Overview", "Results") or a
+   statement about the slide/template itself ("This layout...", "...reads best
+   as a metric wall") instead of a claim about the subject.
+15. Titles-only read-through: read only the slide titles, in order. Can you
+   retell the argument and the ask from the titles alone? Name the first slide
+   where the storyline breaks; flag duplicate claims and gaps.
+16. Any data exhibit whose numbers, units, or takeaway a reader cannot state
+   from the slide alone.
+17. Any headline comparison vulnerable to an apples-to-oranges challenge
+   (mismatched cohorts, time windows, or denominators) with no caveat.
+18. MECE grouping: for each group of zones/steps/bullets/cards, name its
+   cutting dimension. Flag overlapping pairs, an obvious missing bucket, a
+   list that mixes causes/actions/findings, and groups of 1 or more than 5.
 
 Return:
 - PASS if no material issues.

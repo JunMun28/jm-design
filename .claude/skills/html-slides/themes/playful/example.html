@@ -20,6 +20,9 @@
   .panel { grid-column: 2 / span 9; align-self: center; }
   .slide.title-slide h1 { font-size: var(--title-size); margin: 1rem 0; }
   .slide:not(.title-slide) h2 { font-size: var(--headline-size); margin: 0 0 1rem; }
+  /* Presentation-room readability floors: body >=24px, labels >=20px. */
+  .slide p { font-size: clamp(24px, 2vw, 28px); max-width: 38em; }
+  .slide .sticker { font-size: clamp(20px, 1.6vw, 24px); }
 
   .blob { position: absolute; border: 2px solid var(--ink); border-radius: 50%; box-shadow: var(--shadow-chunky); }
   .blob.a { right: 8%; top: 12%; width: 140px; height: 140px; background: var(--accent); transform: rotate(8deg); }

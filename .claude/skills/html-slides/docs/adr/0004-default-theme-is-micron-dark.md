@@ -1,6 +1,6 @@
 # ADR 0004 - Default theme is `micron-dark`
 
-- **Status:** Accepted
+- **Status:** Superseded by the 2026-06-12 amendment below (no default theme)
 - **Date:** 2026-05-21
 
 ## Context
@@ -63,3 +63,25 @@ selector instead of improving it.
 
 - If frequency shifts (e.g. enablement work grows), revisit the default.
   Track which themes get used over a quarter before flipping again.
+
+## Amendment (2026-06-12): no default theme; dark themes merged
+
+This ADR's decision is reversed. The theme lineup changed:
+
+- The engineering `micron-dark` theme (wafer-portal cover, editorial-ops
+  title templates, `engineering-review` role) was **removed**.
+- The premium `micron-dark-executive` theme was **renamed to `micron-dark`**,
+  keeping its strict gates (photo-title cover, required animated Micron
+  primary icon, `premium_corporate_checks`, executive-summary-on-slide-2 for
+  decision decks). It is now the single dark theme — used for executive,
+  vision, technical, and walkthrough dark decks alike.
+- The `"recommended": true` flag was **removed**. No theme is recommended;
+  `Style Selection` lists the four stable themes (`micron-dark`,
+  `micron-light`, `guided-learning`, `playful`) in plain manifest order with
+  no pill. `selector.html` already falls back to the first manifest theme when
+  no `recommended` flag is present.
+
+Rationale: the two dark themes were redundant in practice, and a recommended
+default biased the selector toward one theme when the choice is genuinely the
+user's. Treating all themes equally removes that bias. Reversible, but via a
+further amendment so the trail stays legible.

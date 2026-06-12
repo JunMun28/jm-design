@@ -77,6 +77,23 @@ Avoid:
 
 If crowded, split. Whitespace is a design choice, not a vacancy to fill.
 
+## Grouping discipline (MECE)
+
+Every group on a slide — bullets, cards, zones, steps — passes five testable
+rules:
+
+1. **One nameable dimension.** You can say the cut in a phrase: "3 zones,
+   cut by pipeline stage", "4 risks, cut by owner". If you can't name the
+   dimension, the grouping is decorative.
+2. **No two-bucket items.** If an item could sit in two buckets, re-cut.
+3. **2–5 items.** One item is not a group; more than five is a list to split
+   or re-group (`verify.py` fails >6).
+4. **Parallel grammar, one rhetorical type.** Don't mix causes, actions, and
+   findings in one list; phrase siblings the same way.
+5. **Explicit small "Other".** Content that fits no bucket gets a visible
+   "Other"/"Out of scope" entry — never silently dropped, never forced into
+   the wrong bucket.
+
 ## Anti-slop rules
 
 Production slides should not look like generic generated web UI.

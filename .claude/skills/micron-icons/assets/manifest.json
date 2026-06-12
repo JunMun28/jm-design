@@ -23,8 +23,7 @@
   ],
   "theme_style_defaults": {
     "micron-light": "pos",
-    "micron-dark": "rev",
-    "micron-dark-executive": "rev"
+    "micron-dark": "rev"
   },
   "recommended_groups": {
     "title-hero": {

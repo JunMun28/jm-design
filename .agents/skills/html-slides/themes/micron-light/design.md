@@ -2,6 +2,8 @@
 
 Purpose: light-theme Micron slide reference. Style, philosophy, gotchas only — **no fixed layouts.** Use this for the look-and-feel; invent the layout for whatever the deck needs.
 
+Headline rule: every content-slide headline is a full-sentence assertion stating the takeaway — with the key number on data slides — never a topic label (see SKILL.md Non-Negotiables; `verify.py` lints this).
+
 Compiled: May 2026. Canonical live precedent:
 `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html`
 (a managerial training deck — Apple/Cursor restraint).

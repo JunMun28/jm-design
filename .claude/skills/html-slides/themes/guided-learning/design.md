@@ -6,3 +6,4 @@ Polished app-shell lecture look: lavender-gray letterbox, a large rounded white-
 
 **Use when:** online course modules, lecture handouts, onboarding curricula, workshop units.
 **Feel:** a focused recording/session interface adapted for teaching — structured, quiet, tactile.
+**Headline rule:** content-slide headlines state the teaching point as a full sentence ("Gradient descent walks downhill in small steps"), never a bare topic label (see SKILL.md Non-Negotiables).

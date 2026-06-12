@@ -6,7 +6,7 @@ Reference runtime + skeleton for every generated deck. Inline-editing and image 
 
 The token layer is theme-dependent. Pick the branch for the chosen theme.
 
-**Micron themes** (`micron-dark-executive`, `micron-dark`, `micron-light`, `guided-learning` — anything whose manifest `verify.logo_pattern` is set):
+**Micron themes** (`micron-dark`, `micron-light`, `guided-learning` — anything whose manifest `verify.logo_pattern` is set):
 
 1. `references/tokens/micron-tokens.css` — paste verbatim at the top of `<style>`. It is variables-only.
 2. `references/tokens/viewport-base.css` — paste after tokens.

@@ -62,7 +62,222 @@ UNIVERSAL_VERIFY = {
     "stage_height": None,
     "enforce_stage_overflow": False,
     "min_touch_target_px": None,
+    # Content-quality lints (universal; themes may tighten via themes.json).
+    "require_assertion_titles": False,
+    "max_title_words": 16,
+    "max_body_words_per_slide": 90,
+    "max_list_items": 6,
+    "max_sibling_cards": 6,
+    "max_code_lines": 10,
+    "max_exhibits_per_slide": 3,
+    "require_chart_takeaway": True,
+    "forbid_naked_charts": True,
+    "require_executive_summary_slide": False,
+    "standalone_budget_multiplier": 1.5,
 }
+
+# Content-quality lints, run as a second page pass. Issues prefixed NOTE: are
+# advisory; everything else is a failure. Deck mode is read from
+# data-deck-mode="live|standalone" on the deck root (default: live).
+# Decision decks mark data-deck-kind="decision" on the deck root.
+CONTENT_LINTS_JS = r"""({ cfg }) => {
+    const out = [];
+    const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
+    const deckRoot = document.querySelector('.deck') || document.body;
+    const mode = ((deckRoot.dataset && deckRoot.dataset.deckMode) || (document.body.dataset && document.body.dataset.deckMode) || 'live').toLowerCase();
+    const deckKind = ((deckRoot.dataset && deckRoot.dataset.deckKind) || (document.body.dataset && document.body.dataset.deckKind) || '').toLowerCase();
+    const desktop = !cfg.viewport_width || cfg.viewport_width >= 900;
+    const chromeSelector = [
+        '.nav-dots', '.progress-bar', '.present-toggle', '#overview',
+        '.footer', '.work-footer', '.slide-coord', '.section-label', '.sidebar',
+        '.kicker', '.eyebrow', '.num',
+        '.md-title-note', '.md-title-number', '.md-title-brand',
+        '.screen-topbar', '.screen-dots', '.screen-kpi span',
+        '.screen-node', '.screen-table', '.fineprint', '.ops-foot', '.chart-detail', '[aria-hidden="true"]'
+    ].join(',');
+    const exhibitSelector = 'svg[role="img"], canvas, .chart, [data-chart], table, figure';
+    const chartSelector = 'svg[role="img"], canvas, .chart, [data-chart]';
+    const textOf = (node) => (node.textContent || '').replace(/\s+/g, ' ').trim();
+    const isVisible = (el) => {
+        const cs = getComputedStyle(el);
+        const r = el.getBoundingClientRect();
+        return cs.display !== 'none' && cs.visibility !== 'hidden' &&
+            parseFloat(cs.opacity || '1') > 0.05 && r.width > 0 && r.height > 0;
+    };
+    const fontPx = (el) => {
+        let size = parseFloat(getComputedStyle(el).fontSize || '0');
+        const stage = el.closest('.slide-stage');
+        const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
+        if (stage && stageScale > 0 && stageScale < 1) size = size / stageScale;
+        return size;
+    };
+    const sev = (failing, msg) => out.push((failing ? '' : 'NOTE: ') + msg);
+    const mult = mode === 'standalone' ? (cfg.standalone_budget_multiplier || 1.5) : 1;
+    const wordCap = Math.round((cfg.max_body_words_per_slide || 90) * mult);
+    const failTitles = !!cfg.require_assertion_titles;
+    const bareLabel = /^(overview|agenda|background|summary|update|results|status|timeline|roadmap|next steps|team|our team|the team|financials|introduction|intro|conclusion|recap|q ?& ?a|thank you|thanks|appendix|about us|problem|solution|context|details|discussion|key takeaways|takeaways)[.!?]?$/i;
+    const templateMeta = /(can be shown as|reads? best as|this (layout|slide|template|deck)|the template|deserves the active state|metric wall|layout system|design system)/i;
+    const titles = [];
+
+    slides.forEach((s, i) => {
+        const isTitle = s.classList.contains('title-slide') || s.dataset.slideKind === 'cover';
+        const slideKind = (s.dataset.slideKind || '').toLowerCase();
+        const structural = isTitle || slideKind === 'section' || slideKind === 'divider';
+        const h = Array.from(s.querySelectorAll('h1, h2')).find(isVisible) || s.querySelector('h1, h2');
+        const titleText = h ? textOf(h) : '';
+        titles.push(titleText || '(no title)');
+        if (!desktop) return; // judged at stage size only, like the readability floor
+
+        const charts = Array.from(s.querySelectorAll(chartSelector))
+            .filter(isVisible).filter((c) => !c.closest(chromeSelector));
+        const topCharts = charts.filter((c) => !charts.some((o) => o !== c && o.contains(c)));
+
+        // Assertion-title lints. Covers and section dividers are structural
+        // and exempt; everything else carries the takeaway in the headline.
+        if (!structural && titleText) {
+            const words = titleText.split(/\s+/).filter(Boolean);
+            const maxWords = cfg.max_title_words || 16;
+            if (bareLabel.test(titleText)) {
+                sev(failTitles, `slide ${i + 1}: bare-label title "${titleText}" — the headline must state the takeaway as a full-sentence assertion`);
+            } else if (words.length <= 2) {
+                sev(failTitles, `slide ${i + 1}: title too short to assert anything (${words.length} words) — "${titleText}"`);
+            } else if (words.length === 3 && !/\d/.test(titleText)) {
+                sev(false, `slide ${i + 1}: 3-word title — confirm it states a takeaway, not a topic: "${titleText}"`);
+            }
+            if (templateMeta.test(titleText)) {
+                sev(failTitles, `slide ${i + 1}: title describes the slide/template, not the business — "${titleText}"`);
+            }
+            if (words.length > maxWords) {
+                sev(false, `slide ${i + 1}: title over ${maxWords} words (${words.length}) — tighten to one assertion: "${titleText.slice(0, 80)}"`);
+            }
+            if (topCharts.length && !/\d/.test(titleText)) {
+                sev(false, `slide ${i + 1}: data-slide title carries no number — action titles put the key figure in the headline: "${titleText}"`);
+            }
+        }
+        if (structural) return; // density budgets do not apply to covers/dividers
+
+        // Word budget: visible, non-chrome body words. Headlines, exhibits
+        // (charts/tables read as data, not prose) and code are excluded.
+        let bodyWords = 0;
+        const walker = document.createTreeWalker(s, NodeFilter.SHOW_TEXT, {
+            acceptNode(node) {
+                const text = textOf(node);
+                if (text.length < 2) return NodeFilter.FILTER_REJECT;
+                const el = node.parentElement;
+                if (!el || el.closest(chromeSelector) || el.closest('h1, h2, pre') || el.closest(exhibitSelector) || !isVisible(el)) return NodeFilter.FILTER_REJECT;
+                return NodeFilter.FILTER_ACCEPT;
+            }
+        });
+        while (walker.nextNode()) {
+            bodyWords += textOf(walker.currentNode).split(/\s+/).filter(Boolean).length;
+        }
+        if (bodyWords > wordCap) {
+            sev(true, `slide ${i + 1}: ${bodyWords} body words > budget ${wordCap} (${mode} mode) — cut or split; one idea per slide`);
+        }
+
+        // Element budgets: list items, repeated card siblings, code lines,
+        // exhibit count.
+        const maxItems = cfg.max_list_items || 6;
+        s.querySelectorAll('ul, ol').forEach((list) => {
+            if (list.closest(chromeSelector) || !isVisible(list)) return;
+            const items = Array.from(list.children).filter((li) => li.tagName === 'LI' && isVisible(li));
+            if (items.length > maxItems) {
+                sev(true, `slide ${i + 1}: list has ${items.length} items > max ${maxItems} — group (MECE) or split the slide`);
+            }
+        });
+        const maxCards = cfg.max_sibling_cards || 6;
+        let cardFlagged = false;
+        s.querySelectorAll('*').forEach((el) => {
+            // Exhibit subtrees (figure/table/chart) are exempt: repeated marks
+            // in a chart are data, not a card wall — same carve-out as the
+            // word-budget walker. Exhibit count and the reviewer still bound them.
+            if (cardFlagged || el.closest(chromeSelector) || el.closest(exhibitSelector) || el.tagName === 'UL' || el.tagName === 'OL') return;
+            const groups = {};
+            Array.from(el.children).forEach((child) => {
+                if (!isVisible(child) || textOf(child).length < 2) return;
+                const key = child.tagName + '.' + (child.className || '');
+                groups[key] = (groups[key] || 0) + 1;
+            });
+            for (const key in groups) {
+                if (groups[key] > maxCards) {
+                    cardFlagged = true;
+                    sev(true, `slide ${i + 1}: ${groups[key]} repeated "${key}" siblings > max ${maxCards} — re-group (MECE) or split`);
+                    break;
+                }
+            }
+        });
+        const maxCode = cfg.max_code_lines || 10;
+        s.querySelectorAll('pre').forEach((pre) => {
+            if (pre.closest(chromeSelector) || !isVisible(pre)) return;
+            const lines = (pre.textContent || '').split('\n').filter((l) => l.trim()).length;
+            if (lines > maxCode) {
+                sev(true, `slide ${i + 1}: code block has ${lines} lines > max ${maxCode} — trim to the lines that prove the point`);
+            }
+        });
+        const allExhibits = Array.from(s.querySelectorAll(exhibitSelector))
+            .filter(isVisible).filter((e) => !e.closest(chromeSelector));
+        const topExhibits = allExhibits.filter((e) => !allExhibits.some((o) => o !== e && o.contains(e)));
+        const maxExhibits = cfg.max_exhibits_per_slide || 3;
+        if (topExhibits.length > maxExhibits) {
+            sev(true, `slide ${i + 1}: ${topExhibits.length} chart/table/figure exhibits > max ${maxExhibits} — one visual protagonist per slide`);
+        }
+
+        // Chart integrity: every chart needs an adjacent takeaway (hard fail
+        // in standalone mode) and visible values/axis digits, or an explicit
+        // data-illustrative="true" opt-out with a visible label.
+        if (topCharts.length && cfg.require_chart_takeaway) {
+            const candidates = Array.from(s.querySelectorAll('figcaption, .takeaway, .chart-takeaway, .callout, p, h3, li'))
+                .filter((el) => isVisible(el) && !el.closest(chromeSelector) && !topCharts.some((c) => c.contains(el)));
+            const ok = candidates.some((el) => textOf(el).split(/\s+/).filter(Boolean).length >= 5 && fontPx(el) >= 20);
+            if (!ok) {
+                sev(mode === 'standalone', `slide ${i + 1}: chart has no adjacent takeaway (>=5 words at >=20px outside the chart) — state what the chart proves`);
+            }
+        }
+        if (cfg.forbid_naked_charts) {
+            topCharts.forEach((c) => {
+                if (c.closest('[data-illustrative="true"]')) return; // label enforced below
+                const scope = c.parentElement || c;
+                let digitTexts = 0;
+                const dw = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+                    acceptNode(node) {
+                        const el = node.parentElement;
+                        if (!el || !isVisible(el)) return NodeFilter.FILTER_REJECT;
+                        return /\d/.test(node.textContent || '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                    }
+                });
+                while (dw.nextNode()) digitTexts += 1;
+                if (digitTexts < 2) {
+                    sev(true, `slide ${i + 1}: naked chart — needs >=2 visible value/axis texts with digits in or beside it, or data-illustrative="true" plus a visible "Illustrative" tag`);
+                }
+            });
+        }
+
+        // Placeholder/illustrative content must declare itself visibly.
+        const placeholders = Array.from(s.querySelectorAll('[data-placeholder="true"], [data-illustrative="true"]')).filter(isVisible);
+        if (placeholders.length) {
+            const lw = document.createTreeWalker(s, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    const el = node.parentElement;
+                    if (!el || !isVisible(el)) return NodeFilter.FILTER_REJECT;
+                    return /illustrative|placeholder|sample data/i.test(node.textContent || '') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            });
+            if (!lw.nextNode()) {
+                sev(true, `slide ${i + 1}: data-placeholder/data-illustrative content must render a visible "Illustrative" label`);
+            }
+        }
+    });
+
+    // Decision decks lead with the answer: executive-summary slide at #2.
+    if (desktop && cfg.require_executive_summary_slide && deckKind === 'decision') {
+        const s2 = slides[1];
+        if (!s2 || (s2.dataset.slideKind || '').toLowerCase() !== 'executive-summary') {
+            sev(true, 'slide 2: decision deck (data-deck-kind="decision") must place an executive-summary slide right after the cover, marked data-slide-kind="executive-summary", stating the recommendation and the quantified ask');
+        }
+    }
+
+    return { issues: out, titles: titles, mode: mode };
+}"""
 
 
 def load_themes():
@@ -90,7 +305,41 @@ def parse_viewport(value):
     return {"width": int(width), "height": int(height)}
 
 
-def verify_html(html_path, viewports, slides, output_dir, show, wait, check_overview, fail_on_warnings, skip_brand, theme):
+def print_title_storyline(titles):
+    """The horizontal-logic skim test: titles read in order must retell the
+    argument. Printed every run so the storyline is always in view."""
+    if not titles:
+        return
+    print("Title storyline (read in order — do the titles alone tell the story?):")
+    for index, title in enumerate(titles, 1):
+        print(f"  {index:02d}. {title}")
+
+
+def find_orphan_numerals(deck_text, source_path):
+    """Return numerals visible in the deck that do not appear in the source
+    material. Single digits are skipped (slide numbers, list indices)."""
+    import re
+
+    try:
+        source_text = Path(source_path).read_text(errors="ignore")
+    except OSError as exc:
+        return [f"(source unreadable: {exc})"]
+    normalized_source = source_text.replace(",", "")
+    orphans = []
+    seen = set()
+    for raw in re.findall(r"\d[\d,\.]*%?", deck_text):
+        normalized = raw.replace(",", "").rstrip(".")
+        if len(normalized.rstrip("%")) < 2:
+            continue
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        if normalized not in normalized_source:
+            orphans.append(raw)
+    return orphans[:15]
+
+
+def verify_html(html_path, viewports, slides, output_dir, show, wait, check_overview, fail_on_warnings, skip_brand, theme, print_titles=False, source=None):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -125,6 +374,9 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
     page_errors = []
     notes = []
     notes_seen = set()
+    deck_titles = None
+    deck_mode = None
+    content_seen = set()
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not show)
@@ -149,6 +401,13 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
             slide_count = page.locator(REAL_SLIDE_SELECTOR).count()
             if slide_count == 0:
                 page_errors.append("No .slide elements found.")
+
+            if slide_count and print_titles:
+                result = page.evaluate(CONTENT_LINTS_JS, {"cfg": {**verify_config, "viewport_width": viewport["width"]}})
+                print_title_storyline(result.get("titles") or [])
+                context.close()
+                browser.close()
+                return 0
 
             if slide_count:
                 eval_config = dict(verify_config)
@@ -209,7 +468,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                     out.push(`slide ${i + 1}: missing brand mark — slide/stage pseudo-element must set background-image matching /${cfg.logo_pattern}/i or content containing "${brandWord}"`);
                                 }
                             }
-                            // Premium corporate Micron dark executive checks:
+                            // Premium corporate Micron dark checks:
                             // enforce the approved photo cover, logo asset,
                             // no accent-coloured prose/headline text, sentence
                             // case, and basic vertical rhythm around labels.
@@ -221,7 +480,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                     if (cfg.title_image_pattern) {
                                         const hasTitleImage = imgs.some((img) => new RegExp(cfg.title_image_pattern, 'i').test(img.getAttribute('src') || ''));
                                         if (!hasTitleImage) {
-                                            out.push(`slide ${i + 1}: micron-dark-executive cover must use approved photo asset matching /${cfg.title_image_pattern}/i`);
+                                            out.push(`slide ${i + 1}: micron-dark cover must use approved photo asset matching /${cfg.title_image_pattern}/i`);
                                         }
                                     }
                                     if (cfg.title_logo_pattern) {
@@ -676,7 +935,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             }
                         });
                         if (cfg.require_primary_animated_icon && primaryAnimatedIconCount === 0) {
-                            out.push(`deck: micron-dark-executive must include at least one visible official Micron primary animated MP4 icon matching /${cfg.primary_animated_icon_pattern}/i`);
+                            out.push(`deck: micron-dark must include at least one visible official Micron primary animated MP4 icon matching /${cfg.primary_animated_icon_pattern}/i`);
                         }
                         // Universal UX lints (run for every theme).
                         // 1. Interactive elements should have cursor:pointer.
@@ -807,6 +1066,36 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                     else:
                         page_errors.append(f"Lint: {issue}.")
 
+                # Content-quality lints (assertion titles, density budgets,
+                # chart integrity, deck mode). Dedupe across viewports.
+                content_result = page.evaluate(CONTENT_LINTS_JS, {"cfg": eval_config})
+                if deck_titles is None:
+                    deck_titles = content_result.get("titles") or []
+                if deck_mode is None:
+                    deck_mode = content_result.get("mode")
+                for issue in content_result.get("issues", []):
+                    if issue in content_seen:
+                        continue
+                    content_seen.add(issue)
+                    if issue.startswith("NOTE:"):
+                        note = issue[len("NOTE:"):].strip()
+                        if note not in notes_seen:
+                            notes_seen.add(note)
+                            notes.append(note)
+                    else:
+                        page_errors.append(f"Lint: {issue}.")
+
+                if source:
+                    deck_text = page.evaluate(
+                        "() => Array.from(document.querySelectorAll('.deck > .slide, body > .slide')).map(s => s.textContent || '').join(' ')"
+                    )
+                    for orphan in find_orphan_numerals(deck_text, source):
+                        note = f"numeral \"{orphan}\" not found in source {Path(source).name} — verify provenance or mark it illustrative"
+                        if note not in notes_seen:
+                            notes_seen.add(note)
+                            notes.append(note)
+                    source = None  # one pass is enough
+
                 fonts_ready = page.evaluate("() => document.fonts && document.fonts.status === 'loaded'")
                 if not fonts_ready:
                     console_issues.append("[warning] document.fonts did not reach 'loaded' state before checks ran.")
@@ -928,6 +1217,10 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
         browser.close()
 
     print(f"Screenshots: {output_dir}")
+    if deck_mode and deck_mode != "live":
+        print(f"Deck mode: {deck_mode} (budgets x{verify_config.get('standalone_budget_multiplier', 1.5)}, chart takeaway is a hard fail)")
+    if deck_titles:
+        print_title_storyline(deck_titles)
     if page_errors:
         print("Page errors:")
         for error in page_errors:
@@ -964,6 +1257,10 @@ def main():
                         help="Theme id from themes/themes.json. Applies that theme's verify config.")
     parser.add_argument("--list-themes", action="store_true",
                         help="Print available themes from themes/themes.json and exit.")
+    parser.add_argument("--print-titles", action="store_true",
+                        help="Print the title storyline (titles in order) and exit. The skim test: titles alone must retell the argument.")
+    parser.add_argument("--source", default=None,
+                        help="Path to source material. Deck numerals not found in it are listed as NOTES (provenance check).")
     args = parser.parse_args()
 
     if args.list_themes:
@@ -974,7 +1271,7 @@ def main():
     if not args.html_path:
         parser.error("html_path is required unless --list-themes is given")
 
-    if not args.theme and not args.skip_brand:
+    if not args.theme and not args.skip_brand and not args.print_titles:
         parser.error(
             "--theme <id> is required so per-theme brand lints (palette, accent, "
             "logo, contrast floor, chart-on-gradient) actually run. "
@@ -994,6 +1291,8 @@ def main():
         args.fail_on_warnings,
         args.skip_brand,
         args.theme,
+        args.print_titles,
+        args.source,
     )
 
 
