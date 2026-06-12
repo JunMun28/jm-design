@@ -1,0 +1,141 @@
+/* seventies-sunset tokens — frozen. */
+/* Fraunces custom axes (SOFT, WONK) are requested EXPLICITLY below.
+   Google Fonts strips unrequested custom axes and silently pins them
+   to defaults — never shorten this URL to wght-only. */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,600..900,100,0..1;1,9..144,600..900,100,0..1&family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg: #F7EFE2;            /* warm cream paper */
+  --surface: #EFE2CC;       /* sand panels + chart areas */
+  --ink: #3B2A20;           /* espresso text (12.0:1 on bg) */
+  --ink-muted: #6B5240;     /* secondary text (6.3:1 on bg) */
+  --accent: #A8431B;        /* burnt terracotta (5.3:1 on bg) */
+  --accent-2: #D99A2B;      /* harvest gold — FILLS ONLY on light surfaces */
+  --accent-3: #5C5C22;      /* deep olive (6.1:1 on bg) */
+  --deep: #8A3324;          /* rust — pull quotes + chart axes (7.1:1 on bg) */
+  --chart-gold: #A8721A;    /* data-bearing gold: 3.2:1 on surface (>= 3:1 floor) */
+  --rule: rgba(59, 42, 32, 0.18);
+
+  --font-display: "Fraunces", "Georgia", "Times New Roman", serif;
+  --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, Menlo, monospace;
+
+  --scale-ratio: 1.333;
+  --col-count: 12;
+  --col-gap: 24px;
+  --margin-outer: clamp(28px, 5.5vw, 88px);
+
+  --title-size: clamp(64px, 9.2vw, 120px);
+  --headline-size: clamp(60px, 6.2vw, 82px);
+  --body-size: clamp(1.125rem, 1.35vw, 1.25rem);
+
+  /* Arch grammar — the theme's signature frame. Archetypes must use these
+     exact tokens, never hand-typed radii. */
+  --radius-arch: 999px 999px 24px 24px;   /* arch window: round crown, soft feet */
+  --radius-arch-full: 999px;              /* full capsule: chips, pills, rails */
+  --radius-soft: 24px;
+
+  /* Shadows stay gaussian and quiet — chunky offset shadows belong to playful. */
+  --shadow-soft: 0 24px 44px -30px rgba(59, 42, 32, 0.38);
+
+  /* Film grain — percent-encoded SVG feTurbulence (no raw < > # inside url).
+     Apply via .grain::after at ~5% opacity over gradient areas only. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+
+  /* Giant CSS-only sun: five hard-stop rings from ONE radial-gradient.
+     Background-image only — rings never count against the accent budget. */
+  --sun-rise: radial-gradient(circle at 50% 100%,
+    #A8431B 0 16vmin,  transparent 16vmin 17.6vmin,
+    #BC5C20 17.6vmin 23.8vmin, transparent 23.8vmin 25.4vmin,
+    #CB7424 25.4vmin 30.6vmin, transparent 30.6vmin 32.2vmin,
+    #D28828 32.2vmin 36.6vmin, transparent 36.6vmin 38.2vmin,
+    #D99A2B 38.2vmin 42.4vmin, transparent 42.4vmin);
+  --sun-set: radial-gradient(circle at 50% 100%,
+    #D99A2B 0 16vmin,  transparent 16vmin 17.6vmin,
+    #D28828 17.6vmin 23.8vmin, transparent 23.8vmin 25.4vmin,
+    #CB7424 25.4vmin 30.6vmin, transparent 30.6vmin 32.2vmin,
+    #BC5C20 32.2vmin 36.6vmin, transparent 36.6vmin 38.2vmin,
+    #A8431B 38.2vmin 42.4vmin, transparent 42.4vmin);
+
+  /* Earth-stripe band — stacked horizon layers, background-image only. */
+  --earth-stripes: linear-gradient(180deg,
+    #8A3324 0 25%, #A8431B 25% 50%, #D99A2B 50% 75%, #5C5C22 75% 100%);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display type: Fraunces with SOFT pinned to 100 (rounded 70s terminals)
+   and WONK off by default. Heavier than body, never as heavy + outlined
+   as playful's 900-with-borders look. */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-variation-settings: 'SOFT' 100, 'WONK' 0;
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+h1 { font-weight: 850; }
+
+/* Swash numerals — Fraunces italic with WONK on. Decorative; pair with a
+   readable text label and mark giant ones aria-hidden="true". */
+.swash {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-optical-sizing: auto;
+  line-height: 0.9;
+  color: var(--accent);
+}
+
+/* Arch window frame — no borders, no outlines, soft shadow only. */
+.arch-card {
+  background: var(--surface);
+  border-radius: var(--radius-arch);
+  box-shadow: var(--shadow-soft);
+  padding: 2rem 1.75rem;
+}
+
+/* Film grain overlay — host must be position:relative. ~5% opacity. */
+.grain { position: relative; }
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.accent { color: var(--accent); }
+.accent-3 { color: var(--accent-3); }
+.deep { color: var(--deep); }
+.muted { color: var(--ink-muted); }
+
+/* Motion is theme expression, kept here on purpose. Structural plumbing
+   (--bg-primary, --space-*, --hairline, …) lives in
+   references/tokens/non-micron-contract.css — paste it after this file.
+   Pacing is slow and golden-hour: longer than other themes by design. */
+:root {
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --duration-normal: .8s;
+  --duration-sun: 1.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}

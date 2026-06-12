@@ -167,6 +167,79 @@
         "headline_contrast_min": 4.5,
         "palette_lock": true
       }
+    },
+    {
+      "id": "aurora-glass",
+      "name": "Aurora glass",
+      "status": "stable",
+      "role": "product-launch",
+      "when": "Midnight product-launch style with a near-black blue-tinted canvas, frosted glass panels on lit gradient hairlines, one rationed aurora glow per slide, pill-badge eyebrows, and mono-set chrome.",
+      "design": "themes/aurora-glass/design.md",
+      "example": "themes/aurora-glass/example.html",
+      "preview": "themes/aurora-glass/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": [
+          "--bg",
+          "--surface-solid",
+          "--ink",
+          "--ink-muted",
+          "--accent",
+          "--accent-text",
+          "--aurora-1",
+          "--aurora-2",
+          "--rule",
+          "--font-display",
+          "--font-body",
+          "--font-mono"
+        ],
+        "accent_rgb": "94, 106, 210",
+        "accent_max_per_slide": 10,
+        "forbid_accent_text_selectors": [
+          "h1",
+          "h2",
+          "h3"
+        ],
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true
+      }
+    },
+    {
+      "id": "seventies-sunset",
+      "name": "Seventies sunset",
+      "status": "stable",
+      "role": "storytelling",
+      "when": "Warm 70s editorial style with cream paper surfaces, heavy soft-serif espresso type, terracotta-to-gold concentric sun arcs, arch-shaped frames, faint film grain, and slow golden-hour pacing.",
+      "design": "themes/seventies-sunset/design.md",
+      "example": "themes/seventies-sunset/example.html",
+      "preview": "themes/seventies-sunset/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": [
+          "--bg",
+          "--surface",
+          "--ink",
+          "--ink-muted",
+          "--accent",
+          "--accent-2",
+          "--accent-3",
+          "--deep",
+          "--chart-gold",
+          "--font-display",
+          "--font-body",
+          "--font-mono"
+        ],
+        "accent_rgb": "168, 67, 27",
+        "accent_max_per_slide": 12,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true
+      }
     }
   ]
 }
