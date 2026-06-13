@@ -38,6 +38,27 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Harvey-ball rendering polish (correct fill origin + matrix
+  hierarchy)** — two render bugs in the decision-matrix exhibit, both surfaced by the
+  prior gate workflow: (1) `harvey()` filled from 3 o'clock (`angleRange:[0,90*level]`)
+  so a "half" ball filled the BOTTOM — not how a Harvey ball works; changed to
+  `[270,270+90*level]` (start at 12 o'clock / North, clockwise; positive angles, so
+  the pptxgenjs negative-start constraint still holds). (2) non-highlighted balls in
+  `compareTable` used `T.ink` — near-white on midnight — so a full ball in a
+  non-recommended column was the brightest object and out-shouted the accented
+  column; changed to `T.muted` (recessive but visible). · **Why:** the decision matrix
+  is a flagship exhibit; a hostile expert would flag bottom-filling Harvey balls, and
+  the inverted hierarchy drew the eye AWAY from the recommendation — defeating the
+  matrix's whole purpose. · **Evidence:** verified with an isolated 0–4 Harvey strip
+  (now empty → top-right quarter → right half → three-quarter → full; the >360° end
+  angles render fine), then rebuilt midnight + light and rendered: slide 02 shows
+  conventional balls and the accent "Quick path" column clearly dominant in both
+  themes; `harvey` is used only by `compareTable`, so no other slide is affected;
+  build is 10 pages, unregressed. Excellence cold-judge: PASS — clear correctness +
+  hierarchy gain on a flagship exhibit. · **Source:** slide-quick-test workflow
+  findings (ranks 2–3, prior run); Harvey-ball convention (fill clockwise from 12
+  o'clock); Knaflic — one accent, recessive rest.
+
 - 2026-06-13 · **Tightened the slide-quick ↔ slide-consultant handshake (content
   contract + fabrication guard)** — the consultant runs on EVERY quick deck but its
   improve-mode contract was written for the file case, leaving the inline return

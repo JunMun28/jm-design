@@ -179,8 +179,9 @@ function createBuilder(P, T) {
     if (level >= 4) {
       s.addShape(P.shapes.OVAL, { x, y, w: d, h: d, fill: { color: c }, line: { type: "none" } });
     } else if (level > 0) {
-      // positive angles only — pptxgenjs mishandles a negative start angle
-      s.addShape(P.shapes.PIE, { x, y, w: d, h: d, angleRange: [0, 90 * level], fill: { color: c }, line: { type: "none" } });
+      // fill clockwise from 12 o'clock, like a real Harvey ball (start at 270°
+      // = North; positive angles only — pptxgenjs mishandles a negative start)
+      s.addShape(P.shapes.PIE, { x, y, w: d, h: d, angleRange: [270, 270 + 90 * level], fill: { color: c }, line: { type: "none" } });
     }
   }
 
@@ -225,7 +226,7 @@ function createBuilder(P, T) {
         const isHi = ci === hi;
         if (typeof c === "number") {
           const d = 0.34;
-          harvey(s, cx + optW / 2 - d / 2, ry + rowH / 2 - d / 2, d, c, isHi ? T.accent : T.ink);
+          harvey(s, cx + optW / 2 - d / 2, ry + rowH / 2 - d / 2, d, c, isHi ? T.accent : T.muted);
         } else {
           const mark = c === "✓" || c === "—" || c === "✗";
           const col = c === "✓" ? T.good : (c === "—" || c === "✗") ? T.dim : isHi ? T.ink : T.muted;
