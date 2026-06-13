@@ -116,6 +116,13 @@ Rules:
   colored delta) or `B.statBand(...)` (2–4 KPIs, hairline dividers, NO card
   chrome — a row of bordered cards is the AI-slop tell). The number is the
   protagonist; a bulleted list of figures is a fail.
+- **Trends and comparisons get a real chart, not a faked one.** For a series
+  over time or across categories use `B.chart(s, 'col'|'bar'|'line', series, opts)`
+  — a real, editable PptxGenJS chart with the chartjunk stripped (no title, no
+  gridlines, hidden value axis, labels on the data, ONE accent series/bar with the
+  rest muted; Knaflic declutter). `'col'` = vertical, `'bar'` = horizontal ranking,
+  `'line'` = trend; `opts.highlight` is the index to accent. Never paste a chart
+  image or fake a chart with shapes/bars-as-rectangles.
 - Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
   the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).

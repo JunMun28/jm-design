@@ -38,6 +38,29 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Chartjunk-free chart helper in the native engine** — added
+  `B.chart(s, type, series, opts)` to `builder.js` (type = `col`/`bar`/`line`):
+  a REAL, editable PptxGenJS chart (`addChart`, not an image, not shapes) with
+  Knaflic declutter baked in — no chart title, no gridlines, hidden value axis,
+  data labeled directly, and ONE accent series/bar with the rest muted
+  (`opts.highlight`); theme fonts/colors throughout. Wired an example column-chart
+  slide (06, Q3 inflection highlighted) into `example-build.js` (footers bumped to
+  6) and a "trends/comparisons get a real chart, never a faked one" rule into
+  slide-quick `SKILL.md` + a "Charts (Knaflic declutter)" section in
+  `references/visual-playbook.md`. · **Why:** the engine could make single-number
+  callouts (`stat`/`statBand`) but had NO way to draw a trend/ranking/comparison —
+  the single most common analyst exhibit — so those slides fell back to box+bullets,
+  the exact AI-slop tell. PptxGenJS charts are editable, so this clears the bar AND
+  keeps the deck native-editable. · **Evidence:** built midnight + light, rendered
+  both via LibreOffice. Slide 06 reads as a genuine exec exhibit — no gridlines/axis
+  noise, labels on the bars, one accent bar drawing the eye to the inflection,
+  generous whitespace, AA-readable labels in both themes; slide 05 statBand + earlier
+  slides unregressed (footers now "/ 06"). Excellence cold-judge: PASS, zero slop
+  tells. · **Source:** Cole Nussbaumer Knaflic, *Storytelling with Data*, ch. 3–4
+  (remove border/gridlines/markers, clean axes, label directly, single highlight
+  colour); PptxGenJS `addChart` API (chartColors, valGridLine/catGridLine,
+  valAxisHidden, showValue/dataLabel*).
+
 - 2026-06-13 · **Big-number exhibit vocabulary in the native engine** — added
   `B.stat` (hero value + small-caps label + colored delta) and `B.statBand`
   (2–4 KPIs with hairline dividers and NO card chrome) to `builder.js`, plus

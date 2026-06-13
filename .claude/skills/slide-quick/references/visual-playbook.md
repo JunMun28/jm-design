@@ -29,7 +29,8 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
    row/image/big-number exhibit. Kill bullet lists. (Minto Pyramid Principle.)
    For metrics, the native engine has `B.stat` (hero value + label + colored
    delta) and `B.statBand` (2–4 KPIs, hairline dividers, NO card chrome — a row
-   of bordered cards is slop). The number is the protagonist.
+   of bordered cards is slop). The number is the protagonist. For a series (trend
+   over time, ranking across categories) use `B.chart` — see "Charts" below.
 2. **Real icons, not boxes or emoji.** Use an open icon set; render SVG→PNG and
    `addImage`. See the pipeline below.
 3. **Generous whitespace — leave ~20–25% of the slide empty.** Cut 30–40% of
@@ -80,6 +81,26 @@ slide.addImage({ data, x: 0.3, y: 0.3, w: 0.5, h: 0.5 }); // fresh options each 
 ```
 Licences: Tabler/Phosphor = MIT; unDraw = free (no redistribution); Humaaans /
 Open Doodles / Open Peeps = CC0. Brand logos: Simple Icons.
+
+## Charts (Knaflic declutter) — `B.chart` in the native engine
+
+A real, editable chart beats a box of bullets and a faked-with-shapes "chart" both.
+The engine's `B.chart(s, type, series, opts)` emits a native PptxGenJS chart with the
+clutter already removed, so good is the default:
+
+- **No chart title** — the slide's action title already carries the message.
+- **No gridlines, no chart border** — pure noise; they raise cognitive load.
+- **Value axis hidden; numbers labeled directly on the data** — the reader's eye
+  goes to the mark, not back to an axis.
+- **One highlight colour** — the series/bar that matters is the accent; the rest are
+  muted, so attention lands on the point. (`opts.highlight` = the index to accent.)
+- **Types:** `'col'` vertical (change over a few periods), `'bar'` horizontal (ranking
+  many categories — labels read left-to-right), `'line'` (trend over many periods).
+
+Rule of thumb: ≤ ~5 categories and a "which is biggest / where did it jump" message →
+`col` with the key bar highlighted. Many ranked items → `bar`. A continuous trend →
+`line`. Never use pie/3-D/area for a serious deck. (Knaflic, *Storytelling with Data*,
+ch. 3–4: declutter, then draw the eye with one deliberate colour.)
 
 ## Ready palettes (60-30-10; all text pairs pass WCAG AA)
 

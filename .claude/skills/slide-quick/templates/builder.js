@@ -164,7 +164,62 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand };
+  /* Chartjunk-free chart (Knaflic declutter). A REAL, editable PptxGenJS chart
+     — not an image, not faked with shapes. Strips the noise that reads as AI
+     slop: no chart title (the slide's action title carries the message), no
+     gridlines, hidden value axis (numbers are labeled directly on the data),
+     and ONE accent series/bar with the rest muted so the eye lands on the point.
+     type:   "col" (vertical) | "bar" (horizontal, for ranking) | "line" (trend)
+     series: [{ name, labels:[...], values:[...] }] — 1+ series, shared labels
+     opts:   x,y,w,h · highlight (index to accent, default 0) · showValue
+             (default true for col/bar, false for line) · legend (default
+             series.length>1) · valFmt (number format, e.g. "#,##0" or '0"%"') ·
+             accent (override accent hex). */
+  function chart(s, type, series, opts = {}) {
+    const x = opts.x != null ? opts.x : MX;
+    const y = opts.y != null ? opts.y : 2.5;
+    const w = opts.w != null ? opts.w : CW;
+    const h = opts.h != null ? opts.h : 3.8;
+    const accent = opts.accent || T.accent;
+    const neutral = T.muted;
+    const isLine = type === "line";
+    const multi = series.length > 1;
+    const hi = opts.highlight != null ? opts.highlight : 0;
+    const n = multi ? series.length : series[0].values.length;
+    // single series -> color per BAR; multi series -> color per SERIES (pptxgenjs)
+    const chartColors = Array.from({ length: n }, (_, i) => (i === hi ? accent : neutral));
+    const showValue = opts.showValue != null ? opts.showValue : !isLine;
+
+    const o = {
+      x, y, w, h, chartColors,
+      showTitle: false,
+      showLegend: opts.legend != null ? opts.legend : multi,
+      legendPos: "b", legendColor: T.muted, legendFontFace: F.body, legendFontSize: 12,
+      // declutter: kill gridlines and the value axis; keep a quiet category axis
+      valGridLine: { style: "none" },
+      catGridLine: { style: "none" },
+      valAxisHidden: true, valAxisLineShow: false,
+      catAxisLineShow: false,
+      catAxisLabelColor: T.muted, catAxisLabelFontFace: F.body, catAxisLabelFontSize: 12,
+      // direct data labels — the number sits on the mark, not on a hidden axis
+      showValue,
+      dataLabelColor: T.ink, dataLabelFontFace: F.head, dataLabelFontSize: 14,
+      dataLabelFormatCode: opts.valFmt || "#,##0",
+      chartArea: { fill: { color: T.bg } },
+      plotArea: { fill: { color: T.bg } },
+    };
+    if (isLine) {
+      o.lineSize = 2.75; o.lineSmooth = false; o.lineDataSymbol = "none";
+      o.dataLabelPosition = "t";
+    } else {
+      o.barDir = type === "bar" ? "bar" : "col";
+      o.barGapWidthPct = 45;
+      o.dataLabelPosition = "outEnd";
+    }
+    s.addChart(isLine ? P.ChartType.line : P.ChartType.bar, series, o);
+  }
+
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

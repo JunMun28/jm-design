@@ -24,7 +24,7 @@ const DECK = "slide-quick sample";
     { text: "works", options: { color: T.accentText } },
   ], { x: B.MX, y: 2.5, w: 11, h: 1.4, fontFace: T.fonts.head, fontSize: 54, bold: true, margin: 0 });
   B.closer(s, [{ text: "Four slides exercising every helper.", options: {} }], 4.4);
-  B.footer(s, DECK, 1, 5);
+  B.footer(s, DECK, 1, 6);
 }
 
 /* 02 — comparison: two panels + bullets + accent border */
@@ -43,7 +43,7 @@ const DECK = "slide-quick sample";
       { text: "Third point.", options: {} },
     ], { x: c.x + 0.4, y: py + 0.85, w: pw - 0.8, h: ph - 1.1, fontFace: T.fonts.body, fontSize: 18, color: T.ink, valign: "top", lineSpacingMultiple: 1.3, margin: 0, bullet: { code: "2022", indent: 14 } });
   });
-  B.footer(s, DECK, 2, 5);
+  B.footer(s, DECK, 2, 6);
 }
 
 /* 03 — diagram: nodes, arrows, diamond, dashed box, feedback line */
@@ -66,7 +66,7 @@ const DECK = "slide-quick sample";
   s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
   s.addText("Done", { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 12, color: T.accentText, margin: 0 });
   B.arrow(s, xs[0] + nW / 2, diaY + 0.4, ocx - 0.7 - (xs[0] + nW / 2), 0, { begin: "triangle", end: "none" });
-  B.footer(s, DECK, 3, 5);
+  B.footer(s, DECK, 3, 6);
 }
 
 /* 04 — code: panel + codeText with comment runs */
@@ -83,7 +83,7 @@ const DECK = "slide-quick sample";
     { text: "    if done: break", options: { color: T.ink } },
   ], 14);
   B.closer(s, [{ text: "Sample content. ● ILLUSTRATIVE", options: {} }], 5.4);
-  B.footer(s, DECK, 4, 5);
+  B.footer(s, DECK, 4, 6);
 }
 
 /* 05 — exhibit: KPI band, hairline dividers, NO card chrome (anti-slop) */
@@ -101,7 +101,23 @@ const DECK = "slide-quick sample";
     { value: "2", label: "User replies needed", delta: "from ~12 before", deltaGood: true },
   ], { size: 60 });
   B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — every number traces to source or is labeled.", options: {} }], 5.7);
-  B.footer(s, DECK, 5, 5);
+  B.footer(s, DECK, 5, 6);
+}
+
+/* 06 — chart: a REAL editable column chart, chartjunk stripped, one bar accented */
+{
+  const s = B.newSlide();
+  B.glow(s, 13.0, -0.3, 7, "cyan");
+  B.kicker(s, "05 · Trend");
+  B.title(s, [
+    { text: "Adoption inflected in Q3 — ", options: {} },
+    { text: "and held", options: { color: T.accentText } },
+  ]);
+  B.chart(s, "col", [
+    { name: "Weekly active teams", labels: ["Q1", "Q2", "Q3", "Q4"], values: [120, 180, 410, 460] },
+  ], { y: 2.6, h: 3.5, highlight: 2 });
+  B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — one accent bar, no gridlines, labels on the data.", options: {} }], 6.35);
+  B.footer(s, DECK, 6, 6);
 }
 
 P.writeFile({ fileName: out }).then((f) => console.log("Wrote", f));
