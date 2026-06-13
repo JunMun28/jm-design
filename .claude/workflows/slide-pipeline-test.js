@@ -1,7 +1,7 @@
 export const meta = {
   name: 'slide-pipeline-test',
   description: 'Generate a test deck through the gated pipeline (HTML + PPTX), run all verifiers, and review both outputs visually',
-  whenToUse: 'After changing any slide skill (slide-brainstorm, slide-layout-designer, html-slides, html-to-pptx, pptx) to prove the pipeline still produces production-grade decks in both formats. Also as a demo of the full gate chain.',
+  whenToUse: 'After changing any slide skill (slide-quick, slide-brainstorm, slide-consultant, html-slides, html-to-pptx, pptx) to prove the pipeline still produces production-grade decks in both formats. Also as a demo of the full gate chain.',
   phases: [
     { title: 'Generate', detail: 'one agent builds a small decision deck per the html-slides skill and self-verifies' },
     { title: 'Gate', detail: 'independent verify.py run + html-to-pptx layered conversion + validator' },

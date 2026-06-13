@@ -1,17 +1,9 @@
----
-name: slide-layout-designer
-description: Use before creating or revising slides when the user asks for better, more impressive, less boring, diagram-heavy, infographic-style, visual, or style-matched slide layouts. Use especially when the user attaches a slide/image as layout inspiration, asks for "layout like this", or when an html-slides/PPTX deck needs principal-level spatial design before implementation.
----
+# Layout Blueprint Pass
 
-# Slide Layout Designer
-
-You are the layout architect for slides. Your job is to turn approved content into a strong spatial composition before HTML/PPTX production starts.
-
-This skill does not replace `slide-brainstorm` or `html-slides`:
-
-- Use `slide-brainstorm` to settle audience, message, arc, and content.
-- Use this skill to design the layout system and slide-by-slide wireframes.
-- Use `html-slides` or `pptx` to build the final artifact.
+The layout-architecture pass for slides. Run this inside `slide-brainstorm`
+after the narrative arc is approved (it produces the internal DESIGN INTENT
+lines and the per-slide blueprint), and inside `html-slides` when a deck
+needs a full spatial blueprint before implementation.
 
 ## Core Standard
 
@@ -85,7 +77,7 @@ Layout grammar:
 - Visual primitives: matrix grids, adapter blocks, arrows, badges, small equation cards, icon bullets, and mini before/after artifacts.
 - Text rhythm: labels are short; explanatory text lives in side rail or bottom band.
 
-This archetype matches the bundled LoRA reference (`references/lora-reference.md`): it explains a technical mechanism as a single composed diagram, not as a sequence of generic cards.
+This archetype matches the bundled LoRA reference (`lora-reference.md`): it explains a technical mechanism as a single composed diagram, not as a sequence of generic cards.
 
 ## Evidence Form Selection
 
@@ -129,7 +121,7 @@ Record the choice in the blueprint as `Evidence form: <type> proving <comparison
    - Evidence board.
    - Training walkthrough specimen.
    - Executive proposal sheet.
-   - Declare it as `Archetype: <name> because <trigger>`. Selection triggers, zone maps, reading paths, and budgets per archetype are in `references/archetypes.md`.
+   - Declare it as `Archetype: <name> because <trigger>`. Selection triggers, zone maps, reading paths, and budgets per archetype are in `archetypes.md`.
 
 3. **Set the canvas contract.**
    - Use a 16:9 stage unless the delivery target says otherwise.
