@@ -105,6 +105,12 @@ Run from the repo root so `pptxgenjs` resolves.
 Rules:
 - Slide 1 is a title slide. Diagrams are real shapes. Code ≤10 lines,
   Consolas. Unsourced numbers get a visible "ILLUSTRATIVE" tag.
+- **Make it look designed, not "just boxes."** Read
+  `references/visual-playbook.md` and apply it: one action title + one real
+  visual per slide; reach for icons / a diagram / an image-led layout over flat
+  panels + bullets; keep ~20–25% whitespace; honor the type floors (title ≥32pt,
+  body ≥20pt, caption ≥14pt); use a 3-colour 60-30-10 palette with AA contrast;
+  write copy with concrete numbers and a clear "so what".
 - Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
   the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).
@@ -116,7 +122,10 @@ Rules:
 1. Render: soffice → pdf → `pdftoppm -jpeg -r 130`.
 2. Inspect the rendered per-page JPEGs yourself against this checklist:
    overlap, clipped text, text touching panel edges, low contrast,
-   misaligned columns, arrows missing targets.
+   misaligned columns, arrows missing targets. PLUS the visual-playbook bar:
+   each slide has one real visual (not just boxes/bullets), type floors met
+   (title ≥32pt, body ≥20pt), ~20–25% whitespace, a 3-colour palette, and a
+   "so what" title. A slide that is only a titled box of bullets fails.
 3. Fix and re-render once if needed. Stop after one fix cycle unless
    something is still broken.
 4. `--strict` (user asked for extra checking): spawn one visual-QA

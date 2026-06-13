@@ -27,5 +27,13 @@ Format per entry: date · change · why · evidence (gate result) · source.
   `.image-placeholder`→`.wf-box`, PptxGenJS noFill/noLine + codeText-height fixes,
   light-theme footer contrast.
 
+- 2026-06-13 · **Visual-quality dimension added** — researched slide visual
+  excellence and added `slide-quick/references/visual-playbook.md` (10 moves, type
+  floors, 3 ready palettes, font pairings, the icon→PNG PptxGenJS pipeline). Wired
+  the "make it look designed, not just boxes" rules + a visual bar into slide-quick's
+  build + QA-lite, and added a visual-quality improvement category + gate to the loop
+  prompt. (The deeper engine work — real icons, image-led layouts, palette refresh —
+  is left for the loop to do iteratively, gated.)
+
 ## Iterations
 <!-- newest first; the loop appends here -->

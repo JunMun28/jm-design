@@ -22,7 +22,8 @@ a run that concludes "nothing here is worth changing" and stops is a good outcom
 THE SYSTEM (all under .claude/skills/ unless noted):
 - slide-quick ........ fast path: intake → outline → consultant → wireframe →
                        native PptxGenJS PPTX (templates/builder.js, themes.js,
-                       example-build.js; assets/ glows; scripts/gen-glows.js)
+                       example-build.js; references/visual-playbook.md;
+                       assets/ glows; scripts/gen-glows.js)
 - slide-consultant ... content reviewer (Pyramid/SCQA/MECE/action titles); refs in
                        references/frameworks.md
 - slide-brainstorm ... full discovery + references/layout-blueprint.md,
@@ -42,15 +43,23 @@ DO THESE IN ORDER, ONCE:
    there. Skim the system. Name the SINGLE highest-leverage improvement not yet done.
    It may be any of: restructure (split a bloated skill, or combine two that overlap),
    add/upgrade a content framework, add or fix a native or HTML theme, cut friction
-   or speed in the fast path, strengthen a gate/eval, or apply a researched best
-   practice. Pick ONE and say in one sentence why it is the highest leverage right now.
+   or speed in the fast path, strengthen a gate/eval, apply a researched best
+   practice, or — equally important — improve the VISUAL quality of the OUTPUT decks:
+   real icons/graphics/illustrations instead of flat boxes, image-led layouts,
+   generous spacing, larger type, a designed colour palette, and more convincing copy
+   (see references/visual-playbook.md). Pick ONE and say in one sentence why it is the
+   highest leverage right now.
 
 2. RESEARCH (bounded — 1 to 2 focused web searches). Look up current, credible
    slide-design / consulting / tooling best practices for your chosen area, e.g.
    Duarte, Minto Pyramid Principle, Gene Zelazny, Cole Nussbaumer Knaflic
    ("Storytelling with Data"), McKinsey/BCG deck conventions, IBCS, or the relevant
-   library (PptxGenJS, Reveal.js, Marp, python-pptx). Extract the PRINCIPLE, not
-   boilerplate. Cite the sources you used.
+   library (PptxGenJS, Reveal.js, Marp, python-pptx). For VISUAL work, start from
+   references/visual-playbook.md (icon→PNG pipeline, ready palettes, font pairings,
+   type floors) and research open icon sets (Tabler/Phosphor, MIT), CC0 illustrations
+   (unDraw/Humaaans/Open Doodles), palette + contrast (Open Color/Coolors/WebAIM), and
+   code-SVG generators (Haikei/fffuel). Extract the PRINCIPLE, not boilerplate. Cite
+   the sources you used.
 
 3. PLAN. 3–6 lines for THIS one change: which files, what the change is, and exactly
    how you will prove it works.
@@ -76,6 +85,12 @@ DO THESE IN ORDER, ONCE:
      `scripts/verify.py` on any changed theme (exit 0).
    - Added or changed a THEME → ALSO build a 4–6 slide deck in that theme and visually
      confirm the render (no overlap, clipping, low contrast, or missed arrows).
+   - Changed the OUTPUT's LOOK (engine, theme, layout, icons, copy) → render a 4–6
+     slide deck and confirm the visual-playbook bar by eye: each slide has one real
+     visual (not just boxes/bullets); type floors met (title ≥32pt, body ≥20pt,
+     caption ≥14pt); ~20–25% whitespace; a 3-colour 60-30-10 palette with AA text
+     contrast; copy carries concrete numbers and a "so what" title. A titled box of
+     bullets is a fail.
    If anything fails, or you cannot verify the change, REVERT it
    (`git checkout -- <files>` or `git reset --hard` the working changes), then pick a
    different improvement or stop. Do not commit an unproven change.
