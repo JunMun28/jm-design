@@ -3,9 +3,12 @@
    Every helper creates FRESH option objects per call — PptxGenJS mutates
    option objects in place, so sharing one corrupts the second shape. */
 const path = require("path");
+const fs = require("fs");
+const sharp = require("sharp");
 
 const SW = 13.33, SH = 7.5, MX = 0.9;     // LAYOUT_WIDE inches
 const CW = SW - 2 * MX;                    // content width
+const ICON_DIR = path.join(__dirname, "..", "assets", "icons");
 
 function createBuilder(P, T) {
   const F = T.fonts;
@@ -219,7 +222,60 @@ function createBuilder(P, T) {
     s.addChart(isLine ? P.ChartType.line : P.ChartType.bar, series, o);
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart };
+  /* Real icons, not boxes or emoji (visual-playbook move #2). Rasterizes the
+     vendored Tabler outline SVGs (MIT — see assets/icons/NOTICE) to transparent
+     PNGs tinted to the theme accent, so a slide carries meaning-bearing icons
+     instead of flat panels. ASYNC (sharp) — call ONCE at the top of a build and
+     reuse the returned map: `const I = await B.loadIcons(["bolt","shield"])`.
+     names: file stems in assets/icons. opts: color (hex, default T.accent), px
+     (default 256). Returns { name: "image/png;base64,..." } for sync placement. */
+  async function loadIcons(names, opts = {}) {
+    const color = (opts.color || T.accent).replace("#", "");
+    const px = opts.px || 256;
+    const out = {};
+    for (const name of names) {
+      let svg = fs.readFileSync(path.join(ICON_DIR, name + ".svg"), "utf8");
+      svg = svg
+        .replace(/stroke="currentColor"/g, `stroke="#${color}"`)
+        .replace(/width="24"/, `width="${px}"`)
+        .replace(/height="24"/, `height="${px}"`);
+      const png = await sharp(Buffer.from(svg)).png().toBuffer();
+      out[name] = "image/png;base64," + png.toString("base64");
+    }
+    return out;
+  }
+
+  /* Place one loaded icon (a data URI from loadIcons). Square; size in inches. */
+  function icon(s, dataURI, x, y, size = 0.5) {
+    s.addImage({ data: dataURI, x, y, w: size, h: size });
+  }
+
+  /* A row of 2–4 concepts, each = real icon + bold label + one supporting line.
+     Deliberately CHROME-LESS — a row of equal bordered cards is the AI-slop tell;
+     icon + text on open space reads as designed. items: [{ icon (data URI from
+     loadIcons), label, body }]. opts: y handled by caller, gap, iconSize. */
+  function iconRow(s, y, items, opts = {}) {
+    const n = Math.min(items.length, 4);
+    const gap = opts.gap || 0.55;
+    const colW = (CW - gap * (n - 1)) / n;
+    const isz = opts.iconSize || 0.62;
+    for (let i = 0; i < n; i++) {
+      const cx = MX + i * (colW + gap);
+      if (items[i].icon) icon(s, items[i].icon, cx, y, isz);
+      s.addText(items[i].label, {
+        x: cx, y: y + isz + 0.24, w: colW, h: 0.55,
+        fontFace: F.head, bold: true, fontSize: 20, color: T.ink,
+        valign: "top", lineSpacingMultiple: 1.0, margin: 0,
+      });
+      s.addText(items[i].body, {
+        x: cx, y: y + isz + 0.92, w: colW, h: 1.6,
+        fontFace: F.body, fontSize: 15, color: T.muted,
+        valign: "top", lineSpacingMultiple: 1.28, margin: 0,
+      });
+    }
+  }
+
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

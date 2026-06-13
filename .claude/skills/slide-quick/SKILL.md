@@ -123,6 +123,14 @@ Rules:
   rest muted; Knaflic declutter). `'col'` = vertical, `'bar'` = horizontal ranking,
   `'line'` = trend; `opts.highlight` is the index to accent. Never paste a chart
   image or fake a chart with shapes/bars-as-rectangles.
+- **Concepts get real icons, never flat boxes or emoji.** The engine ships a
+  vendored Tabler set (`assets/icons/`, MIT). Load once at the top of the build —
+  `const I = await B.loadIcons(["bolt","shield","target"])` (tinted to the accent)
+  — then place with `B.icon(s, I.bolt, x, y, size)` or, for a "3–4 pillars" slide,
+  `B.iconRow(s, y, [{icon:I.bolt,label,body}, …])`. `iconRow` is deliberately
+  chrome-less; a row of equal bordered cards is the slop tell. Add more icons by
+  dropping the outline SVG into `assets/icons/`. (The build script must be `async`
+  to await `loadIcons` — see `templates/example-build.js`.)
 - Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
   the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).

@@ -38,6 +38,26 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Real icons in the native engine (vendored Tabler set)** — added
+  `B.loadIcons(names, opts)` (async — reads vendored Tabler outline SVGs, tints
+  `currentColor`→accent, rasterizes to transparent 256px PNG via sharp),
+  `B.icon(s, dataURI, x, y, size)`, and a chrome-less `B.iconRow(s, y, items)`
+  (icon + bold label + supporting line, NO bordered cards) to `builder.js`.
+  Vendored 24 curated MIT Tabler icons into `assets/icons/` with a `NOTICE`
+  (license + how to add more). Refactored `example-build.js` into an async IIFE
+  (so it can `await loadIcons`) and added slide 07 (3 real-icon pillars); footers
+  bumped to /7. Wired the rule into slide-quick `SKILL.md` + visual-playbook move
+  #2. · **Why:** move #2 ("real icons, not boxes or emoji") was documented but the
+  engine had ZERO icon support, so every concept slide fell back to flat `node`
+  boxes — a core AI-slop tell. Icons are the biggest visual lever that applies to
+  ALL style modes. · **Evidence:** built midnight + light, rendered both via
+  LibreOffice. Slide 07 shows three crisp accent-tinted icons (bolt/target/shield),
+  chrome-less, generous whitespace, AA labels in both themes; slides 01–06 (incl.
+  the chart) unregressed, footers now "/ 07". Excellence cold-judge: PASS, reads as
+  designed, zero slop tells. · **Source:** Tabler Icons (MIT, github.com/tabler/
+  tabler-icons); visual-playbook move #2 + SVG→PNG sharp pipeline (already in the
+  playbook); Duarte/Reynolds (one idea + glyph, generous whitespace).
+
 - 2026-06-13 · **Chartjunk-free chart helper in the native engine** — added
   `B.chart(s, type, series, opts)` to `builder.js` (type = `col`/`bar`/`line`):
   a REAL, editable PptxGenJS chart (`addChart`, not an image, not shapes) with

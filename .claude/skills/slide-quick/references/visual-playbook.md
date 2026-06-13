@@ -31,8 +31,11 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
    delta) and `B.statBand` (2–4 KPIs, hairline dividers, NO card chrome — a row
    of bordered cards is slop). The number is the protagonist. For a series (trend
    over time, ranking across categories) use `B.chart` — see "Charts" below.
-2. **Real icons, not boxes or emoji.** Use an open icon set; render SVG→PNG and
-   `addImage`. See the pipeline below.
+2. **Real icons, not boxes or emoji.** The native engine ships this: a vendored
+   Tabler set in `assets/icons/` (MIT) plus `B.loadIcons` (async — tints the SVG
+   to the accent and rasterizes to PNG), `B.icon`, and a chrome-less `B.iconRow`
+   for "3–4 pillars" slides. Use them instead of `B.node` boxes wherever a concept
+   wants a glyph. (For other engines / more icons, the SVG→PNG pipeline is below.)
 3. **Generous whitespace — leave ~20–25% of the slide empty.** Cut 30–40% of
    content before shrinking type. Empty space reads as confidence.
 4. **Enforce the type scale (floors below). Never shrink body to fit** — split
