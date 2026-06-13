@@ -38,6 +38,32 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-14 · **CONVERGED (autonomous scope).** After 14 committed improvements the
+  area the loop owns — the slide-quick native fast path + slide-consultant — is
+  comprehensive and polished, and no remaining candidate there clears the "clear
+  quality gain, not slightly better" bar. The native engine now spans the full
+  exhibit vocabulary (title · decision matrix + Harvey balls · chart · timeline · 2×2
+  quadrant · KPI band · icon pillars · split · big-number · code · process diagram)
+  across premium (midnight/light) + playful modes, with hand-drawn in html-slides;
+  the content→exhibit routing, the build/PDF paths, and the consultant handshake +
+  integrity checks are all fixed. The only mine-area items left are minor P2
+  doc-consistency (one canonical consultant checklist; wire-or-remove the dangling
+  `--strict` QA branch) — not worth forcing. CRUCIALLY, the area with real remaining
+  opportunity — **html-slides** — is under ACTIVE HUMAN OVERHAUL right now: an
+  uncommitted "Slide Player shell" migration sits in the working tree (new
+  `assets/shell.css|js` + `base.css` + `runtime.js`, `scripts/build-deck.py` /
+  `scaffold-deck.py` / `shell.py`, every theme `example.html` migrated, `themes.json`
+  + `verify.py` + `CONTEXT.md` changed). The autonomous loop must NOT touch html-slides
+  and risk conflicting with in-flight work. Stopping per the loop's STOP condition
+  rather than forcing a weak change. · **Parked for when html-slides settles (human-
+  led):** (1) verify the hand-drawn theme conforms to the new shell token contract
+  (shell expects `--muted`/`--faint`/`--panel`/`--line`/`--line-strong`/`--font-mono`;
+  hand-drawn `tokens.css` predates the shell); (2) resolve the wireframe-policy
+  contradiction (`template.md`/`SKILL.md` "inline CSS/JS" + "render the real artifact"
+  vs the no-JS low-fidelity rule); (3) slide-quick theme auto-recommendation
+  (audience/goal → mode) for more effortless intake; (4) consultant canonical numbered
+  checklist + the `--strict` branch.
+
 - 2026-06-13 · **Made the consultant's two integrity checks actionable on the fast
   path** — "Chart & number integrity" and "Comparison integrity" were bare
   `see references/frameworks.md` stubs in the consultant SKILL.md check list, but the
