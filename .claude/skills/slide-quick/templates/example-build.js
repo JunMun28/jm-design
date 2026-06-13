@@ -27,8 +27,8 @@ const DECK = "slide-quick sample";
       { text: "The native engine ", options: { color: T.ink } },
       { text: "works", options: { color: T.accentText } },
     ], { x: B.MX, y: 2.5, w: 11, h: 1.4, fontFace: T.fonts.head, fontSize: 54, bold: true, margin: 0 });
-    B.closer(s, [{ text: "Seven slides exercising every helper.", options: {} }], 4.4);
-    B.footer(s, DECK, 1, 9);
+    B.closer(s, [{ text: "Ten slides exercising every helper.", options: {} }], 4.4);
+    B.footer(s, DECK, 1, 10);
   }
 
   /* 02 — decision matrix: options across, criteria down, Harvey balls, one
@@ -53,7 +53,7 @@ const DECK = "slide-quick sample";
       ],
     });
     B.closer(s, [{ text: "Sample assessment. ● ILLUSTRATIVE — fuller ball = stronger.", options: {} }], 6.4);
-    B.footer(s, DECK, 2, 9);
+    B.footer(s, DECK, 2, 10);
   }
 
   /* 03 — diagram: nodes, arrows, diamond, dashed box, feedback line */
@@ -76,7 +76,7 @@ const DECK = "slide-quick sample";
     s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
     s.addText("Done", { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 12, color: T.accentText, margin: 0 });
     B.arrow(s, xs[0] + nW / 2, diaY + 0.4, ocx - 0.7 - (xs[0] + nW / 2), 0, { begin: "triangle", end: "none" });
-    B.footer(s, DECK, 3, 9);
+    B.footer(s, DECK, 3, 10);
   }
 
   /* 04 — code: panel + codeText with comment runs */
@@ -93,7 +93,7 @@ const DECK = "slide-quick sample";
       { text: "    if done: break", options: { color: T.ink } },
     ], 14);
     B.closer(s, [{ text: "Sample content. ● ILLUSTRATIVE", options: {} }], 5.4);
-    B.footer(s, DECK, 4, 9);
+    B.footer(s, DECK, 4, 10);
   }
 
   /* 05 — exhibit: KPI band, hairline dividers, NO card chrome (anti-slop) */
@@ -111,7 +111,7 @@ const DECK = "slide-quick sample";
       { value: "2", label: "User replies needed", delta: "from ~12 before", deltaGood: true },
     ], { size: 60 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — every number traces to source or is labeled.", options: {} }], 5.7);
-    B.footer(s, DECK, 5, 9);
+    B.footer(s, DECK, 5, 10);
   }
 
   /* 06 — chart: a REAL editable column chart, chartjunk stripped, one bar accented */
@@ -127,7 +127,7 @@ const DECK = "slide-quick sample";
       { name: "Weekly active teams", labels: ["Q1", "Q2", "Q3", "Q4"], values: [120, 180, 410, 460] },
     ], { y: 2.6, h: 3.5, highlight: 2 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — one accent bar, no gridlines, labels on the data.", options: {} }], 6.35);
-    B.footer(s, DECK, 6, 9);
+    B.footer(s, DECK, 6, 10);
   }
 
   /* 07 — pillars: real (tinted) Tabler icons + label + line, NO bordered cards */
@@ -144,7 +144,7 @@ const DECK = "slide-quick sample";
       { icon: I.shield, label: "One quality pass", body: "A single consultant review, then the deck ships." },
     ]);
     B.closer(s, [{ text: "Real icons, tinted to the accent — not boxes, not emoji.", options: {} }], 6.35);
-    B.footer(s, DECK, 7, 9);
+    B.footer(s, DECK, 7, 10);
   }
 
   /* 08 — split: narrative LEFT, chart RIGHT (reading gravity, move #8) */
@@ -165,7 +165,7 @@ const DECK = "slide-quick sample";
       { name: "Component reuse", labels: ["Before", "After"], values: [22, 68] },
     ], { x: zone.x, y: zone.y, w: zone.w, h: zone.h, highlight: 1, valFmt: '0"%"' });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE", options: {} }], 6.45);
-    B.footer(s, DECK, 8, 9);
+    B.footer(s, DECK, 8, 10);
   }
 
   /* 09 — timeline: milestone roadmap, accent shows progress (not a card row) */
@@ -183,7 +183,32 @@ const DECK = "slide-quick sample";
       { date: "Q4", phase: "Optimize", body: "Measure, tune, expand." },
     ], { current: 1 });
     B.closer(s, [{ text: "Sample plan. ● ILLUSTRATIVE — accent marks progress to date.", options: {} }], 6.4);
-    B.footer(s, DECK, 9, 9);
+    B.footer(s, DECK, 9, 10);
+  }
+
+  /* 10 — quadrant: impact-effort 2×2, graded single-colour wash, quick wins lit */
+  {
+    const s = B.newSlide();
+    B.kicker(s, "09 · Prioritize");
+    B.title(s, [
+      { text: "Ship the ", options: {} },
+      { text: "quick wins", options: { color: T.accentText } },
+      { text: " before the big bets", options: {} },
+    ]);
+    B.quadrant(s, 4.6, 2.5, 3.8, {
+      xLabel: "EFFORT →", yLabel: "IMPACT ↑",
+      washes: { tl: 82, tr: 91, bl: 91 },
+      quadrants: { tl: "Quick wins", tlAccent: true, tr: "Major projects", bl: "Fill-ins", br: "Time wasters" },
+      items: [
+        { x: 0.2, y: 0.82, label: "Native charts", highlight: true, side: "left" },
+        { x: 0.34, y: 0.6, label: "Auto-themes", highlight: true, side: "left" },
+        { x: 0.82, y: 0.84, label: "New theme pack", side: "right" },
+        { x: 0.2, y: 0.2, label: "Logo polish", side: "left" },
+        { x: 0.82, y: 0.24, label: "Font embedding", side: "right" },
+      ],
+    });
+    B.closer(s, [{ text: "Sample prioritization. ● ILLUSTRATIVE", options: {} }], 6.6);
+    B.footer(s, DECK, 10, 10);
   }
 
   const f = await P.writeFile({ fileName: out });

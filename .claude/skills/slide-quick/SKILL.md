@@ -136,6 +136,13 @@ Rules:
   above + phase + one line below each (3–6 nodes). `current` accents the axis/markers
   up to "you are here" to show progress; later nodes are hollow. Keep node copy to one
   short line; let the axis carry the story.
+- **Positioning / prioritization gets a 2×2, not a list.** For "where do these sit /
+  what do we do first" use `B.quadrant(s, px, py, S, {xLabel, yLabel, quadrants,
+  washes, items})` — hairline cross axes, faint corner labels, bubbles plotted by
+  `{x,y}` (0–1). Encode "how good" with ONE accent colour at graded opacity via
+  `washes` (sweet-spot quadrant strongest, good ones fainter, worst none) and accent
+  the recommended `items`; give crowded points `side:'left'|'right'`. Impact-Y,
+  Effort-X by convention. Never four different quadrant colours (rainbow = slop).
 - **Concepts get real icons, never flat boxes or emoji.** The engine ships a
   vendored Tabler set (`assets/icons/`, MIT). Load once at the top of the build —
   `const I = await B.loadIcons(["bolt","shield","target"])` (tinted to the accent)

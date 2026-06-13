@@ -122,6 +122,12 @@ markers, date + phase + one line beneath; `current` accents progress to date). O
 beats a row of phase cards. Keep it to 3–6 nodes, one short line each. (SlideModel /
 Slideworks: single axis, circular markers, restraint, let visuals carry it.)
 
+**Positioning / prioritization.** "Where do these sit" → `B.quadrant` (2×2: hairline
+cross axes, bubbles by {x,y}, faint corner labels). Encode "how good" with ONE accent
+at graded opacity — sweet-spot quadrant strongest, good ones fainter, worst none — so
+the eye averts to the darkest cell (accessible, not a rainbow). Impact-Y, Effort-X.
+(BiteSize / LaunchNotes; grade one colour, never four.)
+
 ## Ready palettes (60-30-10; all text pairs pass WCAG AA)
 
 **Dark Pro** — dominant `0F1623` (bg) · secondary `1E2D40` (panels) · accent

@@ -281,6 +281,50 @@ function createBuilder(P, T) {
     }
   }
 
+  /* 2×2 quadrant / prioritization matrix (impact-effort, BCG growth-share, …).
+     Hairline cross axes (no heavy grid); "how good" is encoded with ONE accent
+     colour at graded opacity — the sweet-spot quadrant strongest, good ones
+     fainter, worst none — so the eye averts to the darkest quadrant (accessible,
+     not a rainbow). Bubbles plot by {x,y} in 0..1 (y up); accent the picks.
+     opts: washes {tl,tr,bl,br: transparency 0–100} · quadrants {tl,tr,bl,br
+     (+ *Accent bool)} corner labels · xLabel · yLabel · items [{x,y,label,
+     highlight}]. (Bitesize/LaunchNotes: Impact-Y, Effort-X, grade one colour.) */
+  function quadrant(s, px, py, S, opts = {}) {
+    const cxm = px + S / 2, cym = py + S / 2;
+    const corner = { tl: [px, py], tr: [cxm, py], bl: [px, cym], br: [cxm, cym] };
+    const wash = opts.washes || {};
+    Object.keys(wash).forEach((k) => {
+      const [qx, qy] = corner[k];
+      s.addShape(P.shapes.RECTANGLE, { x: qx, y: qy, w: S / 2, h: S / 2, fill: { color: T.accent, transparency: wash[k] }, line: { type: "none" } });
+    });
+    s.addShape(P.shapes.LINE, { x: px, y: cym, w: S, h: 0, line: { color: T.nodeBorder, width: 1.25 } });
+    s.addShape(P.shapes.LINE, { x: cxm, y: py, w: 0, h: S, line: { color: T.nodeBorder, width: 1.25 } });
+    const q = opts.quadrants || {};
+    const corLbl = (txt, qx, qy, align, accent) => {
+      if (!txt) return;
+      s.addText(txt.toUpperCase(), { x: qx, y: qy, w: S / 2 - 0.25, h: 0.3, align, valign: "middle", fontFace: F.mono, fontSize: 11, color: accent ? T.accentText : T.dim, charSpacing: 1, margin: 0 });
+    };
+    corLbl(q.tl, px + 0.18, py + 0.12, "left", q.tlAccent);
+    corLbl(q.tr, cxm + 0.07, py + 0.12, "right", q.trAccent);
+    corLbl(q.bl, px + 0.18, py + S - 0.42, "left", q.blAccent);
+    corLbl(q.br, cxm + 0.07, py + S - 0.42, "right", q.brAccent);
+    if (opts.xLabel) s.addText(opts.xLabel, { x: px, y: py + S + 0.14, w: S, h: 0.32, align: "center", fontFace: F.mono, fontSize: 12, color: T.muted, charSpacing: 1, margin: 0 });
+    if (opts.yLabel) s.addText(opts.yLabel, { x: px - 0.1, y: py - 0.48, w: S, h: 0.32, align: "left", fontFace: F.mono, fontSize: 12, color: T.muted, charSpacing: 1, margin: 0 });
+    (opts.items || []).forEach((it) => {
+      const sx = px + it.x * S, sy = py + (1 - it.y) * S;
+      const d = 0.2;
+      s.addShape(P.shapes.OVAL, { x: sx - d / 2, y: sy - d / 2, w: d, h: d, fill: { color: it.highlight ? T.accent : T.node }, line: { color: it.highlight ? T.accent : T.nodeBorder, width: 1.5 } });
+      // label points OUTWARD (left-half → left, right-half → right) so adjacent
+      // labels never collide at the centre; it.side overrides.
+      const right = it.side ? it.side === "right" : it.x >= 0.5;
+      s.addText(it.label, {
+        x: right ? sx + 0.16 : sx - 0.16 - 2.3, y: sy - 0.17, w: 2.3, h: 0.34,
+        align: right ? "left" : "right", valign: "middle",
+        fontFace: F.body, fontSize: 14, bold: !!it.highlight, color: it.highlight ? T.ink : T.muted, margin: 0,
+      });
+    });
+  }
+
   /* Chartjunk-free chart (Knaflic declutter). A REAL, editable PptxGenJS chart
      — not an image, not faked with shapes. Strips the noise that reads as AI
      slop: no chart title (the slide's action title carries the message), no
@@ -479,7 +523,7 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, harvey, compareTable, timeline, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, harvey, compareTable, timeline, quadrant, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

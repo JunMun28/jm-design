@@ -38,6 +38,28 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **2×2 quadrant / prioritization matrix in the native engine** — added
+  `B.quadrant(s, px, py, S, {xLabel, yLabel, quadrants, washes, items})` to
+  `builder.js`: hairline cross axes, faint corner labels, bubbles plotted by {x,y}
+  in 0..1, and "how good" encoded with ONE accent colour at GRADED opacity (sweet-
+  spot quadrant strongest → worst none) so the eye averts to the darkest cell. Item
+  labels point outward (left-half→left, right-half→right; `side` overrides) so they
+  never collide. Added example slide 10 (impact-effort, quick-wins lit); footers
+  bumped to /10 and the stale cover copy "Seven"→"Ten slides". Wired the rule into
+  slide-quick `SKILL.md` + visual-playbook. · **Why:** the 2×2 (impact-effort, BCG
+  growth-share) is the one ubiquitous strategy/product exhibit still missing — a
+  spatial-positioning view fundamentally different from the linear/tabular exhibits.
+  · **Evidence:** built midnight + light, rendered both via LibreOffice. First render
+  exposed a real bug — I had shipped `right = it.x < 0.6` (the planning stub) instead
+  of the side-aware outward rule, so left-quadrant labels pulled to centre and
+  collided ("Native charts" over its bubble, over "New theme pack"); fixed to
+  `it.side ? … : it.x >= 0.5` and re-rendered clean. Final: graded wash draws the eye
+  to "Quick wins", labels collision-free, accent bubbles, AA both themes; slides
+  01–09 unregressed (footers "/ 10"). Excellence cold-judge: PASS, genuine consulting
+  2×2, zero slop. · **Source:** BiteSize impact-effort matrix; LaunchNotes 2×2;
+  LogRocket — Impact-Y/Effort-X, four named quadrants, grade ONE colour by opacity
+  (accessible, highlights the best cell), never four colours.
+
 - 2026-06-13 · **Timeline / roadmap exhibit in the native engine** — added
   `B.timeline(s, y, items, {current})` to `builder.js`: one horizontal axis with
   evenly tiled circular markers (date above · phase + one line below), the axis +
