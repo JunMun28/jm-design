@@ -41,7 +41,8 @@ Read the topic/content first. Derive recommendations, then ask ONE
    | bare topic / <1000 words | 5–8 |
    | 1000–3000 words | 8–14 |
    | >3000 words | 12–18 (suggest splitting beyond) |
-3. Theme: 1. midnight (dark) · 2. light (clean corporate)
+3. Theme: 1. midnight (dark) · 2. light (clean corporate) · 3. playful
+   (warm cream, bold color blocks — friendly/energetic, not corporate)
 4. Delivery: 1. PPTX · 2. PPTX + PDF
 
 **Skip rules (baoyu policy):** if the user said "just make it", "use
@@ -57,7 +58,7 @@ doesn't cover).
 `PREFS.md` schema (user-created, all keys optional):
 
 ```markdown
-theme: midnight | light
+theme: midnight | light | playful
 delivery: pptx | pptx+pdf
 audience_default: <free text>
 language: en | zh | ...
@@ -131,6 +132,15 @@ Rules:
   chrome-less; a row of equal bordered cards is the slop tell. Add more icons by
   dropping the outline SVG into `assets/icons/`. (The build script must be `async`
   to await `loadIcons` — see `templates/example-build.js`.)
+- **Playful theme is a DISTINCT mode, not a recolour.** When the theme is
+  `playful`, lead with the block primitives — `B.solidKicker` (filled pill, white
+  text), `B.block` (solid saturated rounded block), and `B.blockRow` (bold
+  multi-colour blocks with white icon + heading + line, the playful "pillars"
+  exhibit) — plus big friendly titles and flat solid accent circles bleeding off a
+  corner. Do NOT just feed the warm palette into the premium hairline layouts; that
+  is the recolour trap. Block text is white and the fills are deep enough to clear
+  AA. Model it on `templates/example-playful.js`. (Premium themes keep the hairline
+  panel/kicker look; never mix the two in one deck.)
 - Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
   the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).

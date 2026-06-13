@@ -14,6 +14,8 @@ across the full STYLE range, each a distinct, intentional look (never a recolour
 - **Premium / professional** — restraint, hairlines, one accent, generous whitespace,
   crisp data exhibits. (Consulting, exec, investor.)
 - **Playful** — bold blocks, warm palette, big friendly type, energy — still composed.
+  (Native: theme `playful` + `B.solidKicker` / `B.block` / `B.blockRow`; saturated
+  coral/teal/violet blocks with white AA text. See `templates/example-playful.js`.)
 - **Hand-drawn** — sketch/marker texture, handwritten headings, doodle arrows; charming,
   not childish. (Education, explainers, YouTube.)
 

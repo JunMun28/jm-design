@@ -38,6 +38,28 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Playful mode — a distinct native style (not a recolour)** — added
+  a `playful` theme to `themes.js` (warm cream canvas + deep coral/teal/violet
+  block palette, white-AA verified: 5.35 / 4.67 / 5.67; muted 4.80 on cream) and
+  three ADDITIVE block primitives to `builder.js` — `B.solidKicker` (filled pill,
+  white text), `B.block` (solid saturated rounded block), `B.blockRow` (bold
+  multi-colour blocks with white icon + heading + line). New `example-playful.js`
+  (5 slides: cover with flat accent circles, bold-block pillars, hero-number-on-
+  block, a playful-tinted chart, block CTA). Wired playful into slide-quick
+  `SKILL.md` intake/PREFS + a "distinct mode, not a recolour" build rule, and into
+  visual-playbook. · **Why:** THE BAR demands the FULL style range (hand-drawn /
+  playful / premium) as distinct modes, but the engine only did premium (midnight +
+  light). Playful was the achievable missing mode (hand-drawn needs sketch fonts
+  PPTX can't guarantee). · **Evidence:** built playful + rebuilt midnight + light,
+  rendered all via LibreOffice. Playful reads as a genuinely distinct mode — bold
+  saturated blocks, solid kicker pills, big friendly type, warm palette — zero slop
+  (multi-colour solid blocks ≠ neutral equal cards; flat circles ≠ gradient soup);
+  white text AA on every block; one overlap (footer under a circle) caught and
+  fixed before commit; midnight/light byte-unregressed. Excellence cold-judge: PASS.
+  · **Source:** Autoppt presentation-design styles; Slidesgo 2026 trends; MS
+  PowerPoint creative-ideas blog (bold geometric colour blocks + big friendly
+  headings balanced with a clean body so it never reads childish); WebAIM contrast.
+
 - 2026-06-13 · **Real icons in the native engine (vendored Tabler set)** — added
   `B.loadIcons(names, opts)` (async — reads vendored Tabler outline SVGs, tints
   `currentColor`→accent, rasterizes to transparent 256px PNG via sharp),

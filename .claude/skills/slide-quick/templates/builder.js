@@ -275,7 +275,68 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow };
+  /* ---- Playful mode primitives (theme.style = playful) ----
+     These render the bold-color-block look that makes "playful" a DISTINCT mode
+     rather than a recolour. Premium themes never call them; safe to add. */
+
+  /* A solid, saturated rounded color block — no border. The playful counterpart
+     to panel()'s hairline rectangle. opts: color (default T.accent), radius. */
+  function block(s, x, y, w, h, opts = {}) {
+    s.addShape(P.shapes.ROUNDED_RECTANGLE, {
+      x, y, w, h,
+      rectRadius: opts.radius != null ? opts.radius : 0.18,
+      fill: { color: opts.color || T.accent },
+      line: { type: "none" },
+    });
+  }
+
+  /* Solid filled kicker pill with white text — the playful counterpart to the
+     premium outline kicker(). opts: color (fill, default T.accent), textColor. */
+  function solidKicker(s, text, y = 0.62, opts = {}) {
+    const color = opts.color || T.accent;
+    const w = Math.min(8.6, 0.7 + text.length * 0.125);
+    s.addShape(P.shapes.ROUNDED_RECTANGLE, {
+      x: MX, y, w, h: 0.42, rectRadius: 0.21,
+      fill: { color }, line: { type: "none" },
+    });
+    s.addText(text.toUpperCase(), {
+      x: MX + 0.28, y, w: w - 0.5, h: 0.42, valign: "middle", align: "left",
+      fontFace: F.mono, fontSize: 11, bold: true,
+      color: opts.textColor || "FFFFFF", charSpacing: 1.5, margin: 0,
+    });
+  }
+
+  /* A row of 2–4 bold COLOR blocks (cycling T.blocks), each = white icon + white
+     heading + white line. The playful "pillars" exhibit — saturated multi-colour
+     blocks read as deliberate energy, not the neutral equal-card slop tell.
+     items: [{ icon (white-tinted data URI), label, body }]. opts: h, gap, iconSize. */
+  function blockRow(s, y, items, opts = {}) {
+    const n = Math.min(items.length, 4);
+    const gap = opts.gap || 0.4;
+    const h = opts.h || 3.0;
+    const colW = (CW - gap * (n - 1)) / n;
+    const pal = T.blocks || [T.accent];
+    const wInk = T.blockInk || "FFFFFF";
+    const isz = opts.iconSize || 0.6;
+    const pad = 0.42;
+    for (let i = 0; i < n; i++) {
+      const cx = MX + i * (colW + gap);
+      block(s, cx, y, colW, h, { color: pal[i % pal.length], radius: 0.2 });
+      if (items[i].icon) icon(s, items[i].icon, cx + pad, y + pad, isz);
+      s.addText(items[i].label, {
+        x: cx + pad, y: y + pad + isz + 0.2, w: colW - 2 * pad, h: 0.6,
+        fontFace: F.head, bold: true, fontSize: 21, color: wInk,
+        valign: "top", lineSpacingMultiple: 1.0, margin: 0,
+      });
+      s.addText(items[i].body, {
+        x: cx + pad, y: y + pad + isz + 0.9, w: colW - 2 * pad, h: h - pad - isz - 1.0,
+        fontFace: F.body, fontSize: 15, color: wInk,
+        valign: "top", lineSpacingMultiple: 1.3, margin: 0,
+      });
+    }
+  }
+
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow, block, solidKicker, blockRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };
