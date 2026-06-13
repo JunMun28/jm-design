@@ -38,6 +38,30 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Made the consultant's two integrity checks actionable on the fast
+  path** — "Chart & number integrity" and "Comparison integrity" were bare
+  `see references/frameworks.md` stubs in the consultant SKILL.md check list, but the
+  fast path invokes the consultant and reads only its SKILL.md (not frameworks.md), so
+  on EVERY quick deck those two checks reached the agent with no actionable rule —
+  effectively non-functional. Inlined concise rules (faithfully transcribed from
+  `frameworks.md` §Chart & number integrity / §Comparison integrity), keeping the
+  `(details: frameworks.md)` pointer: title number must match the visual (mismatch =
+  P0); percentages need a visible/inferable denominator; FLAG (don't fix) truncated
+  baselines / mismatched dual axes / cherry-picked ranges; never alter a value to fit
+  a title — reframe it; comparisons share unit/timeframe/scope/dimension-count, real
+  baseline, one axis per slide. · **Why:** a chart-title/visual mismatch or
+  apples-to-oranges comparison is a P0 boardroom-credibility failure; the consultant
+  was silently skipping both on the fast path. · **Evidence:** the inlined text was
+  verified line-by-line against `frameworks.md` (the already-validated source) and now
+  matches the format of every other check in the list; the block reads cleanly. This
+  is a zero-mechanism, additive doc inline (no flow/structure change), so it was gated
+  by fidelity + structural inspection rather than a 4th heavy slide-quick-test run
+  (which can't detect a fidelity issue and has no flow to regress — same proportionality
+  call as the path-fix iteration). Excellence cold-judge: PASS — closes a real
+  integrity hole on every deck. · **Source:** `slide-consultant/references/frameworks.md`
+  (Zelazny/IBCS/Knaflic chart + comparison integrity); slide-quick-test workflow rank-6
+  finding (prior run).
+
 - 2026-06-13 · **Harvey-ball rendering polish (correct fill origin + matrix
   hierarchy)** — two render bugs in the decision-matrix exhibit, both surfaced by the
   prior gate workflow: (1) `harvey()` filled from 3 o'clock (`angleRange:[0,90*level]`)

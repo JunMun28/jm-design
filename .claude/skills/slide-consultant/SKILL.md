@@ -53,8 +53,14 @@ being called by another skill defaults to what that skill asked for.
      rhetorical type per list.
    - Evidence honesty: every number/quote traced or labeled "Illustrative".
      NEVER invent a stat, quote, or source to strengthen copy.
-   - Chart & number integrity: see `references/frameworks.md`.
-   - Comparison integrity: see `references/frameworks.md`.
+   - Chart & number integrity: the number in a title must match the visual it
+     labels (mismatch = P0); percentages need a visible/inferable denominator;
+     FLAG (don't fix) truncated/non-zero baselines, mismatched dual axes, and
+     cherry-picked ranges; never change a value to fit a title — reframe the
+     title. (details: `references/frameworks.md`)
+   - Comparison integrity: both sides share unit, timeframe, scope, and the same
+     dimension count; the baseline must be real, not a strawman; one comparison
+     axis per slide. (details: `references/frameworks.md`)
 4. Output per mode (formats below).
 
 ## Output contracts
