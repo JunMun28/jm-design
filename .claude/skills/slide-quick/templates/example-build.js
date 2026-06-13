@@ -63,7 +63,7 @@ const DECK = "slide-quick sample";
   s.addShape(P.shapes.DIAMOND, { x: ocx - 0.7, y: diaY, w: 1.4, h: 0.8, fill: { color: T.node }, line: { color: T.nodeBorder, width: 1.25 } });
   s.addText("ok?", { x: ocx - 0.7, y: diaY, w: 1.4, h: 0.8, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 13, color: T.ink, margin: 0 });
   B.arrow(s, ocx, ny + nH + 0.02, 0, diaY - ny - nH - 0.04);
-  s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, fill: { type: "none" }, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
+  s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
   s.addText("Done", { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 12, color: T.accentText, margin: 0 });
   B.arrow(s, xs[0] + nW / 2, diaY + 0.4, ocx - 0.7 - (xs[0] + nW / 2), 0, { begin: "triangle", end: "none" });
   B.footer(s, DECK, 3, 4);

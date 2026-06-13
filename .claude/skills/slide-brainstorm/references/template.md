@@ -182,7 +182,7 @@ Before presenting the brainstorm, check every slide against this gate:
 | Professional visual choice | Layout matches the content shape and has a clear protagonist, scan path, encoding, and restraint move |
 | Source honesty | Unsourced specifics are framed as proposal/ASSUMPTION, not proof |
 | Pushback coverage | The stated pushback or objection is answered explicitly |
-| Layout fidelity | The HTML visibly implements each internal `DESIGN INTENT` line at full structural fidelity |
+| Wireframe completeness | The HTML shows a labeled gray `.wf-box` placeholder for each visual the internal DESIGN INTENT line names, plus action title, layout-signature label, and key bullets |
 | Anti-boring design | Every content slide has a named visual job, adjacent slides avoid the same layout signature, and at least one slide shows an artifact, workflow, checklist, map, specimen, scorecard, mission board, or decision surface |
 | Horizontal logic | Read only the slide titles, in order: they retell the argument from context to recommendation, with no duplicate claims and no gaps; for decision decks the ask appears in the first two titles |
 | Grouping discipline | Every group of zones/steps/bullets/cards names one cutting dimension, holds 2–5 non-overlapping items of one rhetorical type, and uses an explicit "Out of scope"/"Other" instead of silently dropping content |
@@ -209,8 +209,8 @@ no third:
 
 A blank or "trust me" `EVIDENCE` is a failed slide. The format is fixed so a
 reviewer (or a script) can grep for `ARGUMENT -` and audit every slide
-mechanically. The canonical skeleton ships placeholder `ARGUMENT` comments;
-an unreplaced placeholder counts as blank `EVIDENCE`.
+mechanically. Add one `ARGUMENT` comment to every slide panel; the skeleton does not
+pre-seed them.
 
 ## Rigor Audit
 
@@ -268,11 +268,12 @@ presenting unless the user explicitly accepts the risk.
 ## Image Placeholders
 
 When the user asks for photos or image placeholders, include a visible
-`.image-placeholder` block in the relevant slide panel. Label:
+`.wf-box` block in the relevant slide panel. Label:
 
-- what the image should show
+- what the image should show (subject)
+- intended crop / role: hero, supporting evidence, screenshot, product
+  moment, etc.
 - asset status: `Provided`, `Placeholder`, or `Need source`
-- intended role: hero, supporting evidence, screenshot, product moment, etc.
 
 Do not add image placeholders when the user says no.
 

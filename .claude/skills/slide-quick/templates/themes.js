@@ -22,7 +22,7 @@ const THEMES = {
     border: "D9DCE1", nodeBorder: "C2C7CF",
     ink: "16181D", muted: "5A6068", dim: "9AA0A8",
     accent: "5E6AD2", accentText: "4F5BD5",
-    kickerFill: "EFF0F3", footerColor: "9AA0A8",
+    kickerFill: "EFF0F3", footerColor: "7A828C",
     glows: false, assetDir: ASSET_DIR, fonts: FONTS,
   },
 };

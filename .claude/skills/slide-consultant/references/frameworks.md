@@ -29,7 +29,8 @@ the whole argument (the "skim test").
 | Next steps | Approve the pilot now; results land in 6 weeks |
 
 Title repair recipe: ask "what does this slide prove?" — write that
-sentence; cut to ≤12 words; put the key number in if the slide shows data.
+sentence; cut to ≤12 words; put the key number in IF the slide already
+shows that number; never coin a new figure to make the title punchier.
 
 ## One message per slide
 
@@ -45,8 +46,10 @@ cut it or merge its one useful element into a neighbor.
 
 Each group of bullets/cards/zones must:
 - Name one cutting dimension ("4 risks, cut by failure mode").
-- Hold 2–5 items, mutually exclusive, collectively exhaustive
-  (use an explicit "Other"/"Out of scope" instead of silently dropping).
+- Prefer 2–5 items, mutually exclusive, collectively exhaustive
+  (use an explicit "Other"/"Out of scope" instead of silently dropping);
+  if a complete cut genuinely needs more, keep them all and group rather
+  than dropping — never trim a list to hit the count.
 - Mix only one rhetorical type — all causes, all actions, or all findings,
   never a blend.
 
@@ -57,3 +60,18 @@ Quick test: if two items could swap half their content, the cut is wrong.
 Every numeral, quote, and named source traces to user-supplied material or
 carries a visible "Illustrative" label. Strengthening copy by inventing
 specifics is the one unforgivable edit.
+
+## Chart & number integrity
+
+The number in a slide title must match the visual it labels (mismatch = P0).
+Flag (do not fix) truncated/non-zero-baseline tricks, mismatched dual axes,
+and cherry-picked time ranges — name the distortion and leave the fix to the
+author. Percentages need a visible or inferable denominator. Never change a
+data value to fit a title — reframe the title instead.
+
+## Comparison integrity
+
+Both sides of a comparison must use the same unit, timeframe, and scope.
+Each side must show the same dimension count. The baseline must be real, not
+a strawman. Use one comparison axis per slide — mixing two comparison
+dimensions on a single slide splits the message.

@@ -552,7 +552,8 @@ HTML brainstorm rules:
 - Always include a real title slide as Slide 01: title/proposal name,
   one-line ask/subtitle, and optional scope. Do not use a bottom metadata row.
 - If the user requested photos or placeholders, include image placeholders in
-  the relevant slide panels using the skeleton's `.image-placeholder` pattern.
+  the relevant slide panels using `.wf-box` blocks labeled with subject,
+  intended crop, and asset status (Provided/Placeholder/Need source).
 - No JS, no CDN, no Mermaid, no screenshots in the wireframe. Diagram
   structure is conveyed by labeled gray boxes plus the DESIGN INTENT
   comment — the build skill implements the real visual.

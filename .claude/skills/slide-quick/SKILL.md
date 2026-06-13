@@ -15,9 +15,11 @@ reviewer subagents (except the single consultant pass).
 
 Route OUT to the full pipeline when: executive/investor/board audience,
 persuasion or high-stakes decision deck, Micron branding, HTML delivery,
-or the user asks for rigor.
+or the user asks for rigor. To route out, do not build here — invoke
+slide-brainstorm (Skill tool) and tell the user you are switching to the
+full pipeline because <reason>.
 
-## Flow (2 user replies total)
+## Flow (Targets 2 user replies (intake + wireframe approval); wireframe edits add more)
 
 ```
 - [ ] 1. Intake — ONE batched question (or zero with prefs/skip)
@@ -44,9 +46,13 @@ Read the topic/content first. Derive recommendations, then ask ONE
 
 **Skip rules (baoyu policy):** if the user said "just make it", "use
 defaults", or equivalent — skip intake, state the assumed
-audience/count/theme/delivery in the next message, and proceed. If
-`PREFS.md` exists in this skill directory, its values replace the
-matching questions (ask only what it doesn't cover).
+audience/count/theme/delivery in the next message, and proceed.
+`skip_intake:true` means proceed with no questions — use audience_default
+(or infer from topic), the slide-count heuristic, and theme/delivery from
+PREFS (falling back to midnight/pptx). State all assumed values in the
+next message before proceeding. If `PREFS.md` exists in this skill
+directory, its values replace the matching questions (ask only what it
+doesn't cover).
 
 `PREFS.md` schema (user-created, all keys optional):
 
@@ -69,7 +75,13 @@ Do not show this to the user yet.
 ### 3 · Consultant pass
 
 Invoke `slide-consultant` (Skill tool) in **improve** mode on the outline.
-Apply its rewrites. This is the only quality gate — do not add others.
+Pass the outline table inline as text (it is not yet saved to a file);
+apply the rewritten table it returns. This is the only quality gate — do
+not add others.
+
+Per-slide checks (details in `../slide-consultant/references/frameworks.md`):
+Pyramid, SCQA, Action titles + skim test, One message, So-what, MECE,
+Evidence honesty, Chart & number integrity, Comparison integrity.
 
 ### 4 · Wireframe
 
@@ -88,7 +100,7 @@ re-run the flow.
 Write a per-deck build script modeled on `templates/example-build.js`,
 using `templates/builder.js` + `templates/themes.js`. Save it next to the
 output (e.g. `decks/<topic>/build.js`); output `decks/<topic>/<topic>.pptx`.
-Run from the repo root so `pptxgenjs`/`sharp` resolve.
+Run from the repo root so `pptxgenjs` resolves.
 
 Rules:
 - Slide 1 is a title slide. Diagrams are real shapes. Code ≤10 lines,
@@ -102,13 +114,13 @@ Rules:
 ### QA-lite (main agent, no subagent)
 
 1. Render: soffice → pdf → `pdftoppm -jpeg -r 130`.
-2. Inspect the montage yourself against this checklist: overlap, clipped
-   text, text touching panel edges, low contrast, misaligned columns,
-   arrows missing targets.
+2. Inspect the rendered per-page JPEGs yourself against this checklist:
+   overlap, clipped text, text touching panel edges, low contrast,
+   misaligned columns, arrows missing targets.
 3. Fix and re-render once if needed. Stop after one fix cycle unless
    something is still broken.
 4. `--strict` (user asked for extra checking): spawn one visual-QA
-   subagent with the montage, fix P0/P1 only.
+   subagent with the rendered per-page JPEGs, fix P0/P1 only.
 
 ### Deliver
 

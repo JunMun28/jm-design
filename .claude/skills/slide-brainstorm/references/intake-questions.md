@@ -331,8 +331,9 @@ Rules:
 - Do not invent real image content or claim an image exists.
 - If the user gives a path or URL, verify/read enough to know what it is before
   using it.
-- If they want a placeholder, render an `.image-placeholder` block in the
-  brainstorm HTML with a concise label and intended crop/role.
+- If they want a placeholder, render a `.wf-box` block in the brainstorm
+  HTML labeled with subject, intended crop/role, and asset status
+  (Provided/Placeholder/Need source).
 - If they say no, omit image placeholders and keep the slides text/artifact-led.
 - Photo/image choices are content assets, not final theme selection. Theme still
   happens later in `html-slides`.

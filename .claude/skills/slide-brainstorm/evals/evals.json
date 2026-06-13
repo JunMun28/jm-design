@@ -242,7 +242,7 @@
       "id": 6,
       "name": "photo-placeholders-render-in-html",
       "prompt": "Use slide-brainstorming for a 4-slide product launch deck. I want photo placeholders on the title slide and the customer story slide, no actual image files yet.",
-      "expected_output": "Skill records requested photo placeholders with slide/topic, what each should show, and Placeholder asset status. The brainstorm HTML renders visible .image-placeholder blocks in the relevant slide panels without inventing real images.",
+      "expected_output": "Skill records requested photo placeholders with slide/topic, what each should show, and Placeholder asset status. The brainstorm HTML renders visible .wf-box blocks (labeled with subject, intended crop, and asset status) in the relevant slide panels without inventing real images.",
       "files": [],
       "assertions": [
         {
@@ -251,7 +251,7 @@
         },
         {
           "name": "renders_image_placeholders",
-          "description": "Brainstorm HTML includes .image-placeholder blocks on the requested slide panels"
+          "description": "Brainstorm HTML includes .wf-box blocks (labeled with subject, intended crop, and asset status) on the requested slide panels"
         },
         {
           "name": "does_not_invent_real_images",

@@ -50,7 +50,7 @@ function createBuilder(P, T) {
     });
     s.addShape(P.shapes.OVAL, {
       x: MX + 0.2, y: y + 0.155, w: 0.07, h: 0.07,
-      fill: { color: T.accent }, line: { type: "none" },
+      fill: { color: T.accent },
     });
     s.addText(text.toUpperCase(), {
       x: MX + 0.36, y, w: w - 0.5, h: 0.38, valign: "middle", align: "left",
@@ -102,9 +102,9 @@ function createBuilder(P, T) {
   }
 
   /* Monospace block. runs = rich-text array (use breakLine per line). */
-  function codeText(s, x, y, w, runs, size = 13) {
+  function codeText(s, x, y, w, runs, size = 13, h = 2.4) {
     s.addText(runs, {
-      x, y, w, fontFace: F.mono, fontSize: size, color: T.ink,
+      x, y, w, h, fontFace: F.mono, fontSize: size, color: T.ink,
       align: "left", valign: "top", lineSpacingMultiple: 1.32, margin: 0,
     });
   }
