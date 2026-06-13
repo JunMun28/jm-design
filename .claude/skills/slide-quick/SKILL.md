@@ -131,6 +131,11 @@ Rules:
   string, `"✓"`/`"—"`, or a **number 0–4** rendered as a `B.harvey` ball (the
   Big-Three "how good" ideogram). Keep the matrix honest — the recommended option
   need not win every row. Two bordered panels of three bullets each is the slop tell.
+- **Plans / roadmaps get a timeline, not a row of boxes.** For phases over time use
+  `B.timeline(s, y, items, {current})` — one horizontal axis, circular markers, a date
+  above + phase + one line below each (3–6 nodes). `current` accents the axis/markers
+  up to "you are here" to show progress; later nodes are hollow. Keep node copy to one
+  short line; let the axis carry the story.
 - **Concepts get real icons, never flat boxes or emoji.** The engine ships a
   vendored Tabler set (`assets/icons/`, MIT). Load once at the top of the build —
   `const I = await B.loadIcons(["bolt","shield","target"])` (tinted to the accent)

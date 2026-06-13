@@ -239,6 +239,48 @@ function createBuilder(P, T) {
     s.addShape(P.shapes.LINE, { x: MX, y: bottom, w: CW, h: 0, line: { color: T.border, width: 1 } });
   }
 
+  /* Horizontal milestone timeline / roadmap. A single connector axis with evenly
+     spaced circular markers — NOT a row of bordered cards. Each node: a date label
+     above, a phase title + one line below. opts.current (default last) accents the
+     axis + markers up to that index to show progress / "you are here"; later nodes
+     are hollow. items: [{date, phase, body}] (3–6). (SlideModel/Slideworks: one
+     axis, circular markers, short date+label beneath, restraint.) */
+  function timeline(s, y, items, opts = {}) {
+    const n = items.length;
+    if (n < 2) return;
+    // tile n equal columns so adjacent labels never overlap; dot at each centre
+    const colW = CW / n;
+    const cxOf = (i) => MX + (i + 0.5) * colW;
+    const x0 = cxOf(0), x1 = cxOf(n - 1);
+    const current = opts.current != null ? opts.current : n - 1;
+    const cur = cxOf(Math.max(0, Math.min(n - 1, current)));
+    s.addShape(P.shapes.LINE, { x: x0, y, w: Math.max(0, cur - x0), h: 0, line: { color: T.accent, width: 2.5 } });
+    if (cur < x1) s.addShape(P.shapes.LINE, { x: cur, y, w: x1 - cur, h: 0, line: { color: T.border, width: 2 } });
+    for (let i = 0; i < n; i++) {
+      const cx = cxOf(i);
+      const done = i <= current;
+      const d = 0.2;
+      s.addShape(P.shapes.OVAL, {
+        x: cx - d / 2, y: y - d / 2, w: d, h: d,
+        fill: { color: done ? T.accent : T.bg }, line: { color: done ? T.accent : T.nodeBorder, width: 2 },
+      });
+      const tw = colW - 0.4;
+      const tx = cx - tw / 2;
+      s.addText(items[i].date || "", {
+        x: tx, y: y - 0.62, w: tw, h: 0.34, align: "center", valign: "bottom",
+        fontFace: F.mono, fontSize: 12, color: i === current ? T.accentText : T.muted, charSpacing: 1, margin: 0,
+      });
+      s.addText(items[i].phase || "", {
+        x: tx, y: y + 0.28, w: tw, h: 0.45, align: "center", valign: "top",
+        fontFace: F.head, bold: true, fontSize: 17, color: T.ink, margin: 0,
+      });
+      if (items[i].body) s.addText(items[i].body, {
+        x: tx, y: y + 0.78, w: tw, h: 1.2, align: "center", valign: "top",
+        fontFace: F.body, fontSize: 14, color: T.muted, lineSpacingMultiple: 1.25, margin: 0,
+      });
+    }
+  }
+
   /* Chartjunk-free chart (Knaflic declutter). A REAL, editable PptxGenJS chart
      — not an image, not faked with shapes. Strips the noise that reads as AI
      slop: no chart title (the slide's action title carries the message), no
@@ -437,7 +479,7 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, harvey, compareTable, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, harvey, compareTable, timeline, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

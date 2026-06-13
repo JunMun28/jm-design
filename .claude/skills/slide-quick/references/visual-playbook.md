@@ -117,6 +117,11 @@ short strings, `✓`/`—`, or `B.harvey` balls (0–4, the McKinsey/BCG "how go
 ideogram). Keep it honest — the pick need not win every row. A row of bordered cards
 with bullets is the slop tell, never a comparison. (Zelazny; IBCS; Big-Three convention.)
 
+**Plans / roadmaps.** "Phases over time" → `B.timeline` (one horizontal axis, circular
+markers, date + phase + one line beneath; `current` accents progress to date). One axis
+beats a row of phase cards. Keep it to 3–6 nodes, one short line each. (SlideModel /
+Slideworks: single axis, circular markers, restraint, let visuals carry it.)
+
 ## Ready palettes (60-30-10; all text pairs pass WCAG AA)
 
 **Dark Pro** — dominant `0F1623` (bg) · secondary `1E2D40` (panels) · accent

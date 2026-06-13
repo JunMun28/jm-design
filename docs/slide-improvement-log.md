@@ -38,6 +38,24 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Timeline / roadmap exhibit in the native engine** — added
+  `B.timeline(s, y, items, {current})` to `builder.js`: one horizontal axis with
+  evenly tiled circular markers (date above · phase + one line below), the axis +
+  markers accented up to `current` to show progress and hollow after — NOT a row of
+  phase cards. Added example slide 09 (a 4-quarter rollout roadmap, current=Q2);
+  footers bumped to /9. Wired the rule into slide-quick `SKILL.md` + visual-playbook.
+  · **Why:** the engine had no timeline — the phased-plan exhibit in nearly every
+  strategy / project / product / pitch deck — so a roadmap slide had to fall back to
+  boxes. · **Evidence:** built midnight + light, rendered both via LibreOffice. First
+  render exposed a real bug — adjacent node labels OVERLAPPED ("…feedback loopAll of
+  engineering…") because centered `step`-wide boxes collided; fixed by tiling n equal
+  columns (dot at each centre, text = colW−0.4, no clamp) and re-rendered clean. Final:
+  clean axis, progress accent through Q2, hollow Q3–Q4, no overlap, AA both themes;
+  slides 01–08 unregressed, footers now "/ 09". Excellence cold-judge: PASS, premium
+  roadmap, zero slop. · **Source:** Slideworks (consultant roadmaps); Visme roadmap
+  examples; SlideModel horizontal-timeline (one axis, circular markers, short
+  date+label beneath, restraint, let visuals carry it).
+
 - 2026-06-13 · **Decision matrix + Harvey balls in the native engine** — added
   `B.harvey(s,x,y,d,level,color)` (a ring filled 0–4 quarters via a PptxGenJS PIE
   wedge — the McKinsey/BCG "how good" ideogram) and `B.compareTable(s,y,{options,

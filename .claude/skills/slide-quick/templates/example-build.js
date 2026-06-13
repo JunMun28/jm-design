@@ -28,7 +28,7 @@ const DECK = "slide-quick sample";
       { text: "works", options: { color: T.accentText } },
     ], { x: B.MX, y: 2.5, w: 11, h: 1.4, fontFace: T.fonts.head, fontSize: 54, bold: true, margin: 0 });
     B.closer(s, [{ text: "Seven slides exercising every helper.", options: {} }], 4.4);
-    B.footer(s, DECK, 1, 8);
+    B.footer(s, DECK, 1, 9);
   }
 
   /* 02 — decision matrix: options across, criteria down, Harvey balls, one
@@ -53,7 +53,7 @@ const DECK = "slide-quick sample";
       ],
     });
     B.closer(s, [{ text: "Sample assessment. ● ILLUSTRATIVE — fuller ball = stronger.", options: {} }], 6.4);
-    B.footer(s, DECK, 2, 8);
+    B.footer(s, DECK, 2, 9);
   }
 
   /* 03 — diagram: nodes, arrows, diamond, dashed box, feedback line */
@@ -76,7 +76,7 @@ const DECK = "slide-quick sample";
     s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
     s.addText("Done", { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 12, color: T.accentText, margin: 0 });
     B.arrow(s, xs[0] + nW / 2, diaY + 0.4, ocx - 0.7 - (xs[0] + nW / 2), 0, { begin: "triangle", end: "none" });
-    B.footer(s, DECK, 3, 8);
+    B.footer(s, DECK, 3, 9);
   }
 
   /* 04 — code: panel + codeText with comment runs */
@@ -93,7 +93,7 @@ const DECK = "slide-quick sample";
       { text: "    if done: break", options: { color: T.ink } },
     ], 14);
     B.closer(s, [{ text: "Sample content. ● ILLUSTRATIVE", options: {} }], 5.4);
-    B.footer(s, DECK, 4, 8);
+    B.footer(s, DECK, 4, 9);
   }
 
   /* 05 — exhibit: KPI band, hairline dividers, NO card chrome (anti-slop) */
@@ -111,7 +111,7 @@ const DECK = "slide-quick sample";
       { value: "2", label: "User replies needed", delta: "from ~12 before", deltaGood: true },
     ], { size: 60 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — every number traces to source or is labeled.", options: {} }], 5.7);
-    B.footer(s, DECK, 5, 8);
+    B.footer(s, DECK, 5, 9);
   }
 
   /* 06 — chart: a REAL editable column chart, chartjunk stripped, one bar accented */
@@ -127,7 +127,7 @@ const DECK = "slide-quick sample";
       { name: "Weekly active teams", labels: ["Q1", "Q2", "Q3", "Q4"], values: [120, 180, 410, 460] },
     ], { y: 2.6, h: 3.5, highlight: 2 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — one accent bar, no gridlines, labels on the data.", options: {} }], 6.35);
-    B.footer(s, DECK, 6, 8);
+    B.footer(s, DECK, 6, 9);
   }
 
   /* 07 — pillars: real (tinted) Tabler icons + label + line, NO bordered cards */
@@ -144,7 +144,7 @@ const DECK = "slide-quick sample";
       { icon: I.shield, label: "One quality pass", body: "A single consultant review, then the deck ships." },
     ]);
     B.closer(s, [{ text: "Real icons, tinted to the accent — not boxes, not emoji.", options: {} }], 6.35);
-    B.footer(s, DECK, 7, 8);
+    B.footer(s, DECK, 7, 9);
   }
 
   /* 08 — split: narrative LEFT, chart RIGHT (reading gravity, move #8) */
@@ -165,7 +165,25 @@ const DECK = "slide-quick sample";
       { name: "Component reuse", labels: ["Before", "After"], values: [22, 68] },
     ], { x: zone.x, y: zone.y, w: zone.w, h: zone.h, highlight: 1, valFmt: '0"%"' });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE", options: {} }], 6.45);
-    B.footer(s, DECK, 8, 8);
+    B.footer(s, DECK, 8, 9);
+  }
+
+  /* 09 — timeline: milestone roadmap, accent shows progress (not a card row) */
+  {
+    const s = B.newSlide();
+    B.kicker(s, "08 · Roadmap");
+    B.title(s, [
+      { text: "Four quarters from pilot to ", options: {} },
+      { text: "company-wide", options: { color: T.accentText } },
+    ]);
+    B.timeline(s, 3.7, [
+      { date: "Q1", phase: "Pilot", body: "One team, tight feedback loop." },
+      { date: "Q2", phase: "Rollout", body: "All of engineering onboarded." },
+      { date: "Q3", phase: "Scale", body: "Company-wide, self-serve." },
+      { date: "Q4", phase: "Optimize", body: "Measure, tune, expand." },
+    ], { current: 1 });
+    B.closer(s, [{ text: "Sample plan. ● ILLUSTRATIVE — accent marks progress to date.", options: {} }], 6.4);
+    B.footer(s, DECK, 9, 9);
   }
 
   const f = await P.writeFile({ fileName: out });
