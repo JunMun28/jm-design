@@ -38,6 +38,24 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Split (visual-led two-column) layout in the native engine** — added
+  `B.split(s, opts)` to `builder.js`: lays a narrative LEFT column (kicker + title +
+  body) and RETURNS the visual-zone rect {x,y,w,h} for the RIGHT, so a chart/icon/
+  stat drops straight in (`side:'left'` flips). Made `kicker` and `title` accept an
+  optional `x`/`w` column override (backward-compatible defaults MX/CW) so they can
+  live in a column. Added example slide 08 (narrative-left + before/after chart-
+  right; footers bumped to /8) and wired the rule into slide-quick `SKILL.md` +
+  visual-playbook move #8. · **Why:** every native slide was full-width stacked
+  (title-on-top, visual-below); the engine couldn't do the analyst-standard "claim
+  left, exhibit right," so composition never varied — a flatness the bar penalises.
+  · **Evidence:** built midnight + light, rendered both via LibreOffice. Slide 08
+  reads as a real two-column exhibit — claim left, accented before/after bars right,
+  reading gravity respected, AA in both themes; the comparison slide (uses the now-
+  parametrised kicker/title) and slides 01–07 unregressed, footers now "/ 08".
+  Excellence cold-judge: PASS, clear composition gain, zero slop. · **Source:** Visme
+  / Pitchworx / Piktochart on visual hierarchy + reading gravity (Gutenberg diagram,
+  Z/F-pattern: narrative left, focal exhibit right; pick one focal element).
+
 - 2026-06-13 · **Hand-drawn (sketchnote) html-slides theme — completes the style
   range** — added `themes/hand-drawn/` (tokens.css + example.html + design.md +
   screenshots) and registered it in `themes/themes.json`. A DISTINCT sketchnote

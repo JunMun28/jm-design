@@ -132,6 +132,13 @@ Rules:
   chrome-less; a row of equal bordered cards is the slop tell. Add more icons by
   dropping the outline SVG into `assets/icons/`. (The build script must be `async`
   to await `loadIcons` — see `templates/example-build.js`.)
+- **Vary the composition — not every slide is full-width stacked.** For a slide
+  whose point is carried by one exhibit, use `B.split(s, {kicker, title, body,
+  side, ratioText})` — it lays the narrative in a LEFT column and returns the
+  visual-zone rect for the RIGHT (Western reading gravity: claim first, proof
+  where the eye settles). Drop a chart/icon/stat into the zone, e.g.
+  `const z = B.split(s, {...}); B.chart(s, 'col', data, {x:z.x, y:z.y, w:z.w, h:z.h})`.
+  Set `side:'left'` to flip the visual to the left for variety across the deck.
 - **Playful theme is a DISTINCT mode, not a recolour.** When the theme is
   `playful`, lead with the block primitives — `B.solidKicker` (filled pill, white
   text), `B.block` (solid saturated rounded block), and `B.blockRow` (bold

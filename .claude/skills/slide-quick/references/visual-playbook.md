@@ -48,8 +48,12 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
    grid, corner accent. Zero latency, no licence. (Already have glow PNGs.)
 7. **Open illustrations for hero/section slides only** (1 per ~8 slides) — unDraw,
    Humaaans, Open Doodles/Peeps (CC0). Too many = clip-art.
-8. **Image-led layouts.** Full-bleed or half-bleed image/illustration (left 50%),
-   text on the right. Asymmetry + focal hierarchy beats side-by-side boxes.
+8. **Image/visual-led split layouts.** A two-column composition beats a centered
+   title with a visual stacked under it. Western reading gravity (Gutenberg /
+   Z-pattern): narrative LEFT, the focal exhibit RIGHT — the eye reads the claim,
+   then settles on the proof. Native engine: `B.split` places the text column and
+   returns the visual-zone rect for a chart/icon/stat (`side:'left'` flips it).
+   Asymmetry + one focal element beats side-by-side boxes.
 9. **AI image generation: hero art only**, max 1/deck, no text in the image
    (misspells), slow + inconsistent. Use SVG/code for anything with labels.
 10. **Copy = concrete numbers + contrast.** Every number gets a unit and a

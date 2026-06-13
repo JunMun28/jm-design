@@ -44,27 +44,31 @@ function createBuilder(P, T) {
     });
   }
 
-  /* Pill label above the title, with a small accent dot. */
-  function kicker(s, text, y = 0.62) {
+  /* Pill label above the title, with a small accent dot.
+     opts.x overrides the left edge (default MX) — used by split() columns. */
+  function kicker(s, text, y = 0.62, opts = {}) {
+    const bx = opts.x != null ? opts.x : MX;
     const w = Math.min(8.6, 0.8 + text.length * 0.122);
     s.addShape(P.shapes.ROUNDED_RECTANGLE, {
-      x: MX, y, w, h: 0.38, rectRadius: 0.19,
+      x: bx, y, w, h: 0.38, rectRadius: 0.19,
       fill: { color: T.kickerFill }, line: { color: T.border, width: 1 },
     });
     s.addShape(P.shapes.OVAL, {
-      x: MX + 0.2, y: y + 0.155, w: 0.07, h: 0.07,
+      x: bx + 0.2, y: y + 0.155, w: 0.07, h: 0.07,
       fill: { color: T.accent },
     });
     s.addText(text.toUpperCase(), {
-      x: MX + 0.36, y, w: w - 0.5, h: 0.38, valign: "middle", align: "left",
+      x: bx + 0.36, y, w: w - 0.5, h: 0.38, valign: "middle", align: "left",
       fontFace: F.mono, fontSize: 10, color: T.muted, charSpacing: 1.5, margin: 0,
     });
   }
 
-  /* Action title. runs = pptxgenjs rich-text array. */
-  function title(s, runs, y = 1.15, size = 34) {
+  /* Action title. runs = pptxgenjs rich-text array.
+     opts.x / opts.w override the column (default MX / CW) — used by split(). */
+  function title(s, runs, y = 1.15, size = 34, opts = {}) {
     s.addText(runs, {
-      x: MX, y, w: CW, h: 1.0, valign: "top", align: "left",
+      x: opts.x != null ? opts.x : MX, y, w: opts.w != null ? opts.w : CW,
+      h: opts.h != null ? opts.h : 1.0, valign: "top", align: "left",
       fontFace: F.head, fontSize: size, bold: true, color: T.ink,
       lineSpacingMultiple: 1.0, margin: 0,
     });
@@ -275,6 +279,35 @@ function createBuilder(P, T) {
     }
   }
 
+  /* Visual-led split layout (visual-playbook move #8). Western reading gravity
+     puts the narrative LEFT and the focal exhibit RIGHT (Gutenberg / Z-pattern),
+     so the eye lands on the claim, then the proof — sharper than a chart floating
+     under a centered title. Places the text column (kicker + title + body) and
+     RETURNS the visual-zone rect {x,y,w,h}; drop an exhibit into it, e.g.
+     B.chart(s,'col',data,zone). opts: side ('right' default = visual right) ·
+     ratioText (0.5) · gap (0.7) · kicker · title (runs) · titleSize (30) ·
+     body (runs|string) · bodyY (3.1) · visY (1.9) · visH (4.0). */
+  function split(s, opts = {}) {
+    const side = opts.side || "right";
+    const gap = opts.gap || 0.7;
+    const rt = opts.ratioText || 0.5;
+    const tw = (CW - gap) * rt;
+    const vw = CW - gap - tw;
+    const tx = side === "right" ? MX : MX + vw + gap;
+    const vx = side === "right" ? MX + tw + gap : MX;
+    if (opts.kicker) kicker(s, opts.kicker, 0.62, { x: tx });
+    if (opts.title) title(s, opts.title, 1.15, opts.titleSize || 30, { x: tx, w: tw, h: 2.0 });
+    if (opts.body) {
+      const runs = typeof opts.body === "string" ? [{ text: opts.body, options: {} }] : opts.body;
+      s.addText(runs, {
+        x: tx, y: opts.bodyY != null ? opts.bodyY : 3.1, w: tw, h: 2.6,
+        valign: "top", align: "left", fontFace: F.body, fontSize: 18,
+        color: T.ink, lineSpacingMultiple: 1.34, margin: 0,
+      });
+    }
+    return { x: vx, y: opts.visY != null ? opts.visY : 1.9, w: vw, h: opts.visH || 4.0 };
+  }
+
   /* ---- Playful mode primitives (theme.style = playful) ----
      These render the bold-color-block look that makes "playful" a DISTINCT mode
      rather than a recolour. Premium themes never call them; safe to add. */
@@ -336,7 +369,7 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow, block, solidKicker, blockRow };
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

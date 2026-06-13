@@ -28,7 +28,7 @@ const DECK = "slide-quick sample";
       { text: "works", options: { color: T.accentText } },
     ], { x: B.MX, y: 2.5, w: 11, h: 1.4, fontFace: T.fonts.head, fontSize: 54, bold: true, margin: 0 });
     B.closer(s, [{ text: "Seven slides exercising every helper.", options: {} }], 4.4);
-    B.footer(s, DECK, 1, 7);
+    B.footer(s, DECK, 1, 8);
   }
 
   /* 02 — comparison: two panels + bullets + accent border */
@@ -47,7 +47,7 @@ const DECK = "slide-quick sample";
         { text: "Third point.", options: {} },
       ], { x: c.x + 0.4, y: py + 0.85, w: pw - 0.8, h: ph - 1.1, fontFace: T.fonts.body, fontSize: 18, color: T.ink, valign: "top", lineSpacingMultiple: 1.3, margin: 0, bullet: { code: "2022", indent: 14 } });
     });
-    B.footer(s, DECK, 2, 7);
+    B.footer(s, DECK, 2, 8);
   }
 
   /* 03 — diagram: nodes, arrows, diamond, dashed box, feedback line */
@@ -70,7 +70,7 @@ const DECK = "slide-quick sample";
     s.addShape(P.shapes.ROUNDED_RECTANGLE, { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, rectRadius: 0.07, line: { color: T.accentText, width: 1.25, dashType: "dash" } });
     s.addText("Done", { x: ocx - 1.1, y: diaY + 0.95, w: 2.2, h: 0.42, align: "center", valign: "middle", fontFace: T.fonts.head, bold: true, fontSize: 12, color: T.accentText, margin: 0 });
     B.arrow(s, xs[0] + nW / 2, diaY + 0.4, ocx - 0.7 - (xs[0] + nW / 2), 0, { begin: "triangle", end: "none" });
-    B.footer(s, DECK, 3, 7);
+    B.footer(s, DECK, 3, 8);
   }
 
   /* 04 — code: panel + codeText with comment runs */
@@ -87,7 +87,7 @@ const DECK = "slide-quick sample";
       { text: "    if done: break", options: { color: T.ink } },
     ], 14);
     B.closer(s, [{ text: "Sample content. ● ILLUSTRATIVE", options: {} }], 5.4);
-    B.footer(s, DECK, 4, 7);
+    B.footer(s, DECK, 4, 8);
   }
 
   /* 05 — exhibit: KPI band, hairline dividers, NO card chrome (anti-slop) */
@@ -105,7 +105,7 @@ const DECK = "slide-quick sample";
       { value: "2", label: "User replies needed", delta: "from ~12 before", deltaGood: true },
     ], { size: 60 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — every number traces to source or is labeled.", options: {} }], 5.7);
-    B.footer(s, DECK, 5, 7);
+    B.footer(s, DECK, 5, 8);
   }
 
   /* 06 — chart: a REAL editable column chart, chartjunk stripped, one bar accented */
@@ -121,7 +121,7 @@ const DECK = "slide-quick sample";
       { name: "Weekly active teams", labels: ["Q1", "Q2", "Q3", "Q4"], values: [120, 180, 410, 460] },
     ], { y: 2.6, h: 3.5, highlight: 2 });
     B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE — one accent bar, no gridlines, labels on the data.", options: {} }], 6.35);
-    B.footer(s, DECK, 6, 7);
+    B.footer(s, DECK, 6, 8);
   }
 
   /* 07 — pillars: real (tinted) Tabler icons + label + line, NO bordered cards */
@@ -138,7 +138,28 @@ const DECK = "slide-quick sample";
       { icon: I.shield, label: "One quality pass", body: "A single consultant review, then the deck ships." },
     ]);
     B.closer(s, [{ text: "Real icons, tinted to the accent — not boxes, not emoji.", options: {} }], 6.35);
-    B.footer(s, DECK, 7, 7);
+    B.footer(s, DECK, 7, 8);
+  }
+
+  /* 08 — split: narrative LEFT, chart RIGHT (reading gravity, move #8) */
+  {
+    const s = B.newSlide();
+    const zone = B.split(s, {
+      kicker: "07 · Split layout",
+      title: [
+        { text: "Put the claim left, the ", options: {} },
+        { text: "proof right", options: { color: T.accentText } },
+      ],
+      body: [
+        { text: "Western eyes read top-left first, then settle right. A narrative column beside the exhibit lands the point, then backs it — sharper than a chart adrift under a centered title.", options: {} },
+      ],
+      side: "right", ratioText: 0.46, visY: 2.0, visH: 3.9,
+    });
+    B.chart(s, "col", [
+      { name: "Component reuse", labels: ["Before", "After"], values: [22, 68] },
+    ], { x: zone.x, y: zone.y, w: zone.w, h: zone.h, highlight: 1, valFmt: '0"%"' });
+    B.closer(s, [{ text: "Sample figures. ● ILLUSTRATIVE", options: {} }], 6.45);
+    B.footer(s, DECK, 8, 8);
   }
 
   const f = await P.writeFile({ fileName: out });
