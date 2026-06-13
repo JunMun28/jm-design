@@ -26,7 +26,10 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
 
 1. **One action title + one visual per slide.** Title is a full-sentence
    assertion (≤15 words, 2 lines), body proves it with ONE chart/diagram/icon
-   row/image. Kill bullet lists. (Minto Pyramid Principle.)
+   row/image/big-number exhibit. Kill bullet lists. (Minto Pyramid Principle.)
+   For metrics, the native engine has `B.stat` (hero value + label + colored
+   delta) and `B.statBand` (2–4 KPIs, hairline dividers, NO card chrome — a row
+   of bordered cards is slop). The number is the protagonist.
 2. **Real icons, not boxes or emoji.** Use an open icon set; render SVG→PNG and
    `addImage`. See the pipeline below.
 3. **Generous whitespace — leave ~20–25% of the slide empty.** Cut 30–40% of

@@ -12,6 +12,7 @@ const THEMES = {
     border: "2A2C33", nodeBorder: "3A3D47",
     ink: "F7F8F8", muted: "8A8F98", dim: "5A5F68",
     accent: "5E6AD2", accentText: "828FFF",
+    good: "4CB782", bad: "E5484D",   // delta colors — AA on near-black bg
     kickerFill: "121317", footerColor: "6A6F78",
     glows: true, assetDir: ASSET_DIR, fonts: FONTS,
   },
@@ -22,6 +23,7 @@ const THEMES = {
     border: "D9DCE1", nodeBorder: "C2C7CF",
     ink: "16181D", muted: "5A6068", dim: "9AA0A8",
     accent: "5E6AD2", accentText: "4F5BD5",
+    good: "0B7A3E", bad: "C0292E",   // delta colors — AA on white bg
     kickerFill: "EFF0F3", footerColor: "7A828C",
     glows: false, assetDir: ASSET_DIR, fonts: FONTS,
   },

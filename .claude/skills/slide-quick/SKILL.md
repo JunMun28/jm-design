@@ -111,6 +111,11 @@ Rules:
   panels + bullets; keep ~20–25% whitespace; honor the type floors (title ≥32pt,
   body ≥20pt, caption ≥14pt); use a 3-colour 60-30-10 palette with AA contrast;
   write copy with concrete numbers and a clear "so what".
+- **Evidence slides lead with the number, not bullets.** For any data/metric
+  slide use the big-number exhibit helpers — `B.stat(...)` (hero value + label +
+  colored delta) or `B.statBand(...)` (2–4 KPIs, hairline dividers, NO card
+  chrome — a row of bordered cards is the AI-slop tell). The number is the
+  protagonist; a bulleted list of figures is a fail.
 - Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
   the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).

@@ -38,6 +38,22 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Big-number exhibit vocabulary in the native engine** — added
+  `B.stat` (hero value + small-caps label + colored delta) and `B.statBand`
+  (2–4 KPIs with hairline dividers and NO card chrome) to `builder.js`, plus
+  AA-checked `good`/`bad` delta colors to both themes (`themes.js`); wired an
+  evidence slide into `example-build.js` and a "lead with the number, not
+  bullets" rule into slide-quick `SKILL.md` + `references/visual-playbook.md`.
+  · **Why:** the engine could only make "box + bullets" data slides — the exact
+  AI-slop tell THE BAR rejects; the big-number callout is the signature
+  consulting exhibit and was previously impossible. · **Evidence:** built
+  midnight + light, rendered both via LibreOffice. Slide 05 reads as a real exec
+  KPI band — hero numbers as protagonist, chrome-less dividers, ~25% whitespace,
+  AA contrast in both themes, ILLUSTRATIVE tag; earlier slides unregressed.
+  Excellence cold-judge: PASS, zero slop tells. · **Source:** SlideModel "How to
+  Present Key Metrics"; FanRuan KPI card design (4-layer callout: label · value
+  · delta · context; ≤3–4 callouts per slide).
+
 
 ## Failed experiments
 <!-- Scrapped changes that did NOT clear the bar (reverted, not committed). Record so

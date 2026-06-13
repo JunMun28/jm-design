@@ -109,7 +109,62 @@ function createBuilder(P, T) {
     });
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText };
+  /* Big-number exhibit (Zelazny / Knaflic): the four layers of a metric
+     callout — small label, hero value, colored delta. Use this on evidence
+     slides INSTEAD of a box of bullets; the number, not a bullet list, is the
+     point. opts: value (req), label, delta, deltaGood (default true),
+     size (66), align ("left"), valueColor (T.ink). */
+  function stat(s, x, y, w, opts = {}) {
+    const align = opts.align || "left";
+    const size = opts.size || 66;
+    let cy = y;
+    if (opts.label) {
+      s.addText(opts.label.toUpperCase(), {
+        x, y: cy, w, h: 0.34, align, valign: "bottom",
+        fontFace: F.mono, fontSize: 12, color: T.muted, charSpacing: 1.5, margin: 0,
+      });
+      cy += 0.4;
+    }
+    s.addText(String(opts.value), {
+      x, y: cy, w, h: size / 50, align, valign: "top",
+      fontFace: F.head, fontSize: size, bold: true,
+      color: opts.valueColor || T.ink, lineSpacingMultiple: 0.95, margin: 0,
+    });
+    cy += size / 50 + 0.04;
+    if (opts.delta) {
+      s.addText(opts.delta, {
+        x, y: cy, w, h: 0.36, align, valign: "top",
+        fontFace: F.body, fontSize: 15, bold: true,
+        color: opts.deltaGood === false ? T.bad : T.good, margin: 0,
+      });
+    }
+  }
+
+  /* A row of 2–4 KPIs across the content width, separated by hairline rules
+     and carrying NO card chrome. A row of equal bordered cards is the classic
+     AI-slop tell; chrome-less numbers with thin dividers read as a real
+     dashboard/exec exhibit. stats: [{ value, label, delta, deltaGood }]. */
+  function statBand(s, y, stats, opts = {}) {
+    const n = Math.min(stats.length, 4);
+    const colW = CW / n;
+    const size = opts.size || (n >= 3 ? 46 : 56);
+    for (let i = 0; i < n; i++) {
+      const cx = MX + i * colW;
+      if (i > 0) {
+        s.addShape(P.shapes.LINE, {
+          x: cx, y: y + 0.1, w: 0, h: size / 50 + 0.7,
+          line: { color: T.border, width: 1 },
+        });
+      }
+      stat(s, cx + (i > 0 ? 0.34 : 0), y, colW - 0.4, {
+        value: stats[i].value, label: stats[i].label,
+        delta: stats[i].delta, deltaGood: stats[i].deltaGood,
+        size, align: "left",
+      });
+    }
+  }
+
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };
