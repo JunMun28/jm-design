@@ -38,6 +38,37 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Content-shape → exhibit routing guide (the engine's brain)** — in
+  slide-quick `SKILL.md`, replaced the stale, MISDIRECTING outline mapping
+  ("comparison → two panels" — the exact slop deleted in the decision-matrix
+  iteration; it also omitted every exhibit built since) with a full content-shape →
+  exhibit DECISION TABLE: compare/trade-offs → `B.compareTable`(+`harvey`); trend/
+  ranking/before-after → `B.chart`; phased plan → `B.timeline`; positioning →
+  `B.quadrant`; KPIs → `B.statBand`/`stat`; pillars → `B.iconRow`/`blockRow`; claim+
+  exhibit → `B.split`; sequence → node diagram; code → `codeText`. Added a "one
+  exhibit per slide, never a box of bullets, aim for variety" rule and aligned the
+  wireframe step to label the chosen exhibit. · **Why:** the engine became a rich
+  toolkit over 9 iterations but the skill's SELECTION guidance still pointed at the
+  old slop and ignored the new vocabulary — so decks wouldn't actually use it. This
+  is the multiplier (effortless: the skill routes content to the right exhibit with
+  minimal user input). · **Evidence:** ran the `slide-quick-test` workflow (8 agents,
+  full fast-path generate + content/visual review) → **status PASS**; the generated
+  deck reviewed clean and NONE of the workflow's 11 findings touched the new routing
+  table (they are pre-existing issues — see Failed/Next below). SKILL-only change, no
+  engine code touched. · **Source:** Zelazny (exhibit form follows the message);
+  Minto (one message per slide); Knaflic (lead with the visual) — all already applied
+  across prior iterations, here consolidated into a selection table.
+  · **Workflow-surfaced NEXT-UP (pre-existing, not this change):** P0 — Step 5 build
+  paths break from a clean checkout: example-build.js `require("./builder")` resolves
+  to the SCRIPT dir so a `decks/<topic>/build.js` throws (fix: absolute require or
+  copy templates); the PDF cmd `../pptx/...` is wrong from repo root (use
+  `.claude/skills/pptx/scripts/office/soffice.py`); example-build.js needs
+  `mkdirSync(dirname(out))` before writeFile (nested out path ENOENTs). P1 — brainstorm
+  `presentation-design-decisioning.md` + `strong-slide-design-checklist.md` still say
+  "render the real artifact", contradicting the wireframe policy; consultant inline
+  improve-mode return contract is undefined (full table vs change-log); Step 3 doesn't
+  require mode=improve. These are the strongest candidates for upcoming iterations.
+
 - 2026-06-13 · **2×2 quadrant / prioritization matrix in the native engine** — added
   `B.quadrant(s, px, py, S, {xLabel, yLabel, quadrants, washes, items})` to
   `builder.js`: hairline cross axes, faint corner labels, bubbles plotted by {x,y}

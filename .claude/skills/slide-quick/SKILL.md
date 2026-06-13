@@ -68,10 +68,26 @@ skip_intake: true | false
 ### 2 · Outline
 
 Draft a table — one row per slide:
-`# | action title (full-sentence claim, ≤12 words) | layout | key points`.
-Choose layouts from content shape (comparison → two panels; sequence/
-mechanism → node diagram; evidence → table/big number; code → code panel).
-Do not show this to the user yet.
+`# | action title (full-sentence claim, ≤12 words) | exhibit | key points`.
+
+**Pick the exhibit from the content shape** (this is where the engine earns its
+keep — route every slide to ONE real exhibit, never a titled box of bullets):
+
+| If the slide's point is… | Exhibit (helper) |
+|---|---|
+| compare options / "which is best" / trade-offs | decision matrix — `B.compareTable` (+ `B.harvey` for "how good") |
+| a trend over time, a ranking, or before→after | chart — `B.chart` (`col` change · `bar` ranking · `line` trend) |
+| a phased plan / roadmap / "you are here" | timeline — `B.timeline` |
+| positioning / prioritization on two axes | 2×2 — `B.quadrant` (graded one-colour wash) |
+| metrics / KPIs / one number that matters | `B.statBand` (2–4 KPIs) or `B.stat` (one hero number) |
+| 3–4 concepts / pillars / capabilities | icon row — `B.iconRow` (+ `B.loadIcons`); playful → `B.blockRow` |
+| one claim backed by one exhibit | split — `B.split` (claim left, exhibit right) |
+| a sequence / mechanism / flow | node diagram — `B.node` + `B.arrow` |
+| code | `B.codeText` (≤10 lines) |
+
+Aim for VARIETY across the deck — not the same exhibit twice in a row. If a slide
+is "just bullets," it has not found its exhibit yet; pick the row above that fits or
+split it. Do not show this table to the user yet.
 
 ### 3 · Consultant pass
 
@@ -87,8 +103,10 @@ Evidence honesty, Chart & number integrity, Comparison integrity.
 ### 4 · Wireframe
 
 Copy `../slide-brainstorm/references/wireframe-skeleton.html` and fill it:
-one `article.slide-panel` per slide — number, action title, layout label,
-gray `[visual]` boxes, 2–4 bullets. Save to
+one `article.slide-panel` per slide — number, action title, and the chosen
+**exhibit** named in the layout label (e.g. "decision matrix", "timeline",
+"2×2", "chart: col") with a gray `[visual]` box standing in for it; add only a
+couple of supporting notes, not paragraphs of bullets. Save to
 `docs/brainstorms/YYYY-MM-DD-<topic>-wireframe.html`. Keep it dumb: no JS,
 no CDN, no previews, no screenshots.
 
