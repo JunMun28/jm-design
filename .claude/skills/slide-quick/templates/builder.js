@@ -171,6 +171,74 @@ function createBuilder(P, T) {
     }
   }
 
+  /* Harvey ball (McKinsey/BCG signature): a ring filled 0–4 quarters to show
+     "how good" without a number. level 0 = empty ring, 4 = full. */
+  function harvey(s, x, y, d, level, color) {
+    const c = color || T.accent;
+    s.addShape(P.shapes.OVAL, { x, y, w: d, h: d, fill: { type: "none" }, line: { color: c, width: 1.25 } });
+    if (level >= 4) {
+      s.addShape(P.shapes.OVAL, { x, y, w: d, h: d, fill: { color: c }, line: { type: "none" } });
+    } else if (level > 0) {
+      // positive angles only — pptxgenjs mishandles a negative start angle
+      s.addShape(P.shapes.PIE, { x, y, w: d, h: d, angleRange: [0, 90 * level], fill: { color: c }, line: { type: "none" } });
+    }
+  }
+
+  /* Decision matrix / comparison table (Zelazny · IBCS · Big-Three convention):
+     options across the TOP, criteria down the SIDE, hairline row rules ONLY (a
+     grid of bordered cells is the AI-slop tell). The recommended column gets an
+     accent header + cap + faint wash so the eye lands on the answer. Cells are
+     short: a 1–3 word string, "✓"/"—", or a NUMBER 0–4 (rendered as a Harvey
+     ball). Keep to 4–8 criteria. opts: options [str], rows [{label, cells[]}],
+     highlight (recommended col index), labelW (3.2), rowH (0.72). */
+  function compareTable(s, y, opts = {}) {
+    const options = opts.options || [];
+    const rows = opts.rows || [];
+    const n = options.length;
+    const labelW = opts.labelW || 3.2;
+    const optW = (CW - labelW) / n;
+    const headH = 0.5;
+    const rowH = opts.rowH || 0.72;
+    const hi = opts.highlight;
+    const bottom = y + headH + rows.length * rowH;
+
+    if (hi != null) {
+      const hx = MX + labelW + hi * optW;
+      s.addShape(P.shapes.RECTANGLE, { x: hx, y: y - 0.06, w: optW, h: bottom - y + 0.18, fill: { color: T.accent, transparency: 88 }, line: { type: "none" } });
+      s.addShape(P.shapes.RECTANGLE, { x: hx, y: y - 0.06, w: optW, h: 0.05, fill: { color: T.accent }, line: { type: "none" } });
+    }
+    options.forEach((o, i) => {
+      s.addText(o, {
+        x: MX + labelW + i * optW, y, w: optW, h: headH, align: "center", valign: "middle",
+        fontFace: F.head, bold: true, fontSize: 16, color: i === hi ? T.accentText : T.ink, margin: 0,
+      });
+    });
+    rows.forEach((r, ri) => {
+      const ry = y + headH + ri * rowH;
+      s.addShape(P.shapes.LINE, { x: MX, y: ry, w: CW, h: 0, line: { color: T.border, width: 1 } });
+      s.addText(r.label, {
+        x: MX, y: ry, w: labelW - 0.2, h: rowH, align: "left", valign: "middle",
+        fontFace: F.body, fontSize: 15, color: T.muted, margin: 0,
+      });
+      r.cells.forEach((c, ci) => {
+        const cx = MX + labelW + ci * optW;
+        const isHi = ci === hi;
+        if (typeof c === "number") {
+          const d = 0.34;
+          harvey(s, cx + optW / 2 - d / 2, ry + rowH / 2 - d / 2, d, c, isHi ? T.accent : T.ink);
+        } else {
+          const mark = c === "✓" || c === "—" || c === "✗";
+          const col = c === "✓" ? T.good : (c === "—" || c === "✗") ? T.dim : isHi ? T.ink : T.muted;
+          s.addText(c, {
+            x: cx, y: ry, w: optW, h: rowH, align: "center", valign: "middle",
+            fontFace: mark ? F.head : F.body, bold: mark || isHi, fontSize: mark ? 18 : 15, color: col, margin: 0,
+          });
+        }
+      });
+    });
+    s.addShape(P.shapes.LINE, { x: MX, y: bottom, w: CW, h: 0, line: { color: T.border, width: 1 } });
+  }
+
   /* Chartjunk-free chart (Knaflic declutter). A REAL, editable PptxGenJS chart
      — not an image, not faked with shapes. Strips the noise that reads as AI
      slop: no chart title (the slide's action title carries the message), no
@@ -369,7 +437,7 @@ function createBuilder(P, T) {
     }
   }
 
-  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
+  return { SW, SH, MX, CW, newSlide, glow, panel, node, kicker, title, footer, closer, arrow, codeText, stat, statBand, chart, harvey, compareTable, loadIcons, icon, iconRow, split, block, solidKicker, blockRow };
 }
 
 module.exports = { createBuilder, SW, SH, MX, CW };

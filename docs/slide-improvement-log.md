@@ -38,6 +38,30 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Decision matrix + Harvey balls in the native engine** — added
+  `B.harvey(s,x,y,d,level,color)` (a ring filled 0–4 quarters via a PptxGenJS PIE
+  wedge — the McKinsey/BCG "how good" ideogram) and `B.compareTable(s,y,{options,
+  rows,highlight})` (options across, criteria down, hairline row rules ONLY, the
+  recommended column carrying an accent header + cap + faint wash; cells = short
+  string / `✓`–`—` / a 0–4 Harvey ball) to `builder.js`. Replaced example slide 02
+  — which was literally "two bordered panels + three bullets each", the exact
+  rows-of-cards / three-bullets slop THE BAR auto-fails — with a real decision
+  matrix (Manual vs Full pipeline vs Quick path, Quick path recommended; honest —
+  Full pipeline still wins the visual-polish row). Wired the rule into slide-quick
+  `SKILL.md` + visual-playbook. · **Why:** the engine had NO comparison exhibit, so
+  any "which option" slide defaulted to the panels-of-bullets slop; the decision
+  matrix is the most common exec/consulting comparison and was impossible before.
+  · **Evidence:** built midnight + light, rendered both via LibreOffice. First render
+  exposed a real bug — a negative PIE start angle made levels 1–3 render wrong
+  (level-1 came out full); fixed to positive `angleRange:[0,90*level]` and verified
+  with an isolated 0–4 Harvey strip (clean empty→quarter→half→¾→full). Matrix then
+  rendered data-accurate in both themes: proportional balls, accented recommended
+  column, ✓ green / — dim, hairline chrome, ~25% whitespace; slides 01,03–08
+  unregressed. Excellence cold-judge: PASS, a genuine Big-Three exhibit, zero slop.
+  · **Source:** Deckary comparison-slide formats; Ampler & Deckary on Harvey balls
+  (Big-Three "how good" ideograms); Stratechi (McKinsey-alum) decision-matrix
+  convention — options × criteria, 1–3 words/cell, highlight the recommendation.
+
 - 2026-06-13 · **Split (visual-led two-column) layout in the native engine** — added
   `B.split(s, opts)` to `builder.js`: lays a narrative LEFT column (kicker + title +
   body) and RETURNS the visual-zone rect {x,y,w,h} for the RIGHT, so a chart/icon/

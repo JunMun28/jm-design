@@ -111,6 +111,12 @@ Rule of thumb: ≤ ~5 categories and a "which is biggest / where did it jump" me
 `line`. Never use pie/3-D/area for a serious deck. (Knaflic, *Storytelling with Data*,
 ch. 3–4: declutter, then draw the eye with one deliberate colour.)
 
+**Comparisons / decision matrix.** "Which option" → `B.compareTable` (options across,
+4–8 criteria down, hairline rules only, recommended column accented), with cells as
+short strings, `✓`/`—`, or `B.harvey` balls (0–4, the McKinsey/BCG "how good"
+ideogram). Keep it honest — the pick need not win every row. A row of bordered cards
+with bullets is the slop tell, never a comparison. (Zelazny; IBCS; Big-Three convention.)
+
 ## Ready palettes (60-30-10; all text pairs pass WCAG AA)
 
 **Dark Pro** — dominant `0F1623` (bg) · secondary `1E2D40` (panels) · accent

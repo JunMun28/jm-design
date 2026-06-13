@@ -31,22 +31,28 @@ const DECK = "slide-quick sample";
     B.footer(s, DECK, 1, 8);
   }
 
-  /* 02 — comparison: two panels + bullets + accent border */
+  /* 02 — decision matrix: options across, criteria down, Harvey balls, one
+     recommended column highlighted. NOT a row of bordered cards + bullets. */
   {
     const s = B.newSlide();
     B.glow(s, -0.3, 6.8, 6.5, "teal");
-    B.kicker(s, "01 · Comparison");
-    B.title(s, [{ text: "Panels hold bulleted comparisons", options: {} }]);
-    const py = 2.5, ph = 2.6, pw = 5.55;
-    [{ x: B.MX, lbl: "LEFT", lit: false }, { x: B.MX + pw + 0.43, lbl: "RIGHT", lit: true }].forEach((c) => {
-      B.panel(s, c.x, py, pw, ph, { border: c.lit ? T.accent : T.border });
-      s.addText(c.lbl, { x: c.x + 0.4, y: py + 0.3, w: pw - 0.8, h: 0.35, fontFace: T.fonts.mono, fontSize: 13, color: c.lit ? T.accentText : T.muted, charSpacing: 2, margin: 0 });
-      s.addText([
-        { text: "First point.", options: { breakLine: true } },
-        { text: "Second point.", options: { breakLine: true } },
-        { text: "Third point.", options: {} },
-      ], { x: c.x + 0.4, y: py + 0.85, w: pw - 0.8, h: ph - 1.1, fontFace: T.fonts.body, fontSize: 18, color: T.ink, valign: "top", lineSpacingMultiple: 1.3, margin: 0, bullet: { code: "2022", indent: 14 } });
+    B.kicker(s, "01 · Decision");
+    B.title(s, [
+      { text: "The quick path wins when ", options: {} },
+      { text: "speed and effort", options: { color: T.accentText } },
+      { text: " matter", options: {} },
+    ]);
+    B.compareTable(s, 2.65, {
+      options: ["Manual", "Full pipeline", "Quick path"],
+      highlight: 2,
+      rows: [
+        { label: "Speed to draft", cells: [1, 3, 4] },
+        { label: "Low effort", cells: [1, 2, 4] },
+        { label: "Editable .pptx", cells: ["—", "✓", "✓"] },
+        { label: "Visual polish ceiling", cells: [2, 4, 3] },
+      ],
     });
+    B.closer(s, [{ text: "Sample assessment. ● ILLUSTRATIVE — fuller ball = stronger.", options: {} }], 6.4);
     B.footer(s, DECK, 2, 8);
   }
 

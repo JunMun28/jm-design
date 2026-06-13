@@ -124,6 +124,13 @@ Rules:
   rest muted; Knaflic declutter). `'col'` = vertical, `'bar'` = horizontal ranking,
   `'line'` = trend; `opts.highlight` is the index to accent. Never paste a chart
   image or fake a chart with shapes/bars-as-rectangles.
+- **Comparisons get a decision matrix, never two panels of bullets.** For "which
+  option / how do these stack up" use `B.compareTable(s, y, {options, rows,
+  highlight})` — options across the top, criteria down the side (4–8), hairline
+  row rules only, the recommended column accented. Cells are short: a 1–3 word
+  string, `"✓"`/`"—"`, or a **number 0–4** rendered as a `B.harvey` ball (the
+  Big-Three "how good" ideogram). Keep the matrix honest — the recommended option
+  need not win every row. Two bordered panels of three bullets each is the slop tell.
 - **Concepts get real icons, never flat boxes or emoji.** The engine ships a
   vendored Tabler set (`assets/icons/`, MIT). Load once at the top of the build —
   `const I = await B.loadIcons(["bolt","shield","target"])` (tinted to the accent)
