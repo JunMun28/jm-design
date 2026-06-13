@@ -4,6 +4,24 @@ Concrete materials for making decks look designed, not "just boxes." Applies to
 the native PptxGenJS engine here and (the universal parts) to `html-slides`.
 The fast path should reach for these instead of flat panels + bullets.
 
+## The bar (what passes)
+
+Judge every deck as if it's presented where failure costs millions or a career — a
+McKinsey/BCG boardroom, a world-class professor's seminar, a Fortune-500 pitch — or a
+billion-view YouTube lesson that must be genuinely fun and engaging. Decks must hit this
+across the full STYLE range, each a distinct, intentional look (never a recolour):
+
+- **Premium / professional** — restraint, hairlines, one accent, generous whitespace,
+  crisp data exhibits. (Consulting, exec, investor.)
+- **Playful** — bold blocks, warm palette, big friendly type, energy — still composed.
+- **Hand-drawn** — sketch/marker texture, handwritten headings, doodle arrows; charming,
+  not childish. (Education, explainers, YouTube.)
+
+NO AI SLOP (auto-fail, redo it): rows of equal cards, an accent line under the title,
+emoji-as-icons, everything centred, gradient soup, decorative bars that explain nothing,
+clip-art overload, filler copy, three-bullets-forever. "Fine" is not good enough.
+Stay effortless: the skill does the heavy lifting — minimal user input, excellent deck.
+
 ## The 10 moves (impact-for-effort order)
 
 1. **One action title + one visual per slide.** Title is a full-sentence

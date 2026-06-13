@@ -37,3 +37,9 @@ Format per entry: date · change · why · evidence (gate result) · source.
 
 ## Iterations
 <!-- newest first; the loop appends here -->
+
+
+## Failed experiments
+<!-- Scrapped changes that did NOT clear the bar (reverted, not committed). Record so
+     the loop never retries a dead end. Format: date · what was tried · why it failed. -->
+

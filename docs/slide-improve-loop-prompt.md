@@ -7,8 +7,9 @@ proven, committed improvement per run and to stop itself when there is nothing
 worth changing.
 
 Decisions baked in (from setup): scope = the whole slide system · autonomous
-(applies + commits) · hard regression gate (revert if a test fails) · bounded
-web research each iteration.
+(applies + commits) · two-part gate (mechanical + an excellence bar) — scrap & record
+anything mediocre, no AI slop · bounded web research each iteration · must cover the
+full style range (hand-drawn → playful → premium) and stay effortless for the user.
 
 ---
 
@@ -18,6 +19,19 @@ web research each iteration.
 Improve the jm-design slide skill SYSTEM by exactly ONE high-leverage change this
 iteration, prove it did not regress anything, then commit it. Quality over motion:
 a run that concludes "nothing here is worth changing" and stops is a good outcome.
+
+THE BAR — what "high quality" means (judge EVERY change against this, never "it renders"):
+Imagine the deck is presented where failing costs millions or a career — a McKinsey/BCG
+consultant in the boardroom, an engineer in front of a world-class professor, a founder
+pitching a Fortune 500 CEO, or a billion-view YouTube lesson that must be genuinely fun
+and engaging. The system must clear that bar across the FULL style range — hand-drawn,
+playful, and premium/professional — each a distinct, excellent mode, not a recolour. And
+it must be COMPREHENSIVE yet effortless: the skill does the heavy lifting; the user gives
+minimal input and still gets an excellent deck.
+NO AI SLOP — reject the generic-AI-slide tells on sight: rows of equal cards, an accent
+line under the title, emoji-as-icons, everything centred, gradient soup, decorative bars
+that explain nothing, clip-art overload, filler copy, three-bullets-forever. If it looks
+"AI-generated," it has already failed. Only excellent changes survive; mediocre is a fail.
 
 THE SYSTEM (all under .claude/skills/ unless noted):
 - slide-quick ........ fast path: intake → outline → consultant → wireframe →
@@ -44,7 +58,10 @@ DO THESE IN ORDER, ONCE:
    It may be any of: restructure (split a bloated skill, or combine two that overlap),
    add/upgrade a content framework, add or fix a native or HTML theme, cut friction
    or speed in the fast path, strengthen a gate/eval, apply a researched best
-   practice, or — equally important — improve the VISUAL quality of the OUTPUT decks:
+   practice, make the skill do MORE of the heavy lifting (fewer/seamless user inputs,
+   smarter defaults, better auto-recommendation), deepen a STYLE into a genuinely
+   excellent distinct mode (hand-drawn, playful, or premium/professional — not a
+   recolour), or — equally important — improve the VISUAL quality of the OUTPUT decks:
    real icons/graphics/illustrations instead of flat boxes, image-led layouts,
    generous spacing, larger type, a designed colour palette, and more convincing copy
    (see references/visual-playbook.md). Pick ONE and say in one sentence why it is the
@@ -71,7 +88,8 @@ DO THESE IN ORDER, ONCE:
    gates remain). Never delete a working skill unless its replacement exists AND
    passes the gate. Never invent facts, stats, or sources.
 
-5. GATE (HARD — the only path to a commit is green):
+5. GATE (TWO-PART — a change is accepted ONLY if BOTH hold):
+   (a) MECHANICAL — must be green:
    - Touched the native engine or a native theme → run
      `node .claude/skills/slide-quick/templates/example-build.js tmp/loop/m.pptx midnight`
      and `... tmp/loop/l.pptx light`; render one with LibreOffice
@@ -91,14 +109,25 @@ DO THESE IN ORDER, ONCE:
      caption ≥14pt); ~20–25% whitespace; a 3-colour 60-30-10 palette with AA text
      contrast; copy carries concrete numbers and a "so what" title. A titled box of
      bullets is a fail.
-   If anything fails, or you cannot verify the change, REVERT it
-   (`git checkout -- <files>` or `git reset --hard` the working changes), then pick a
-   different improvement or stop. Do not commit an unproven change.
+   (b) EXCELLENCE — judge the rendered deck COLD against THE BAR, as if a hostile
+   expert in that boardroom is reviewing it. For any look/copy/theme/flow change do a
+   fresh-eyes pass (or run the slide-quick-test visual reviewer; spawn a subagent
+   reviewer for a big change). It must look intentionally designed and on-brand for its
+   style, carry ZERO AI-slop tells, and read as clearly more convincing/engaging than
+   before. "Fine" or "slightly better" is a FAIL — only a clear quality gain passes.
+
+   ACCEPTANCE / SCRAP-AND-RECORD: commit ONLY if (a) and (b) both hold. If the change
+   fails either part, can't be verified, or is merely mediocre, SCRAP it — revert
+   (`git checkout -- <files>` or `git reset --hard` the working changes) — and RECORD it
+   under "## Failed experiments" in docs/slide-improvement-log.md (what you tried, why it
+   didn't clear the bar) so it is never retried. Then pick a different improvement or
+   stop. Never commit a change that only "renders."
 
 6. COMMIT + LOG. One atomic commit with a clear message (end the body with the
    Co-Authored-By trailer this repo uses). Append one entry to
    docs/slide-improvement-log.md: date · the change · why · evidence (gate result) ·
-   research source(s).
+   research source(s). (Scrapped attempts go under "## Failed experiments" instead —
+   they are recorded even though nothing is committed, so the loop never repeats them.)
 
 7. REPORT. Five lines: what changed, the gate result, and the top 2 candidate
    improvements for the next iteration.
