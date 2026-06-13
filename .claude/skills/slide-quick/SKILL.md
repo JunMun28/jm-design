@@ -91,10 +91,14 @@ split it. Do not show this table to the user yet.
 
 ### 3 · Consultant pass
 
-Invoke `slide-consultant` (Skill tool) in **improve** mode on the outline.
-Pass the outline table inline as text (it is not yet saved to a file);
-apply the rewritten table it returns. This is the only quality gate — do
-not add others.
+Invoke `slide-consultant` (Skill tool) with **`mode=improve`** stated
+explicitly (it defaults to `review` otherwise) on the outline. Pass the
+outline table inline as text (it is not yet saved to a file). Require the
+FULL rewritten outline table back — same columns, every row — and replace
+your outline with it verbatim. It MUST keep the third column named exactly
+`exhibit` (do not let it rename to `layout`); later steps key off `exhibit`.
+If only a findings list / change log comes back, apply those edits to the
+table yourself. This is the only quality gate — do not add others.
 
 Per-slide checks (details in `.claude/skills/slide-consultant/references/frameworks.md`):
 Pyramid, SCQA, Action titles + skim test, One message, So-what, MECE,

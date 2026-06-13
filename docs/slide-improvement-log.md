@@ -38,6 +38,37 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Tightened the slide-quick ↔ slide-consultant handshake (content
+  contract + fabrication guard)** — the consultant runs on EVERY quick deck but its
+  improve-mode contract was written for the file case, leaving the inline return
+  format undefined and the handoff fragile. Fixes: (1) consultant `improve` mode now
+  spells out the inline return — the FULL rewritten table, echoing back the EXACT
+  columns received (never rename/add/drop/reorder; preserve un-edited columns like
+  `exhibit` verbatim), every row, + change log, never a bare findings list; `.pptx`
+  uses the same canonical format. (2) slide-quick Step 3 now requires `mode=improve`
+  explicitly (consultant defaults to `review`), demands the full table back, and
+  guards the third column name (`exhibit`, not `layout`). (3) the action-title rule
+  now treats unsourced outline numbers as UNVERIFIED — keep but don't coin/round, and
+  flag placeholder-looking numbers rather than promoting them into titles. · **Why:**
+  an undefined contract silently drops the consultant's content improvements or
+  mis-applies them, and the placeholder loophole risked fabricated title numbers — on
+  every deck. · **Evidence:** ran the `slide-quick-test` workflow (8 agents, full
+  generate + content/visual review) → **status PASS**, deck shipped clean. The review
+  surfaced one defect IN this change (rank-1 P1): my first draft used the literal
+  `# | title | layout | key points` example, contradicting slide-quick's actual
+  `exhibit` header — a literal reader could rename the column and break the build.
+  Fixed by making the contract column-agnostic and naming `exhibit` on both sides;
+  verified by inspection that both skills are now consistent (strictly safer wording,
+  no re-run needed). Excellence cold-judge: PASS — clear content-integrity gain. ·
+  **Source:** slide-quick-test workflow findings (ranks 6–8 prior run; rank 1 this
+  run); Minto/SCQA action-title discipline already in the consultant refs.
+  · **NEXT-UP (workflow-surfaced, not this change):** P1 — `harvey()` fills from 3
+  o'clock not 12 (`angleRange:[270,270+90*level]`); P2 — non-highlight Harvey balls
+  use `T.ink` (near-white on midnight, out-shouts the accent) → use `T.muted`; `--strict`
+  referenced in QA-lite but never defined; brainstorm `template.md`/`SKILL.md` still
+  say "inline CSS/JS" vs the no-JS wireframe rule; consultant chart/comparison-integrity
+  checks are stubs. The two Harvey-ball fixes are a tight coherent next iteration.
+
 - 2026-06-13 · **Fixed the P0 build/PDF path bugs (fast path works from a clean
   checkout)** — the documented build commands failed for a real per-deck script:
   (1) `example-build.js` uses `require("./builder")`, which resolves relative to the
