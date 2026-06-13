@@ -73,11 +73,11 @@ Check:
    decision.
 8. Any slide without a clear visual protagonist, 3-5 stop scan path, or
    meaningful visual encoding.
-9. Any internal `DESIGN INTENT` promise that is not visibly implemented in the
-   HTML.
-10. Any low-fidelity slide where a complex technical or product idea is reduced
-   to generic rectangles, vague placeholders, or shallow bullets instead of a
-   production-grade monochrome preview.
+9. Any internal `DESIGN INTENT` line that is missing from the HTML
+   comment, or that names a visual with no matching labeled placeholder
+   box in that slide's panel.
+10. Any slide panel whose placeholder boxes are unlabeled or so vague
+   ("[visual]") that the build skill could not tell what to draw.
 11. Any density mismatch or overloaded slide.
 12. Any unclear decision ask, weak close, or missing next action.
 13. Any likely overflow, tiny text, inaccessible scan path, or confusing visual

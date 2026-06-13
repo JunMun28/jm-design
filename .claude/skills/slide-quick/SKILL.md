@@ -74,8 +74,8 @@ Apply its rewrites. This is the only quality gate — do not add others.
 ### 4 · Wireframe
 
 Copy `../slide-brainstorm/references/wireframe-skeleton.html` and fill it:
-one `.wf-slide` per slide — number, action title, layout label, gray
-`[visual]` boxes, 2–4 bullets. Save to
+one `article.slide-panel` per slide — number, action title, layout label,
+gray `[visual]` boxes, 2–4 bullets. Save to
 `docs/brainstorms/YYYY-MM-DD-<topic>-wireframe.html`. Keep it dumb: no JS,
 no CDN, no previews, no screenshots.
 

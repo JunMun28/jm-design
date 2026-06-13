@@ -47,6 +47,11 @@ Examples that can skip:
 
 When in doubt, run this skill. A short discovery exchange prevents deck rework.
 
+Routing: simple internal/training decks delivered as PPTX/PDF belong to
+the `slide-quick` skill (fast path, no full brainstorm). Use this skill
+for executive, persuasion, brand-locked, or HTML-delivery decks — and say
+so on the first turn so the user can switch.
+
 ## Workflow
 
 ```
@@ -528,7 +533,7 @@ HTML brainstorm rules:
 
 - Keep it standalone: one HTML file, inline CSS/JS, no build step.
 - Mark the page clearly as `BRAINSTORM — NOT FINAL DECK`.
-- Start by copying `references/html-companion-skeleton.html`. Treat that file
+- Start by copying `references/wireframe-skeleton.html`. Treat that file
   as the canonical skeleton, not an inspiration sample.
 - Show a concise core idea at the top.
 - Do not add admin/status notes in the header. Keep audience, assumptions,
@@ -536,10 +541,11 @@ HTML brainstorm rules:
 - Record the internal per-slide layout map in an HTML comment under `DESIGN
   INTENT`, so the brainstorm remains the handoff artifact without cluttering
   the visible page.
-- Show slide content only: one panel per slide with the visible slide text and a
-  **full-fidelity monochrome layout preview**. "Brainstorm" means not final
-  theme, not low-detail. The user should be able to judge the actual
-  information design, density, diagram structure, and artifacts from the HTML.
+- Show slide content only: one panel per slide with the slide number, the
+  action title, a layout-signature label, gray placeholder boxes with short
+  text labels for every visual (`[loop diagram]`, `[code ~10 lines]`,
+  `[table 4 rows]`), and 2–4 key bullets. The wireframe is for judging
+  narrative, structure, and layout choice — NOT rendered design.
 - Preserve the skeleton's flattened, annotation-friendly DOM:
   `section.deck > article.slide-panel[data-slide]`, with each slide containing
   one direct `header.slide-head` and one direct `div.preview`.
@@ -547,38 +553,9 @@ HTML brainstorm rules:
   one-line ask/subtitle, and optional scope. Do not use a bottom metadata row.
 - If the user requested photos or placeholders, include image placeholders in
   the relevant slide panels using the skeleton's `.image-placeholder` pattern.
-- Use grayscale / monochrome by default in the brainstorm companion. This keeps
-  it clearly separate from final theme selection while still allowing
-  production-grade layout, hierarchy, diagrams, and artifacts.
-- Use diagrams as real slide content when they clarify the idea, not as
-  separate "sample" panels. Flowcharts are good for process/product mechanics.
-- Render complex visuals at near-final structural fidelity: if the arc promises
-  a matrix, formula, forward-pass graph, product mock, data table, timeline,
-  map, dashboard, or decision surface, the HTML must show that object with
-  meaningful labels, spacing, paths, and state. Do not replace it with a vague
-  placeholder rectangle unless the missing asset itself is the point.
-- Prevent overflow. Dense panels should scale type, spacing, image
-  placeholders, and scorecards before content clips.
-- Match the resolved **Slide density**. Dense executive slides must be
-  information-rich, not merely wordy: use compact tables, matrices, scorecards,
-  operating models, decision sheets, journey maps, or artifact strips. Sparse
-  slides must not be padded with detail just to look complete.
-- Include visual comparison sections only when useful: alternate arcs, layout
-  options, demo pacing, artifact specimens, or risk/assumption callouts.
-- Keep visuals theme-agnostic. Do not choose palette, typography, or final
-  html-slides theme here.
-- Theme-agnostic does **not** mean visually plain. Avoid brand color and final
-  theme styling, but still use production-grade composition: staged boards,
-  symbolic diagrams, labeled objects, hairline systems, icon-like glyphs,
-  matrices, equations, charts, mock interfaces, and artifact specimens where
-  the content calls for them.
-- CDN libraries are allowed when they materially improve a real slide diagram
-  or interactive review surface. For brainstorm flowcharts, Mermaid from a
-  pinned CDN is the recommended default because the diagram stays text-authored,
-  inspectable, and easy to revise. Pin exact versions, prefer ESM imports,
-  record the dependency and reason in an HTML comment, and provide a graceful
-  fallback or static equivalent. Do not use a CDN for basic layouts that inline
-  SVG/CSS can handle reliably.
+- No JS, no CDN, no Mermaid, no screenshots in the wireframe. Diagram
+  structure is conveyed by labeled gray boxes plus the DESIGN INTENT
+  comment — the build skill implements the real visual.
 - If opened locally, mention the local file path in chat; do not start a dev
   server for this standalone file.
 
@@ -596,9 +573,12 @@ invent a competing convention here:
   CORE IDEA, and SLIDE PANELS.
 - **`references/visual-companion.md`** — standalone HTML review rules and
   minimum sections.
-- **`references/html-companion-skeleton.html`** — the canonical reusable
-  skeleton for the visual companion. Copy this first and replace placeholders;
+- **`references/wireframe-skeleton.html`** — the canonical low-fi wireframe
+  skeleton (shared with slide-quick). Copy this first and replace placeholders;
   do not rebuild the page structure from scratch.
+- **`references/layout-blueprint.md`** — the layout-architecture pass (was
+  the slide-layout-designer skill).
+- **`references/archetypes.md`** — the layout archetype library.
 - **`references/design-vocabulary.md`** — the named layout signatures
   (manuscript row, vertical hairline split, stat-row, etc.) the build skill
   understands. Reach for these names instead of describing layouts longhand.
@@ -655,10 +635,11 @@ the rigor audit below.
    label.
 4. **Concrete content** — at least one slide shows a concrete workflow,
    artifact, decision frame, or example instead of only describing the idea.
-5. **Information design** — content is packed into a scannable, production-grade
-   structure, not paragraphs, disconnected bullets, or generic boxes. Technical
-   mechanism slides should use full-fidelity symbolic visuals such as matrices,
-   equations, path diagrams, state legends, or technical infographic boards.
+5. **Information design** — content is structured into scannable zones, not
+   paragraphs or disconnected bullets. Technical mechanism slides name a rich
+   symbolic visual in their DESIGN INTENT (matrices, equations, path diagrams,
+   state legends, technical infographic boards) and show it as a labeled
+   placeholder box in the wireframe — the build skill renders it for real.
 6. **Professional visual choice** — each slide's layout matches the content
    shape: comparison, sequence, mechanism, relationship, hierarchy, evidence,
    exception, product state, or decision. The slide has a clear visual
@@ -667,10 +648,10 @@ the rigor audit below.
    specifics are framed as proposals or `ASSUMPTION:`, not proof.
 8. **Pushback coverage** — the stated pushback or objection is answered by a
    slide with explicit criteria, tradeoff, or guardrail.
-9. **Layout fidelity** — every slide's internal `DESIGN INTENT` line is visibly
-   implemented in the HTML. If the design pass chose a complex mechanism board,
-   the HTML shows the board; if it chose a product mock, the HTML shows an
-   inspectable mock surface.
+9. **Wireframe completeness** — every slide panel carries its number,
+   action title, layout-signature label, labeled placeholder boxes for
+   each promised visual, and key bullets; every DESIGN INTENT line is
+   recorded in the HTML comment for the build skill.
 10. **Anti-boring design** — run
    `references/strong-slide-design-checklist.md`; every content slide has a
    named visual job, adjacent slides avoid repeated layout signatures, and at

@@ -4,7 +4,7 @@ Save the file to `docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.html`. Use
 today's date; keep `<topic>` short and kebab-case.
 
 The file is standalone HTML with inline CSS/JS. Copy
-`references/html-companion-skeleton.html` first. It is the canonical skeleton
+`references/wireframe-skeleton.html` first. It is the canonical skeleton
 for the review + handoff artifact, not a loose design reference.
 
 ## Section Order
@@ -84,8 +84,8 @@ Each slide panel must include:
 - Slide number and title
 - Headline
 - Visible body or artifact content
-- The internal `DESIGN INTENT` choice, rendered as a
-  full-fidelity monochrome preview
+- Labeled gray placeholder boxes for each visual the DESIGN
+  INTENT promises
 - Image placeholder, if requested for that slide/topic
 - Closer, if useful
 
@@ -115,32 +115,15 @@ shape, and information hierarchy the final builder is expected to preserve.
 
 ## Layout Fidelity
 
-The brainstorm is **theme-less, not low-fidelity**. Do not hide behind abstract
-rectangles, generic placeholders, or simple title-plus-bullet panels when the
-content requires a richer visual.
-
-For every content slide, implement the internal `DESIGN INTENT` line:
-
-- A `technical infographic board` should show numbered mechanism zones,
-  symbolic artifacts such as matrices/equations/graphs, training-vs-inference
-  or state callouts, and a bottom payoff strip.
-- A `product mock` should show recognizable controls, prompt/output surfaces,
-  generated states, review/approval affordances, and placeholders only for
-  unavailable images.
-- A `workflow` should show the full path and active step, not one isolated
-  box.
-- A `decision cockpit` should show the decision surface: premise, proof,
-  risks, guardrails, owner, and next step.
-- A `data/chart/table` slide should show real axes, row/column structure,
-  labels, and sample values when sourced or clearly marked assumptions.
-
-Use inline SVG/CSS for complex static mechanism diagrams when exact placement
-matters. Use pinned Mermaid/D3/ECharts only when the renderer materially helps
-and a fallback is provided.
+The brainstorm is a **wireframe**: theme-less AND low-fidelity by design.
+Every promised visual appears as a gray placeholder box with a short
+label. The DESIGN INTENT comment carries the real layout contract
+(signature, protagonist, scan path, encoding) for the build skill.
+Do not render matrices, charts, mocks, or diagrams in the wireframe.
 
 ## Professional Visual Choice
 
-Before writing slide HTML, run `references/presentation-design-decisioning.md`.
+Before writing slide HTML, run `references/layout-blueprint.md`.
 The layout should be selected from the shape of the content:
 
 | Content shape | Preferred visual treatment |
@@ -161,55 +144,6 @@ Every content slide should have:
   grouping, contrast, order, size, annotation, or state.
 - **Restraint:** what was intentionally removed so the slide looks designed,
   not merely filled.
-
-## CDN Dependencies
-
-The brainstorm should stay standalone by default, but CDN libraries are allowed
-when they make a slide materially clearer or more interactive.
-
-Use this decision rule:
-
-| Need | Preferred approach |
-|---|---|
-| Static loop, arrow, process, or simple graph that needs exact art direction | Inline SVG/CSS |
-| Text-authored diagram with quick layout | Mermaid from CDN (recommended default for brainstorm flowcharts) |
-| Interactive node canvas, dragging, zooming, complex edges | Real React Flow (`@xyflow/react`) via a React/ESM setup |
-| Custom data-driven SVG with precise control | D3 from CDN |
-| Large directed graph auto-layout | ELK / Dagre with SVG |
-
-Rules:
-
-- Pin exact versions in CDN URLs. Do not use `latest`.
-- Prefer ESM CDNs for module imports, such as `esm.sh`, and package CDNs such
-  as `jsDelivr` or `UNPKG` when a package provides browser-ready files.
-- Record dependencies in an HTML comment: library, version, CDN URL, reason,
-  and fallback.
-- Mermaid is the first choice for flowcharts, measurement loops, sequence
-  diagrams, and simple graph layouts in the brainstorm artifact. Use an import
-  like `https://cdn.jsdelivr.net/npm/mermaid@<exact-version>/dist/mermaid.esm.min.mjs`,
-  call `mermaid.initialize({ startOnLoad: true })`, and keep node labels short
-  enough to read after auto-layout.
-- If using React Flow, actually import/render `@xyflow/react`; otherwise call
-  the pattern `node-edge loop`, not React Flow.
-- Keep a fallback: a static SVG, plain HTML version, or clear message if CDN
-  loading fails.
-
-Minimal Mermaid pattern:
-
-```html
-<div class="mermaid-panel" aria-label="Measurement loop">
-  <pre class="mermaid">
-flowchart LR
-  A["Join"] --> B["Repeat"] --> C["Finish"] --> D["Produce"] --> E["Improve"]
-  E -. review .-> A
-  </pre>
-  <div class="mermaid-fallback">Static fallback content here.</div>
-</div>
-<script type="module">
-  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.0/dist/mermaid.esm.min.mjs";
-  mermaid.initialize({ startOnLoad: true, theme: "base", flowchart: { useMaxWidth: true } });
-</script>
-```
 
 ## Density Rules
 

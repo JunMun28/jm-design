@@ -1,22 +1,25 @@
-# HTML Brainstorm Artifact
+# HTML Wireframe Artifact
 
 Use this as the slide-brainstorm deliverable. It replaces saved text frame
 files.
 
 ## Purpose
 
-The HTML brainstorm is a temporary review surface:
+The HTML wireframe is a temporary review surface:
 
-- Help the user compare visual pacing, slide density, diagrams, and artifact
-  examples.
-- Make review easier before `html-slides` builds the final deck.
-- Carry the full handoff content for the build skill.
+- Help the user judge narrative flow, slide density, layout choice, and where
+  each visual goes — before any pixels are designed.
+- Make review easier before `html-slides` (or `slide-quick`) builds the final
+  deck.
+- Carry the full handoff content for the build skill (titles, key points,
+  layout signatures, and the per-slide DESIGN INTENT comment).
 
-It is not the final deck and must not select the final theme.
+It is a low-fidelity draft. It is **not** the final deck, must not select the
+final theme, and must not try to look designed.
 
 ## File
 
-Save the brainstorm as:
+Save the wireframe as:
 
 ```text
 docs/brainstorms/YYYY-MM-DD-<topic>-brainstorm.html
@@ -26,73 +29,53 @@ Use today's date and a short kebab-case topic slug.
 
 ## Minimum Structure
 
-Use one standalone HTML file with inline CSS/JS. Start by copying
-`references/html-companion-skeleton.html`; replace placeholders with the
-approved synthesis and slide content. Preserve its flattened DOM so Codex
-browser annotations land on meaningful elements.
+Use one standalone HTML file with inline CSS. Start by copying
+`references/wireframe-skeleton.html`; replace placeholders with the approved
+synthesis and slide content. Preserve its flattened DOM so Codex browser
+annotations land on meaningful elements.
 
 Required page sections:
 
-1. Header: `BRAINSTORM — NOT FINAL DECK` and deck title only.
-2. Core idea: one strong summary line plus proposal, why it matters, and what
-   makes it credible.
-3. Slide panels: one panel per slide with visible slide content only. Slide 01
-   is always a title slide.
+1. Header: `WIREFRAME — NOT FINAL DECK` and deck title only.
+2. Core idea: one strong summary line.
+3. Slide panels: one `article.slide-panel` per slide with low-fi content only.
+   Slide 01 is always a title slide.
 
 Optional sections:
 
-1. Image placeholders when requested: show intended subject, crop, and role.
-2. Artifact specimens: prompt/output, spreadsheet grid, chart mock, document
-   excerpt, dashboard block, approval note.
-3. Risk or assumption callouts, only when needed for review.
+1. Image placeholders when requested: a `.wf-box` labelled with intended
+   subject, crop, and asset status.
+2. Risk or assumption callouts, only when needed for review.
 
 ## Design Rules
 
-- Theme-agnostic: no final palette, typography, template, or brand treatment.
-- Grayscale by default: use shades of gray for the brainstorm companion unless
-  the user explicitly asks otherwise.
-- Review-first: full enough to judge the actual layout and information design,
-  but still theme-less so it does not pretend to be the final deck.
-- Standalone by default: no build step and no dev server. Pinned CDN
-  dependencies are allowed only when they materially improve a real diagram or
-  interactive review surface, and the HTML comment records the library,
-  version, URL, reason, and fallback.
-- Mermaid-first for flowcharts: when a process, measurement loop, or simple
-  graph would benefit from auto-layout, use a pinned Mermaid CDN import before
-  reaching for heavier libraries. Keep labels short and move detail into nearby
-  slide text.
-- Accessible: readable text sizes, keyboard-safe controls if interactive.
+- Low-fidelity by design: every visual is a gray `.wf-box` with a short text
+  label (`[loop diagram: 3 nodes + feedback edge]`, `[code ~10 lines]`,
+  `[table 4 rows]`). Do not render real matrices, charts, mocks, or diagrams.
+- Theme-agnostic AND low-fidelity: no palette, typography, brand, or
+  production composition. The wireframe judges *structure and layout choice*,
+  not visual design — that comes at build.
+- Standalone and dumb: inline CSS only. No JS, no CDN, no Mermaid, no
+  screenshots, no webfonts.
 - Focused: show the core idea and slide content. Do not expose intake status,
-  audits, design principles, or builder notes unless the user asks.
+  audits, design principles, or builder notes on the page.
 - Header-light: do not show audience/goal/status notes under the page title.
-- Title-slide-light: title slides should contain title, one-line ask/subtitle,
-  and optional scope. Avoid bottom metadata rows.
+- Title-slide-light: title slides carry title, one-line ask/subtitle, and
+  optional scope.
 - Annotation-friendly: keep slide panels as direct children of `section.deck`,
-  with `data-slide`, `aria-labelledby`, one direct `header.slide-head`, and one
-  direct `div.preview`.
-- Diagram-real: when a flowchart or diagram clarifies the story, include it as
-  an actual slide in the narrative, not a detached sample.
-- Complete enough for handoff: slide text and intended visual structure must be
-  visible in the HTML as a full-fidelity monochrome layout preview.
-- Theme-less, not low-fidelity: final color, brand treatment, and theme belong
-  later, but the brainstorm must still show production-grade composition,
-  detailed diagrams, artifacts, mock interfaces, tables, matrices, equations,
-  and state callouts when those are part of the approved arc.
-- Layout-contract honest: every internal `DESIGN INTENT` line must be
-  implemented visibly in the slide panel. If the design pass chooses
-  `technical infographic board`, the HTML must show the numbered zones,
-  symbolic artifacts, legends, and payoff strip, not a generic diagram
-  placeholder.
-- Professionally composed: each content slide must have a clear visual
-  protagonist, a 3-5 stop scan path, and an encoding choice that fits the data
-  or content shape. A good brainstorm panel should make the point visually
-  before the viewer reads every label.
+  each with `data-slide`, `aria-labelledby`, one direct `header.slide-head`,
+  and one direct `div.preview`.
+- Layout-labelled: every content slide names its layout signature (e.g.
+  `contrast wall`, `operating loop`, `technical infographic board`) as a
+  `.wf-layout` line, and shows a `.wf-box` placeholder for each visual that
+  signature implies.
+- Layout-contract recorded, not rendered: every internal `DESIGN INTENT` line
+  lives in the HTML source comment (signature, protagonist, scan path,
+  encoding). The wireframe shows the matching labeled placeholder box; the
+  build skill renders the real artifact. Do not draw the artifact here.
 - Image-aware: if the user asked for photos/placeholders, represent each one
-  with `.image-placeholder`; label asset status as Provided, Placeholder, or
+  with a `.wf-box` labelled with its asset status: Provided, Placeholder, or
   Need source.
-- Overflow-safe: if a slide has multiple vertical blocks, use the skeleton's
-  dense-slide fitting pattern (`.preview.is-dense` or equivalent) so content
-  scales down instead of clipping.
 - Updated in place: every Phase 4 revision updates this same HTML file.
 
 ## Chat Mention
@@ -100,6 +83,6 @@ Optional sections:
 When created, say:
 
 ```text
-Saved the brainstorm to docs/brainstorms/<topic>-brainstorm.html.
-This is the review artifact, not the final deck.
+Saved the wireframe to docs/brainstorms/<topic>-brainstorm.html.
+This is the low-fi review artifact, not the final deck.
 ```

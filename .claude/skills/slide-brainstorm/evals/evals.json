@@ -54,7 +54,7 @@
         },
         {
           "name": "uses_canonical_flat_skeleton",
-          "description": "Brainstorm HTML follows references/html-companion-skeleton.html with section.deck directly containing article.slide-panel[data-slide] elements"
+          "description": "Brainstorm HTML follows references/wireframe-skeleton.html with section.deck directly containing article.slide-panel[data-slide] elements"
         },
         {
           "name": "does_not_save_text_frame_file",
@@ -136,7 +136,7 @@
         },
         {
           "name": "file_has_per_slide_panels",
-          "description": "Brainstorm HTML contains slide panels with full-fidelity monochrome layout previews and visible slide content"
+          "description": "Brainstorm HTML contains slide panels with low-fi wireframe previews (labeled gray placeholder boxes) and visible slide content"
         },
         {
           "name": "refuses_to_build_actual_deck",
@@ -210,11 +210,11 @@
         },
         {
           "name": "html_is_full_fidelity_monochrome",
-          "description": "The HTML brainstorm renders full-fidelity monochrome layout previews with meaningful diagrams, artifacts, labels, and structure rather than rough generic placeholders"
+          "description": "The HTML brainstorm renders a low-fi wireframe: a labeled gray placeholder box for each visual the DESIGN INTENT names, plus action titles, layout labels, and key bullets"
         },
         {
           "name": "implements_internal_design_intent",
-          "description": "Each slide panel visibly implements the internal DESIGN INTENT line created before HTML generation"
+          "description": "Each slide panel records its internal DESIGN INTENT line in the HTML comment and shows a matching labeled placeholder box"
         },
         {
           "name": "uses_professional_visual_choice",
@@ -321,7 +321,7 @@
         },
         {
           "name": "technical_slides_use_infographic_boards_when_needed",
-          "description": "Technical mechanism slides use full-fidelity visual structures such as technical infographic boards, node-edge loops, matrices, formulas, state legends, or mechanism diagrams instead of simple title-plus-bullet panels"
+          "description": "Technical mechanism slides name a rich visual (technical infographic board, node-edge loop, matrix, formula, state legend) in their DESIGN INTENT and show it as a labeled placeholder box, not a simple title-plus-bullet panel"
         },
         {
           "name": "visual_design_has_protagonist_scan_path_encoding",
