@@ -211,6 +211,7 @@ const DECK = "slide-quick sample";
     B.footer(s, DECK, 10, 10);
   }
 
+  require("fs").mkdirSync(require("path").dirname(out), { recursive: true });
   const f = await P.writeFile({ fileName: out });
   console.log("Wrote", f);
 })().catch((e) => { console.error(e); process.exit(1); });

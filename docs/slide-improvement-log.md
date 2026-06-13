@@ -38,6 +38,36 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Fixed the P0 build/PDF path bugs (fast path works from a clean
+  checkout)** — the documented build commands failed for a real per-deck script:
+  (1) `example-build.js` uses `require("./builder")`, which resolves relative to the
+  SCRIPT, so a `decks/<topic>/build.js` threw "Cannot find module ./builder";
+  (2) the PDF command `../pptx/...` resolved outside the project when run from repo
+  root; (3) `example-build.js` `writeFile`'d a nested out path with no `mkdir`, so it
+  ENOENT'd. Fixes: slide-quick `SKILL.md` Step 5 now states ONE cwd convention (run
+  from repo root, all paths repo-root-relative), shows the per-deck `build.js`
+  requiring templates by their path RELATIVE TO THE SCRIPT
+  (`../../.claude/skills/slide-quick/templates/builder.js`) with a note NOT to copy
+  `builder.js` out (its icon dir is location-relative); the PDF + QA-lite commands
+  now use `.claude/skills/pptx/scripts/office/soffice.py`; the remaining `../`
+  read-paths (visual-playbook, consultant frameworks, wireframe skeleton, pptxgenjs
+  pitfalls) were made repo-root-relative; and `example-build.js` now
+  `mkdirSync(dirname(out))` before writing. · **Why:** a build path that fails from a
+  clean checkout makes the whole fast path unreliable in practice — a P0 correctness
+  bug outranks any new feature. · **Evidence:** REPRODUCED the exact failure — wrote
+  a real `decks/_loop-pathtest/build.js` per the FIXED instructions and ran it from
+  repo root → "BUILD OK", `loadIcons` resolved (icons rendered, proving ICON_DIR is
+  correct), the nested out dir was created (no ENOENT), and the fixed soffice command
+  produced a PDF; the rendered deck looked correct; `example-build.js` still builds
+  midnight + light; all referenced paths verified to exist (test dir removed). Gate
+  note: used direct reproduction (deterministic, targeted proof for this path-bug
+  class) rather than re-running the 8-agent slide-quick-test workflow, which had
+  already validated the flow AND surfaced these exact bugs the prior iteration.
+  Excellence cold-judge: PASS — clear correctness gain, not cosmetic. · **Source:**
+  the slide-quick-test workflow findings (ranks 1–3, P0) from the prior iteration;
+  Node module-resolution semantics (`require` is file-relative; `node_modules` walks
+  up).
+
 - 2026-06-13 · **Content-shape → exhibit routing guide (the engine's brain)** — in
   slide-quick `SKILL.md`, replaced the stale, MISDIRECTING outline mapping
   ("comparison → two panels" — the exact slop deleted in the decision-matrix

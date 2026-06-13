@@ -96,13 +96,13 @@ Pass the outline table inline as text (it is not yet saved to a file);
 apply the rewritten table it returns. This is the only quality gate — do
 not add others.
 
-Per-slide checks (details in `../slide-consultant/references/frameworks.md`):
+Per-slide checks (details in `.claude/skills/slide-consultant/references/frameworks.md`):
 Pyramid, SCQA, Action titles + skim test, One message, So-what, MECE,
 Evidence honesty, Chart & number integrity, Comparison integrity.
 
 ### 4 · Wireframe
 
-Copy `../slide-brainstorm/references/wireframe-skeleton.html` and fill it:
+Copy `.claude/skills/slide-brainstorm/references/wireframe-skeleton.html` and fill it:
 one `article.slide-panel` per slide — number, action title, and the chosen
 **exhibit** named in the layout label (e.g. "decision matrix", "timeline",
 "2×2", "chart: col") with a gray `[visual]` box standing in for it; add only a
@@ -116,16 +116,31 @@ re-run the flow.
 
 ### 5 · Build (native PptxGenJS)
 
-Write a per-deck build script modeled on `templates/example-build.js`,
-using `templates/builder.js` + `templates/themes.js`. Save it next to the
+**Run every command in this skill from the repo root; all paths below are
+repo-root-relative.** (`pptxgenjs`/`sharp` resolve via node's walk-up to the
+repo's `node_modules` from anywhere under it.)
+
+Write a per-deck build script modeled on
+`.claude/skills/slide-quick/templates/example-build.js`. Save it next to the
 output (e.g. `decks/<topic>/build.js`); output `decks/<topic>/<topic>.pptx`.
-Run from the repo root so `pptxgenjs` resolves.
+Because `require` resolves relative to the SCRIPT file, a relocated `build.js`
+must point back at the templates dir — do NOT copy `builder.js` out (its icon
+dir resolves relative to its own location). From `decks/<topic>/build.js`:
+
+```js
+const { createBuilder } = require("../../.claude/skills/slide-quick/templates/builder.js");
+const { THEMES } = require("../../.claude/skills/slide-quick/templates/themes.js");
+```
+
+(`../../` is the depth from `decks/<topic>/`; adjust it to reach
+`.claude/skills/slide-quick/templates/` from wherever you actually saved the
+script.) Then run: `node decks/<topic>/build.js`.
 
 Rules:
 - Slide 1 is a title slide. Diagrams are real shapes. Code ≤10 lines,
   Consolas. Unsourced numbers get a visible "ILLUSTRATIVE" tag.
 - **Make it look designed, not "just boxes."** Read
-  `references/visual-playbook.md` and apply it: one action title + one real
+  `.claude/skills/slide-quick/references/visual-playbook.md` and apply it: one action title + one real
   visual per slide; reach for icons / a diagram / an image-led layout over flat
   panels + bullets; keep ~20–25% whitespace; honor the type floors (title ≥32pt,
   body ≥20pt, caption ≥14pt); use a 3-colour 60-30-10 palette with AA contrast;
@@ -185,15 +200,17 @@ Rules:
   is the recolour trap. Block text is white and the fills are deep enough to clear
   AA. Model it on `templates/example-playful.js`. (Premium themes keep the hairline
   panel/kicker look; never mix the two in one deck.)
-- Honor PptxGenJS pitfalls — read `../pptx/pptxgenjs.md` before writing
-  the script (no "#" hex, no 8-char hex, fresh option objects, no
+- Honor PptxGenJS pitfalls — read `.claude/skills/pptx/pptxgenjs.md` before
+  writing the script (no "#" hex, no 8-char hex, fresh option objects, no
   negative shadow offsets).
 - PDF delivery: convert with
-  `python3 ../pptx/scripts/office/soffice.py --headless --convert-to pdf <file>.pptx`.
+  `python3 .claude/skills/pptx/scripts/office/soffice.py --headless --convert-to pdf <file>.pptx`.
 
 ### QA-lite (main agent, no subagent)
 
-1. Render: soffice → pdf → `pdftoppm -jpeg -r 130`.
+1. Render (from repo root):
+   `python3 .claude/skills/pptx/scripts/office/soffice.py --headless --convert-to pdf <deck>.pptx`
+   then `pdftoppm -jpeg -r 130 <deck>.pdf <deck>-page`.
 2. Inspect the rendered per-page JPEGs yourself against this checklist:
    overlap, clipped text, text touching panel edges, low contrast,
    misaligned columns, arrows missing targets. PLUS the visual-playbook bar:
