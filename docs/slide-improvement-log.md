@@ -38,6 +38,30 @@ Format per entry: date · change · why · evidence (gate result) · source.
 ## Iterations
 <!-- newest first; the loop appends here -->
 
+- 2026-06-13 · **Hand-drawn (sketchnote) html-slides theme — completes the style
+  range** — added `themes/hand-drawn/` (tokens.css + example.html + design.md +
+  screenshots) and registered it in `themes/themes.json`. A DISTINCT sketchnote
+  mode: `Caveat` handwriting display over clean `Nunito` body, warm paper dot-grid,
+  and wobbly ink via one SVG filter (`#rough`: feTurbulence + feDisplacementMap)
+  applied to borders/underlines/arrows ONLY, never text. Helpers: `.sketch` frame,
+  `.sticker`, `.hl` highlighter swipe, `.ul` underline, pen colors; a flow diagram
+  of `.node.sketch` boxes joined by inline rough `<svg>` arrows. · **Why:** THE BAR
+  demands the full style range (hand-drawn / playful / premium); the system had
+  premium + playful but NO hand-drawn anywhere. html-slides is the right vehicle —
+  web fonts + CSS/SVG nail handwriting + rough texture where portable PPTX cannot.
+  · **Evidence:** `verify.py --theme hand-drawn` EXIT 0, no page errors (fixed two
+  it caught: a nowrap highlight overflowing at 375px, and an ILLUSTRATIVE line under
+  the 24px body floor); cold-judged the rendered screenshots — title (handwriting +
+  highlighter + doodle arrow), a sketchnote flow diagram, a circled stat — reads as
+  a genuine "YouTube lesson" sketchnote, distinct from playful, zero slop, charming
+  not childish. Regression: existing `playful` theme still verifies EXIT 0 against
+  the edited manifest (shared verifier intact). Change is theme-additive (no
+  pipeline code touched), so gated via verify.py + visual review, not the heavy
+  pipeline workflow. Excellence cold-judge: PASS. · **Source:** Autoppt / Slidesgo
+  2026 / MS PowerPoint design-styles (sketchnote = handwriting heading + clean body,
+  restraint keeps it from childish); Google Fonts Caveat/Nunito; SVG filter
+  feTurbulence+feDisplacementMap rough-ink technique; WebAIM contrast.
+
 - 2026-06-13 · **Playful mode — a distinct native style (not a recolour)** — added
   a `playful` theme to `themes.js` (warm cream canvas + deep coral/teal/violet
   block palette, white-AA verified: 5.35 / 4.67 / 5.67; muted 4.80 on cream) and
