@@ -136,6 +136,38 @@ _Avoid_: dark classroom palette, generic blue training portal
 The chosen **Guided Learning Palette** direction: a soft technical lab palette with graphite text, mist background, ice-blue structure, Micron purple for all purple roles, and plasma-pink quiz/exercise accents.
 _Avoid_: green accents, beige-only theme, soft beauty palette
 
+**Deck Shell**:
+The theme-independent core of an `html-slides` deck — the `SlidePresentation` controller (keyboard/wheel/touch nav, intersection observer, progress bar, nav-dot generation, ESC overview + thumbnail cloning, `window.presentation` API), the document skeleton (chrome DOM, `.reveal`→`.visible` motion contract), the viewport invariants, **and** the default styling for nav dots, progress, the `Present` pill, and the overview grid. Themes override the chrome look via tokens but inherit a working one. A theme owns only color, type, layout grammar, chart surface, logo, title treatment, and exhibit recipes — never the shell.
+_Avoid_: per-theme runtime copy, theme-owned navigation controller, re-authored chrome per theme
+
+**Shell Inliner**:
+The build script that reads the canonical shell source (`shell.js` + `shell.css`) and inlines it into a deck at the **Shell Markers**, producing a single self-contained `.html`. It is the only sanctioned way the **Deck Shell** enters a deck; the agent never hand-writes the shell. Re-running it over an existing marked deck refreshes that deck's shell ("reshell"), which is how a manual "change all existing decks" is achieved without giving up single-file output.
+_Avoid_: agent-retyped shell, hand-copied runtime, per-deck shell edits
+
+**Shell Markers**:
+The HTML comment insertion points (`<!-- SHELL:CSS -->`, `<!-- SHELL:JS -->`) that tell the **Shell Inliner** where the canonical shell goes. Their presence is what makes a delivered deck re-inlinable. `verify.py` fails a deck whose inlined shell has drifted from the canonical source.
+_Avoid_: silent inline, marker-free deck, unverifiable shell copy
+
+**Slide Player**:
+The default, non-presenting view of a deck — a slide-app shell with a persistent **Slide Rail** on the left, a single main slide stage, a top bar (deck title, slide counter, help, Present), and a collapsible **Speaker Notes** panel under the stage. Navigation is one-slide-at-a-time (arrow keys or clicking a rail thumbnail); there is **no vertical scroll-snap**. There is **no timer** anywhere in the shell. Shell-owned and theme-independent (see html-slides ADR 0006).
+_Avoid_: scroll-snap webpage, nav-dot rail, talk timer, per-theme player chrome
+
+**Slide Rail**:
+The persistent left-hand list of live-scaled, numbered slide thumbnails in the **Slide Player**, with the current slide highlighted; scrollable and collapsible. It replaces the old right-edge nav dots as the deck's navigator. It can also expand into a full-screen **Grid Overview** (all thumbnails at once), which is the kept-and-relocated successor to the old ESC overview grid.
+_Avoid_: right-edge nav dots, static thumbnail images
+
+**Grid Overview**:
+The full-screen all-thumbnails view expanded from the **Slide Rail**. Click a thumbnail to jump and collapse back to the **Slide Player**. It is the kept successor to the old ESC overview grid, now invoked from the rail rather than being the only overview.
+_Avoid_: ESC-only overview, removed overview, nav dots
+
+**Present Mode**:
+The fullscreen, slide-only state entered from the **Slide Player** (Present button or `P`). The rail, top bar, and notes collapse away, leaving the slide, a thin progress line, and an auto-hiding minimal control bar (exit, prev/next, counter). No timer. A single window only — there is no second presenter window (that idea was dropped; see html-slides ADR 0006). Esc returns to the **Slide Player**.
+_Avoid_: second presenter window, talk timer, audience-visible speaker notes, nav dots
+
+**Speaker Notes**:
+Per-slide presenter text authored as `<aside class="speaker-notes">` inside a slide. Shown in a collapsible panel under the stage in the **Slide Player**, and hidden whenever **Present Mode** is active (so the projected screen never shows them). Notes are *content* (agent-authored), not shell. Policy is **recommended**: the agent drafts one per content slide by default, the brainstorm/consultant pipeline produces a draft, and `verify.py` warns (not fails) when a content slide has none.
+_Avoid_: required notes gate, shell-owned notes, second-window notes, visible audience notes
+
 ## Relationships
 
 - **HTML Slides** may reference **Micron Icons** when a Micron deck needs official iconography.
@@ -174,6 +206,13 @@ _Avoid_: green accents, beige-only theme, soft beauty palette
 - **Guided Learning Palette** belongs to **HTML Slides** as the visual language for the `guided-learning` training theme.
 - **Warm Paper V2** is the current target expression of **Guided Learning Palette**.
 
+- **HTML Slides** owns the **Deck Shell**; it is theme-independent and the same across every theme.
+- The **Shell Inliner** is the only sanctioned way the **Deck Shell** enters a deck; the agent authors theme + content + **Speaker Notes** only, never the shell.
+- **Shell Markers** make a delivered deck re-inlinable; `verify.py` fails a deck whose inlined shell drifted from the canonical source.
+- The **Slide Player**, **Slide Rail**, and **Present Mode** are **Deck Shell** capabilities; **Speaker Notes** are content the agent authors, shown by the shell in the player and hidden in **Present Mode**.
+- The **Slide Rail** replaces the old right-edge nav dots and ESC overview grid; navigation is one-slide-at-a-time, not vertical scroll-snap (html-slides ADR 0006).
+- Decks **inline** the shell rather than linking a shared runtime, preserving single-file portability (see html-slides ADR 0005).
+
 ## Example dialogue
 
 > **Dev:** "Should we put the Micron icon archives inside **HTML Slides**?"
@@ -210,3 +249,10 @@ _Avoid_: green accents, beige-only theme, soft beauty palette
 - "visual review" resolved as a static **Icon Preview** page, not a separate built application.
 - "analysis timing" resolved as writing a **Micron Icons Skill Spec** now and creating the actual skill later with `skill-creator`.
 - "future skill creation" resolved as a **Complete Icon Skill Build**, including real extracted assets.
+- "deck shell" resolved as a single inlined source-of-truth (**Deck Shell** via **Shell Inliner** + **Shell Markers**), not a per-theme copy and not a linked shared runtime (html-slides ADR 0005).
+- "change once, change all" resolved as build-time inlining for future decks plus a manual `--reshell` for marked existing decks — never a live-linked runtime, to keep single-file portability.
+- "production-grade slide application" resolved as Tier 1 (wayfinding: deep-link, help overlay, jump-to-slide, counter) + Tier 2 (**Presenter View**, **Speaker Notes**, timer); Tier 3 (fragments, transitions, kiosk) deferred as conflicting with scroll-snap + density rules.
+- "speaker notes" resolved as **recommended** content (`verify.py` warns, never fails), authored by the agent and the brainstorm/consultant pipeline.
+- "presenter view" resolved as **dropped** — no second window. Replaced by single-window **Present Mode** (html-slides ADR 0006).
+- "presentation slide app" resolved as a **Slide Player** (left **Slide Rail** + single stage, one-slide-at-a-time) plus fullscreen **Present Mode** — not a scroll-snap webpage.
+- "nav dots" resolved as **removed**; the **Slide Rail** is the navigator.

@@ -130,12 +130,7 @@
         "require_logo_on_content_slides": false,
         "forbid_chart_on_gradient": true,
         "headline_contrast_min": 4.5,
-        "palette_lock": true,
-        "require_fixed_stage": true,
-        "stage_width": 1280,
-        "stage_height": 720,
-        "enforce_stage_overflow": true,
-        "min_touch_target_px": 44
+        "palette_lock": true
       }
     },
     {

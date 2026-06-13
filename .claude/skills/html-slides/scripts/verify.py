@@ -20,7 +20,45 @@ from pathlib import Path
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = SKILL_ROOT / "themes" / "themes.json"
-REAL_SLIDE_SELECTOR = ".deck > .slide, body > .slide"
+REAL_SLIDE_SELECTOR = ".deck > .slide, body > .slide, .stage > .slide"
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import shell as shell_mod  # noqa: E402  (canonical Deck Shell inliner/freshness)
+
+
+def check_shell_and_notes(deck_src, require_shell):
+    """Pure-text gates (no browser): shell freshness + speaker-notes warning.
+
+    Returns (errors, notes). Drift always fails; missing markers fails only
+    under require_shell (legacy/self-contained decks have no markers and must
+    still pass until they are migrated to the shell — see ADR 0005)."""
+    errors, notes = [], []
+    status, detail = shell_mod.shell_status(deck_src)
+    if status == "stale":
+        errors.append(f"Shell drift: {detail}. Run: build-deck.py reshell <deck.html>")
+    elif status == "missing-markers":
+        if require_shell:
+            errors.append(f"Shell markers missing ({detail}); --require-shell is set.")
+        else:
+            notes.append(f"No shell markers ({detail}); shell-freshness check skipped (legacy/self-contained deck).")
+    else:
+        print(f"Shell: {detail} (canonical {shell_mod.canonical_hash()[:12]}).")
+
+    missing = []
+    n = 0
+    for chunk in deck_src.split("<section")[1:]:
+        head = chunk.split(">", 1)[0]
+        if "slide" not in head:
+            continue
+        n += 1
+        if ('data-slide-kind="cover"' in head or 'data-slide-kind="section"' in head
+                or "title-slide" in head):
+            continue
+        if "speaker-notes" not in chunk and 'class="notes"' not in chunk:
+            missing.append(n)
+    if missing:
+        notes.append(f"Content slides without speaker notes: {missing} (recommended, not required).")
+    return errors, notes
 
 # Fallback used only when --theme is given but the theme has no `verify` block,
 # or when --skip-brand is passed. Pure universal lints — no palette/logo checks.
@@ -82,7 +120,7 @@ UNIVERSAL_VERIFY = {
 # Decision decks mark data-deck-kind="decision" on the deck root.
 CONTENT_LINTS_JS = r"""({ cfg }) => {
     const out = [];
-    const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
+    const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide, .stage > .slide'));
     const deckRoot = document.querySelector('.deck') || document.body;
     const mode = ((deckRoot.dataset && deckRoot.dataset.deckMode) || (document.body.dataset && document.body.dataset.deckMode) || 'live').toLowerCase();
     const deckKind = ((deckRoot.dataset && deckRoot.dataset.deckKind) || (document.body.dataset && document.body.dataset.deckKind) || '').toLowerCase();
@@ -106,9 +144,18 @@ CONTENT_LINTS_JS = r"""({ cfg }) => {
     };
     const fontPx = (el) => {
         let size = parseFloat(getComputedStyle(el).fontSize || '0');
-        const stage = el.closest('.slide-stage');
-        const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
-        if (stage && stageScale > 0 && stageScale < 1) size = size / stageScale;
+        // Normalize to design-canvas px on a scaled fixed stage, so the floor
+        // judges presented size. Old micron model: .slide-stage wrapper with
+        // --stage-scale on body. Player model (ADR 0006): the .stage element
+        // carries --stage-scale. Fluid stages leave it unset (-> 1, no change).
+        const stageEl = el.closest('.stage') || el.closest('.slide-stage');
+        let stageScale = 1;
+        if (stageEl) {
+            const v = getComputedStyle(stageEl).getPropertyValue('--stage-scale')
+                || getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1';
+            stageScale = parseFloat(v) || 1;
+        }
+        if (stageEl && stageScale > 0 && stageScale < 1) size = size / stageScale;
         return size;
     };
     const sev = (failing, msg) => out.push((failing ? '' : 'NOTE: ') + msg);
@@ -339,7 +386,7 @@ def find_orphan_numerals(deck_text, source_path):
     return orphans[:15]
 
 
-def verify_html(html_path, viewports, slides, output_dir, show, wait, check_overview, fail_on_warnings, skip_brand, theme, print_titles=False, source=None):
+def verify_html(html_path, viewports, slides, output_dir, show, wait, check_overview, fail_on_warnings, skip_brand, theme, print_titles=False, source=None, require_shell=False):
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -378,6 +425,11 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
     deck_mode = None
     content_seen = set()
 
+    shell_errors, shell_notes = check_shell_and_notes(
+        html_path.read_text(errors="ignore"), require_shell)
+    page_errors.extend(shell_errors)
+    notes.extend(shell_notes)
+
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=not show)
 
@@ -397,6 +449,15 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
             page.goto(html_path.as_uri(), wait_until="networkidle")
             page.wait_for_timeout(wait)
             page.evaluate("() => document.fonts && document.fonts.ready")
+
+            # Slide Player decks (ADR 0006) letterbox the stage smaller than the
+            # viewport in the player. Readability floors and overflow checks are
+            # about the PRESENTED size, so measure with the stage filling the
+            # viewport (present mode) — the size the floors assume.
+            is_player = page.locator(".stage").count() > 0
+            if is_player:
+                page.evaluate("() => { const d = document.querySelector('.deck'); if (d) { d.classList.add('presenting'); window.dispatchEvent(new Event('resize')); } }")
+                page.wait_for_timeout(350)  # let the shell's debounced fitStage recompute --stage-scale
 
             slide_count = page.locator(REAL_SLIDE_SELECTOR).count()
             if slide_count == 0:
@@ -435,7 +496,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 }
                             }
                         }
-                        const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
+                        const slides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide, .stage > .slide'));
                         if (slides.length && !slides[0].classList.contains('title-slide') && slides[0].dataset.slideKind !== 'cover') {
                             out.push('first slide is not a title slide (.title-slide or data-slide-kind="cover")');
                         }
@@ -532,8 +593,8 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                         const lcs = getComputedStyle(label);
                                         const ncs = getComputedStyle(next);
                                         if (lcs.display === 'none' || ncs.display === 'none' || lr.width <= 0 || nr.width <= 0) return;
-                                        const stage = label.closest('.slide-stage');
-                                        const stageScale = stage ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-scale') || '1') : 1;
+                                        const stage = label.closest('.slide-stage') || label.closest('.stage');
+                                        const stageScale = stage ? (parseFloat(getComputedStyle(stage).getPropertyValue('--stage-scale')) || parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-scale')) || parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale')) || 1) : 1;
                                         const gap = stage && stageScale > 0 && stageScale < 1 ? (nr.top - lr.bottom) / stageScale : nr.top - lr.bottom;
                                         if (gap + 0.5 < cfg.min_label_body_gap_px) {
                                             const txt = (label.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 48);
@@ -581,7 +642,8 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                     return nums.length >= 3 ? 1 : 0;
                                 };
                                 const stage = s.querySelector(':scope > .slide-stage') || s;
-                                const stageScaleRaw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stage-scale') || '1');
+                                const scaleStageEl = s.closest('.stage');
+                                const stageScaleRaw = parseFloat((scaleStageEl && getComputedStyle(scaleStageEl).getPropertyValue('--stage-scale')) || getComputedStyle(document.documentElement).getPropertyValue('--stage-scale') || '1');
                                 const toStagePx = (v) => stageScaleRaw > 0 && stageScaleRaw < 1 ? v / stageScaleRaw : v;
                                 if (cfg.require_title_mesh_background) {
                                     const bgImage = getComputedStyle(stage).backgroundImage || '';
@@ -947,8 +1009,8 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                             }
                             if (cfg.min_touch_target_px) {
                                 const r = el.getBoundingClientRect();
-                                const stage = el.closest('.slide-stage');
-                                const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
+                                const stage = el.closest('.slide-stage') || el.closest('.stage');
+                                const stageScale = stage ? (parseFloat(getComputedStyle(stage).getPropertyValue('--stage-scale')) || parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale')) || 1) : 1;
                                 const width = stage && stageScale > 0 && stageScale < 1 ? r.width / stageScale : r.width;
                                 const height = stage && stageScale > 0 && stageScale < 1 ? r.height / stageScale : r.height;
                                 if (width > 0 && height > 0 && (width < cfg.min_touch_target_px || height < cfg.min_touch_target_px)) {
@@ -1026,9 +1088,14 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                                 seenTextHosts.add(el);
                                 const cs = getComputedStyle(el);
                                 let fontSize = parseFloat(cs.fontSize || '0');
-                                const stage = el.closest('.slide-stage');
-                                const stageScale = stage ? parseFloat(getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1') : 1;
-                                if (stage && stageScale > 0 && stageScale < 1) {
+                                const stageEl = el.closest('.stage') || el.closest('.slide-stage');
+                                let stageScale = 1;
+                                if (stageEl) {
+                                    const v = getComputedStyle(stageEl).getPropertyValue('--stage-scale')
+                                        || getComputedStyle(document.body).getPropertyValue('--stage-scale') || '1';
+                                    stageScale = parseFloat(v) || 1;
+                                }
+                                if (stageEl && stageScale > 0 && stageScale < 1) {
                                     fontSize = fontSize / stageScale;
                                 }
                                 const text = textOf(el);
@@ -1087,7 +1154,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
 
                 if source:
                     deck_text = page.evaluate(
-                        "() => Array.from(document.querySelectorAll('.deck > .slide, body > .slide')).map(s => s.textContent || '').join(' ')"
+                        "() => Array.from(document.querySelectorAll('.deck > .slide, body > .slide, .stage > .slide')).map(s => s.textContent || '').join(' ')"
                     )
                     for orphan in find_orphan_numerals(deck_text, source):
                         note = f"numeral \"{orphan}\" not found in source {Path(source).name} — verify provenance or mark it illustrative"
@@ -1117,7 +1184,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                         if (window.presentation?.goTo) {
                             window.presentation.goTo(index, { immediate: true });
                         } else {
-                            document.querySelectorAll('.deck > .slide, body > .slide')[index]?.scrollIntoView({ behavior: 'instant', block: 'start' });
+                            document.querySelectorAll('.deck > .slide, body > .slide, .stage > .slide')[index]?.scrollIntoView({ behavior: 'instant', block: 'start' });
                         }
                     }""",
                     index,
@@ -1125,7 +1192,7 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                 page.wait_for_timeout(1500)
                 issues = page.evaluate(
                     """({ index, cfg }) => {
-                        const allSlides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide'));
+                        const allSlides = Array.from(document.querySelectorAll('.deck > .slide, body > .slide, .stage > .slide'));
                         const slide = allSlides[index];
                         if (!slide) return ['missing slide'];
                         const stage = slide.querySelector(':scope > .slide-stage');
@@ -1187,13 +1254,27 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                 page.screenshot(path=str(out), full_page=False)
 
             if check_overview:
-                overview = page.locator("#overview")
-                if overview.count() == 0:
-                    page_errors.append("Missing #overview element for ESC slide overview.")
-                else:
+                grid = page.locator(".grid-overview")
+                legacy = page.locator("#overview")
+                if grid.count() > 0:
+                    # Slide Player grid overview (ADR 0006): opened with G.
+                    page.keyboard.press("g")
+                    page.wait_for_timeout(300)
+                    is_visible = grid.evaluate(
+                        "el => getComputedStyle(el).display !== 'none'")
+                    thumb_count = page.locator(".grid-overview .gthumb").count()
+                    if not is_visible:
+                        page_errors.append("G did not open .grid-overview.")
+                    if slide_count and thumb_count != slide_count:
+                        page_errors.append(f"Grid overview thumb count mismatch: {thumb_count} for {slide_count} slides.")
+                    out = output_dir / f"{stem}-overview-{viewport['width']}x{viewport['height']}.png"
+                    page.screenshot(path=str(out), full_page=False)
+                    page.keyboard.press("Escape")
+                    page.wait_for_timeout(150)
+                elif legacy.count() > 0:
                     page.keyboard.press("Escape")
                     page.wait_for_timeout(300)
-                    is_visible = overview.evaluate(
+                    is_visible = legacy.evaluate(
                         """el => el.getAttribute('aria-hidden') === 'false' &&
                         getComputedStyle(el).display !== 'none'"""
                     )
@@ -1209,6 +1290,8 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                     page.screenshot(path=str(out), full_page=False)
                     page.keyboard.press("Escape")
                     page.wait_for_timeout(150)
+                else:
+                    page_errors.append("Missing overview element (.grid-overview or #overview).")
 
             if show:
                 input("Browser is open. Press Enter to close...")
@@ -1261,6 +1344,8 @@ def main():
                         help="Print the title storyline (titles in order) and exit. The skim test: titles alone must retell the argument.")
     parser.add_argument("--source", default=None,
                         help="Path to source material. Deck numerals not found in it are listed as NOTES (provenance check).")
+    parser.add_argument("--require-shell", action="store_true",
+                        help="Fail if the deck has no shell markers (for decks that must use the universal Deck Shell). Drift always fails regardless.")
     args = parser.parse_args()
 
     if args.list_themes:
@@ -1293,6 +1378,7 @@ def main():
         args.theme,
         args.print_titles,
         args.source,
+        args.require_shell,
     )
 
 
