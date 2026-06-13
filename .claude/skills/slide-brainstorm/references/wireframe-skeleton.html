@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{DECK_TITLE}} — Wireframe</title>
+<style>
+  :root { --ink:#222; --muted:#777; --line:#ccc; --box:#e9e9e9; --paper:#fafafa; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: ui-sans-serif, system-ui, sans-serif; background: var(--paper);
+         color: var(--ink); line-height: 1.4; padding: 24px; }
+  main { max-width: 980px; margin: 0 auto; display: grid; gap: 28px; }
+  .banner { font: 700 12px/1 ui-monospace, monospace; letter-spacing: .12em;
+            color: #a33; text-transform: uppercase; }
+  h1 { font-size: 28px; }
+  .wf-slide { border: 1px solid var(--line); background: #fff; border-radius: 6px;
+              padding: 18px 20px; display: grid; gap: 10px; }
+  .wf-head { display: flex; gap: 12px; align-items: baseline; }
+  .wf-num { font: 700 12px/1 ui-monospace, monospace; color: var(--muted); }
+  .wf-title { font-size: 19px; font-weight: 700; }
+  .wf-layout { font: 600 11px/1 ui-monospace, monospace; color: var(--muted);
+               text-transform: uppercase; letter-spacing: .08em; }
+  .wf-box { background: var(--box); border: 1px dashed #bbb; border-radius: 4px;
+            min-height: 64px; display: grid; place-items: center;
+            color: var(--muted); font: 600 13px/1.3 ui-monospace, monospace;
+            padding: 10px; text-align: center; }
+  .wf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wf-row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .wf-bullets { padding-left: 18px; color: var(--ink); font-size: 14px; }
+  .wf-bullets li { margin: 2px 0; }
+</style>
+</head>
+<body>
+<main>
+  <p class="banner">Wireframe — draft, not final deck</p>
+  <h1>{{DECK_TITLE}}</h1>
+
+  <!-- One .wf-slide per slide. Patterns:
+       single box:   <div class="wf-box">[loop diagram]</div>
+       two-column:   <div class="wf-row"><div class="wf-box">…</div><div class="wf-box">…</div></div>
+       three-column: <div class="wf-row3">…</div>
+       Keep box labels short: [code ~10 lines], [table 4 rows], [photo: team]. -->
+  <section class="wf-slide">
+    <div class="wf-head">
+      <span class="wf-num">01</span>
+      <span class="wf-title">{{ACTION_TITLE_SENTENCE}}</span>
+    </div>
+    <div class="wf-layout">{{LAYOUT_SIGNATURE}}</div>
+    <div class="wf-box">[{{VISUAL_LABEL}}]</div>
+    <ul class="wf-bullets">
+      <li>{{KEY_POINT_1}}</li>
+      <li>{{KEY_POINT_2}}</li>
+    </ul>
+  </section>
+  {{MORE_SLIDES}}
+</main>
+</body>
+</html>
