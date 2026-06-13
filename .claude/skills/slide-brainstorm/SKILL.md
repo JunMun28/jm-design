@@ -576,8 +576,8 @@ invent a competing convention here:
 - **`references/wireframe-skeleton.html`** — the canonical low-fi wireframe
   skeleton (shared with slide-quick). Copy this first and replace placeholders;
   do not rebuild the page structure from scratch.
-- **`references/layout-blueprint.md`** — the layout-architecture pass (was
-  the slide-layout-designer skill).
+- **`references/layout-blueprint.md`** — the layout-architecture pass
+  (formerly a standalone skill, now merged here).
 - **`references/archetypes.md`** — the layout archetype library.
 - **`references/design-vocabulary.md`** — the named layout signatures
   (manuscript row, vertical hairline split, stat-row, etc.) the build skill
