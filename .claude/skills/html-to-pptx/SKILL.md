@@ -94,6 +94,22 @@ Implementation details that keep it faithful:
 
 Limits to state to the user: chart values, axis labels, and any SVG/`::before`/`::after` text remain part of the background image (not editable); inline runs are placed per text node, so unusual inline mixes can drift slightly. Everything a presenter normally edits — titles, body copy, KPI numbers, card labels — is editable.
 
+## Living-deck workflow
+
+When converting a deck from the living-deck pipeline, default to `--mode layered`
+so the `.pptx` keeps editable text boxes, and name the output to match the deck
+variant — `<topic>.<theme>.pptx` beside `<topic>.<theme>.html`:
+
+```sh
+node .claude/skills/html-to-pptx/scripts/html_to_pptx.mjs \
+  ai-agents.micron-dark.html \
+  --out ai-agents.micron-dark.pptx \
+  --mode layered --validate
+```
+
+The HTML deck and the exported PPTX are edited **independently** — there is no
+sync between them. Re-export from the HTML whenever you want a fresh PPTX.
+
 ## Validation
 
 The validator opens the generated `.pptx` as an Office package and checks the real slide XML and embedded media. It reads `manifest.json["mode"]` and adapts.

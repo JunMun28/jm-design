@@ -1,180 +1,1074 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+  EXAMPLE: Playful theme (bright, friendly, colourful) on the universal Slide
+  Player shell. The shell (app bar, left rail, present mode, grid overview) is
+  INLINED from assets/shell.{css,js} between the SHELL markers — never edit it
+  here; edit the canonical files and re-inline with scripts/build-deck.py.
+  This is a FLUID theme: content uses clamp() and fills the 16:9 stage (no
+  data-stage="fixed"). Visual precedent — copy/adapt, do not use verbatim.
+-->
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Playful — example</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="tokens.css">
-<style>
-  html, body { margin: 0; padding: 0; height: 100%; }
-  body { scroll-snap-type: y mandatory; overflow-y: auto; }
+<!-- SHELL:CSS -->
+<style id="shell-css">
+/* html-slides :: shell.css — universal Slide Player shell (theme-independent)
+ *
+ * This is the canonical chrome + slide-system CSS. It is INLINED into every
+ * deck between the <!-- SHELL:CSS --> markers by scripts/build-deck.py. Never
+ * hand-edit an inlined copy — edit this file and re-inline (see ADR 0005).
+ *
+ * Everything here is token-driven. A theme overrides the look by setting the
+ * tokens below in its own :root block; it never re-authors the shell.
+ * See ADR 0006 for the Slide Player / Present Mode design.
+ */
+
+:root {
+  /* --- theme-overridable tokens (defaults: clean neutral light) --- */
+  --bg: #ffffff;
+  --ink: #15171c;
+  --muted: #5a5f6e;
+  --faint: #8a8f9e;
+  --accent: #3b6cff;
+  --panel: #f6f7f9;
+  --line: rgba(0, 0, 0, .10);
+  --line-strong: rgba(0, 0, 0, .18);
+
+  /* --- shell chrome geometry (themes rarely touch these) --- */
+  --rail-w: 164px;
+  --appbar-h: 52px;
+  --notes-max-h: 132px;
+  --shell-radius: 10px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  --font-body: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img, svg, video { max-width: 100%; display: block; }
+button { font-family: inherit; }
+
+/* speaker notes are source-of-truth content; the shell renders them into the
+   notes panel and never shows them in place. */
+.speaker-notes, aside.notes, .notes { display: none !important; }
+
+/* ===================== PLAYER LAYOUT ===================== */
+.deck {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.app-bar {
+  flex: 0 0 var(--appbar-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  z-index: 30;
+}
+.app-bar .menu-btn { display: none; }
+.app-bar .deck-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 42vw;
+}
+.app-bar .counter {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.app-bar .spacer { margin-left: auto; }
+
+.shell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1;
+  padding: 7px 13px;
+  border-radius: var(--shell-radius);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .15s var(--ease), background .15s var(--ease);
+}
+.shell-btn:hover { border-color: var(--line-strong); }
+.shell-btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.shell-btn.icon { width: 32px; height: 32px; justify-content: center; padding: 0; color: var(--muted); }
+.shell-btn svg { width: 15px; height: 15px; }
+
+.app-body { flex: 1 1 auto; display: flex; min-height: 0; }
+
+/* ----- left rail ----- */
+.rail {
+  flex: 0 0 var(--rail-w);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  scrollbar-width: thin;
+}
+.rail-thumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.rail-thumb .num {
+  flex: 0 0 15px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--faint);
+  text-align: right;
+}
+.rail-thumb .frame {
+  flex: 1 1 auto;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.rail-thumb .mini { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+.rail-thumb.is-active .frame { border: 2px solid var(--ink); }
+.rail-thumb.is-active .num { color: var(--ink); font-weight: 600; }
+
+/* ----- stage ----- */
+.stage-wrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.stage-area { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: 18px; min-height: 0; overflow: hidden; }
+.stage {
+  position: relative;
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .12);
+  border: 1px solid var(--line);
+  border-radius: var(--shell-radius);
+}
+
+/* fixed-canvas stage: themes that author at a fixed design size (e.g. Micron
+   1600x900) set data-stage="fixed" + --stage-w/--stage-h. shell.js computes
+   --stage-scale so the canvas fits the stage area / viewport. */
+.deck[data-stage="fixed"] .stage {
+  width: var(--stage-w, 1280px);
+  height: var(--stage-h, 720px);
+  aspect-ratio: auto;
+  max-height: none;
+  flex: 0 0 auto;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: center center;
+}
+.deck.presenting[data-stage="fixed"] .stage { max-height: none; }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 5vw, 64px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(22px);
+  transition: opacity .42s var(--ease), transform .42s var(--ease);
+  overflow: hidden;
+}
+.slide.is-active { opacity: 1; pointer-events: auto; transform: none; z-index: 2; }
+.slide.is-prev { transform: translateX(-22px); }
+
+/* ----- notes panel (player only) ----- */
+.notes-panel {
+  flex: 0 0 auto;
+  max-height: var(--notes-max-h);
+  overflow: auto;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 10px 16px 12px;
+}
+.notes-panel.collapsed { display: none; }
+.notes-panel .notes-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 5px;
+}
+.notes-panel .notes-label .hint { margin-left: auto; text-transform: none; letter-spacing: 0; }
+.notes-panel .notes-body { font-size: 14px; line-height: 1.65; color: var(--muted); }
+.notes-panel .notes-body:empty::before { content: 'No notes for this slide.'; color: var(--faint); font-style: italic; }
+
+/* ===================== PROGRESS ===================== */
+.progress-bar { position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; z-index: 60; }
+.progress-bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s var(--ease); }
+
+/* ===================== GRID OVERVIEW ===================== */
+.grid-overview {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  padding: 40px;
+  overflow: auto;
+  background: color-mix(in srgb, var(--bg) 86%, #000);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.grid-overview.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; align-content: start; }
+.grid-overview .gthumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg);
+  transition: transform .18s var(--ease);
+}
+.grid-overview .gthumb:hover { transform: scale(1.03); }
+.grid-overview .gthumb.is-active { outline: 2px solid var(--accent); outline-offset: -2px; }
+.grid-overview .gthumb .mini { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+.grid-overview .gthumb .badge {
+  position: absolute; top: 8px; left: 10px; z-index: 3;
+  font: 600 13px/1 var(--font-mono); color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+}
+
+/* ===================== HELP OVERLAY ===================== */
+.help-overlay { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center; background: color-mix(in srgb, var(--bg) 82%, #000); }
+.help-overlay.open { display: flex; }
+.help-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px 28px; max-width: 440px; width: calc(100% - 48px); }
+.help-card h2 { margin: 0 0 14px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.help-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.help-row:last-child { border-bottom: none; }
+.help-card kbd { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px; }
+
+/* ===================== JUMP-TO-SLIDE ===================== */
+.jump-input { position: fixed; left: 50%; top: 22px; transform: translateX(-50%); z-index: 95; display: none; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, .18); }
+.jump-input.open { display: flex; }
+.jump-input input { width: 64px; border: none; background: transparent; color: var(--ink); font-family: var(--font-mono); font-size: 15px; outline: none; }
+.jump-input .lbl { font-size: 12px; color: var(--faint); }
+
+/* ===================== PRESENT MODE ===================== */
+.deck.presenting .app-bar,
+.deck.presenting .rail,
+.deck.presenting .notes-panel { display: none; }
+.deck.presenting .stage-area { padding: 0; }
+.deck.presenting .stage { max-height: 100vh; max-height: 100dvh; box-shadow: none; border: none; border-radius: 0; }
+
+.present-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: none; align-items: center; gap: 16px; padding: 10px 18px;
+  background: color-mix(in srgb, #000 58%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, .82);
+  opacity: 0; transition: opacity .3s var(--ease);
+}
+.deck.presenting .present-bar { display: flex; }
+.deck.presenting.bar-show .present-bar { opacity: 1; }
+.present-bar .pcount { font-family: var(--font-mono); font-size: 14px; color: rgba(255, 255, 255, .82); }
+.present-bar .spacer { margin-left: auto; }
+.present-bar button { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid rgba(255, 255, 255, .18); color: rgba(255, 255, 255, .82); font-size: 13px; padding: 5px 11px; border-radius: 8px; cursor: pointer; }
+.present-bar button.nav { border: none; font-size: 20px; padding: 2px 6px; }
+.present-bar button svg { width: 15px; height: 15px; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 820px) {
+  .app-bar .menu-btn { display: inline-flex; }
+  .app-bar .deck-title { max-width: 32vw; }
+  .rail {
+    position: fixed; top: var(--appbar-h); left: 0; bottom: 0; width: 220px; z-index: 50;
+    transform: translateX(-100%); transition: transform .25s var(--ease);
+  }
+  .deck.rail-open .rail { transform: none; }
+  .notes-panel { display: none; }
+}
+
+/* ===================== REDUCED MOTION ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .slide, .progress-bar > span, .rail, .grid-overview .gthumb, .present-bar { transition: none !important; }
+  .slide { transform: none !important; }
+}
+
+/* ===================== PRINT ===================== */
+@media print {
+  body { overflow: visible; }
+  .app-bar, .rail, .notes-panel, .progress-bar, .present-bar, .grid-overview, .help-overlay, .jump-input { display: none !important; }
+  .deck, .app-body, .stage-wrap, .stage-area { display: block; height: auto; }
+  .stage { box-shadow: none; border: none; border-radius: 0; aspect-ratio: auto; }
+  .slide { position: relative; inset: auto; opacity: 1 !important; transform: none !important; page-break-after: always; height: 100vh; }
+}
+
+/* ===================== DEFAULT CONTENT TYPOGRAPHY =====================
+   Minimal readable defaults so a theme-less deck still renders. Deliberately
+   LOW specificity (bare element selectors) so any theme rule — even a plain
+   `.eyebrow {}` — wins by source order, since the theme <style> is inlined
+   AFTER this shell block. Never raise these to `.slide x`; that would fight
+   themes (see the migration note in ADR 0006). */
+:where(.slide h1) { font: 800 clamp(44px, 6.2vw, 84px)/1.05 inherit; letter-spacing: -.02em; margin: 0 0 .35em; }
+:where(.slide h2) { font: 700 clamp(40px, 4.8vw, 60px)/1.1 inherit; letter-spacing: -.015em; margin: 0 0 .35em; }
+:where(.slide p, .slide li) { font-size: clamp(20px, 1.95vw, 26px); line-height: 1.5; color: var(--muted); margin: 0 0 .5em; }
+:where(.slide .eyebrow) { font-size: clamp(18px, 1.6vw, 22px); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 0 0 .7em; }
+:where(.slide ul) { margin: 0; padding-left: 1.1em; }
+:where(.slide .grid) { display: grid; gap: clamp(12px, 1.6vw, 22px); }
+:where(.slide .g2) { grid-template-columns: repeat(2, 1fr); }
+:where(.slide .g3) { grid-template-columns: repeat(3, 1fr); }
+:where(.slide .card) { background: var(--panel); border: 1px solid var(--line); border-radius: var(--shell-radius); padding: clamp(14px, 1.8vw, 24px); }
+
+/* ===================== LIVING EDITOR ===================== */
+.app-bar .shell-btn.active { border-color: var(--ink); color: var(--ink); }
+body.edit-active [contenteditable="true"] { outline: 1px dashed var(--accent); outline-offset: 3px; border-radius: 3px; cursor: text; }
+body.edit-active [contenteditable="true"]:focus { outline: 2px solid var(--accent); }
+body.edit-active .reveal { transition: none !important; }
+body.edit-active .rail-thumb { cursor: grab; }
+.rail-thumb .thumb-tools { display: none; }
+body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 auto; margin-left: 2px; }
+.rail-thumb .thumb-tools button {
+  width: 18px; height: 18px; line-height: 1; padding: 0;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+  color: var(--muted); font-size: 12px; cursor: pointer;
+}
+.rail-thumb .thumb-tools button:hover { border-color: var(--line-strong); color: var(--ink); }
+@media print { body.edit-active [contenteditable] { outline: none !important; } }
+</style>
+<!-- /SHELL:CSS -->
+<style id="theme-tokens">
+  /* === playful tokens (inlined from themes/playful/tokens.css — frozen) === */
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700;9..144,900&family=DM+Sans:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #FFF8E7;
+    --ink: #2B2118;
+    --ink-muted: #6B5E51;
+    --accent: #FF6B6B;
+    --accent-2: #4ECDC4;
+    --accent-3: #FFE66D;
+    --accent-4: #6C5CE7;
+    --rule: #2B2118;
+
+    --font-display: "Fraunces", "Times New Roman", serif;
+    --font-body: "DM Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: ui-monospace, Menlo, monospace;
+
+    --scale-ratio: 1.333;
+    --col-count: 12;
+    --col-gap: 24px;
+    --margin-outer: clamp(24px, 5vw, 80px);
+
+    --headline-size: clamp(2.5rem, 6vw, 4.5rem);
+    --title-size: clamp(3rem, 9vw, 6.5rem);
+    --body-size: clamp(1.0625rem, 1.3vw, 1.1875rem);
+    --shadow-chunky: 0 6px 0 var(--ink);
+    --radius: 20px;
+
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+    --duration-normal: .6s;
+
+    /* shell chrome tokens mapped to the playful palette so the rail / app bar /
+       notes panel read native (warm cream surfaces, warm-ink hairlines). */
+    --muted: #6B5E51;
+    --faint: #9A8C7C;
+    --panel: #FFFDF6;
+    --line: rgba(43, 33, 24, .14);
+    --line-strong: rgba(43, 33, 24, .26);
+  }
+
+  /* body weight + smoothing carried from tokens.css */
+  body { font-weight: 500; }
+
+  /* === theme content CSS ===
+     The .slide IS the painted surface — retarget the old 12-col grid layout
+     onto it (the shell's .slide is flex/centered by default). */
   .slide {
-    min-height: 100vh; min-height: 100dvh;
-    scroll-snap-align: start; scroll-snap-stop: always;
-    display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--col-gap);
-    padding: clamp(48px, 6vw, 96px) var(--margin-outer);
-    box-sizing: border-box; position: relative;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--col-gap);
+    align-content: center;
+    padding: clamp(12px, 3.5vw, 96px) var(--margin-outer);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
   }
   .panel { grid-column: 2 / span 9; align-self: center; }
-  .slide.title-slide h1 { font-size: var(--title-size); margin: 1rem 0; }
-  .slide:not(.title-slide) h2 { font-size: var(--headline-size); margin: 0 0 1rem; }
-  /* Presentation-room readability floors: body >=24px, labels >=20px. */
-  .slide p { font-size: clamp(24px, 2vw, 28px); max-width: 38em; }
-  .slide .sticker { font-size: clamp(20px, 1.6vw, 24px); }
 
+  /* Bare selectors — keep specificity at the theme's own level so class rules
+     (e.g. .title-date) are never beaten by a stray .slide p {} fallback. */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .title-slide h1 { font-size: clamp(2rem, 9vw, 6.5rem); margin: clamp(.25rem, 2vw, 1rem) 0; }
+  .slide:not(.title-slide) h2 { font-size: clamp(1.05rem, 4.4vw, 4.5rem); margin: 0 0 clamp(.3rem, 1.6vw, 1rem); line-height: 1.02; }
+  /* Presentation-room readability: body scales up toward 28px on the full stage. */
+  /* vw coefficients sized so the present stage clears the 24px body / 20px label
+     readability floors at the narrowest tested desktop present width (1127px);
+     the upper clamp caps keep the 1280 look unchanged, and on mobile (<900px,
+     floor-governed) the px minimums still win, so overflow tuning is untouched. */
+  p { font-size: clamp(12px, 2.2vw, 28px); max-width: 38em; color: var(--ink); line-height: 1.28; margin: 0; }
+  .sticker { font-size: clamp(13px, 1.85vw, 24px); }
+
+  .sticker {
+    display: inline-block;
+    padding: clamp(.25rem, 1vw, .5rem) clamp(.5rem, 2vw, 1rem);
+    background: var(--accent-3);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-chunky);
+    transform: rotate(-2deg);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  .card {
+    background: var(--bg);
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-chunky);
+    padding: clamp(.5rem, 3vw, 1.5rem);
+  }
+
+  .accent { color: var(--accent); }
+  .accent-2 { color: var(--accent-2); }
+  .accent-3 { color: var(--accent-3); }
+  .accent-4 { color: var(--accent-4); }
+  .muted { color: var(--ink-muted); }
+
+  /* Off-grid sticker shapes — Memphis-design echoes. */
   .blob { position: absolute; border: 2px solid var(--ink); border-radius: 50%; box-shadow: var(--shadow-chunky); }
   .blob.a { right: 8%; top: 12%; width: 140px; height: 140px; background: var(--accent); transform: rotate(8deg); }
   .blob.b { right: 18%; bottom: 14%; width: 90px; height: 90px; background: var(--accent-2); }
   .blob.c { left: 6%; bottom: 10%; width: 110px; height: 110px; background: var(--accent-4); }
 
-  .nav-dots { position: fixed; right: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 50; }
-  .nav-dots button {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 2px solid var(--ink); background: var(--bg);
-    padding: 0; cursor: pointer; transition: background 200ms ease-out, transform 200ms ease-out;
+  /* Reveal — the shell toggles `visible` on the active slide. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--duration-normal) var(--ease-out-expo),
+                transform var(--duration-normal) var(--ease-out-expo);
   }
-  .nav-dots button[aria-current="true"] { background: var(--accent); transform: scale(1.2); }
-  .nav-dots button:focus-visible { outline: 2px solid var(--accent-4); outline-offset: 4px; }
-
-  .progress { position: fixed; left: 0; top: 0; height: 3px; background: var(--accent); width: 0%; z-index: 60; transition: width 200ms ease-out; }
-
-  #overview {
-    position: fixed; inset: 0; background: var(--bg);
-    padding: var(--margin-outer); display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-    overflow: auto; z-index: 100;
-  }
-  #overview[aria-hidden="true"] { display: none; }
-  .ov-card {
-    border: 2px solid var(--ink); border-radius: var(--radius); padding: 0; cursor: pointer;
-    background: var(--bg); box-shadow: var(--shadow-chunky);
-    color: var(--ink); text-align: left; font-family: var(--font-body);
-    transition: transform 150ms ease-out; overflow: hidden;
-  }
-  .ov-card:hover, .ov-card:focus-visible { transform: translateY(-2px); outline: none; }
-  .ov-thumb { aspect-ratio: 16 / 9; overflow: hidden; position: relative; background: var(--bg); border-bottom: 2px solid var(--ink); }
-  .ov-thumb .clone { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
-  .ov-thumb-title { position: absolute; left: 0.75rem; bottom: 0.75rem; max-width: 80%; font-weight: 900; font-size: 1rem; color: var(--ink); background: var(--accent-3); border: 2px solid var(--ink); border-radius: 999px; padding: 0.2rem 0.55rem; }
-  .ov-label { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 1rem; font-size: 0.8rem; }
+  .slide.visible .reveal { opacity: 1; transform: none; }
+  .reveal:nth-child(1) { transition-delay: .05s; }
+  .reveal:nth-child(2) { transition-delay: .15s; }
+  .reveal:nth-child(3) { transition-delay: .25s; }
+  .reveal:nth-child(4) { transition-delay: .35s; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    .ov-card:hover, .ov-card:focus-visible { transform: none; }
+    .sticker { transform: none; }
   }
 </style>
 </head>
 <body>
+<main class="deck" data-deck-title="Playful — example" data-deck-mode="standalone">
 
-<div class="progress" id="progress"></div>
-<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+  <!-- 01 Cover -->
+  <section class="slide title-slide" data-slide-kind="cover">
+    <div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+    <div class="panel">
+      <span class="sticker reveal">Workshop / 2026</span>
+      <h1 class="reveal"><span class="accent">Hi.</span></h1>
+      <p class="reveal">A specimen deck for the playful theme. Bright, friendly, ready to start the day.</p>
+    </div>
+  </section>
 
-<section class="slide title-slide" data-slide-kind="cover" data-title="Hi.">
-  <div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
-  <div class="panel">
-    <span class="sticker">Workshop / 2026</span>
-    <h1><span class="accent">Hi.</span></h1>
-    <p>A specimen deck for the playful theme. Bright, friendly, ready to start the day.</p>
-  </div>
-</section>
+  <!-- 02 What it's for -->
+  <section class="slide" data-slide-kind="statement">
+    <div class="panel card">
+      <h2 class="reveal">For <span class="accent-2">workshops</span>, kickoffs, onboarding.</h2>
+      <p class="reveal">Use playful when the goal is to energise the room, not inform a board. The deck carries the warmth so the speaker can carry the substance.</p>
+    </div>
+    <aside class="speaker-notes">Set expectations early: this theme is for energising a room. If the audience needs to be informed or persuaded with data, pick a quieter theme.</aside>
+  </section>
 
-<section class="slide" data-title="What this theme is for">
-  <div class="panel card">
-    <h2>For <span class="accent-2">workshops</span>, kickoffs, onboarding.</h2>
-    <p>Use playful when the goal is to energise the room, not inform a board. The deck carries the warmth so the speaker can carry the substance.</p>
-  </div>
-</section>
+  <!-- 03 One accent per slide -->
+  <section class="slide" data-slide-kind="statement">
+    <div class="panel">
+      <h2 class="reveal"><span class="accent-4">One</span> accent per slide.</h2>
+      <p class="reveal">Rotate across the deck: coral, teal, sunshine, grape. Never all four on the same slide.</p>
+    </div>
+    <aside class="speaker-notes">Point at the rotation rule — each slide picks one of the four accents. Using all four at once reads as confused, not playful.</aside>
+  </section>
 
-<section class="slide" data-title="One accent per slide">
-  <div class="panel">
-    <h2><span class="accent-4">One</span> accent per slide.</h2>
-    <p>Rotate across the deck: coral, teal, sunshine, grape. Never all four on the same slide.</p>
-  </div>
-</section>
+  <!-- 04 End -->
+  <section class="slide" data-slide-kind="close">
+    <div class="panel">
+      <span class="sticker reveal">that's it</span>
+      <h2 class="reveal">Have fun.</h2>
+    </div>
+  </section>
 
-<section class="slide" data-title="End">
-  <div class="panel">
-    <span class="sticker">that's it</span>
-    <h2>Have fun.</h2>
-  </div>
-</section>
+</main>
+<!-- SHELL:JS -->
+<script id="shell-js">
+/* html-slides :: shell.js — universal Slide Player runtime (theme-independent)
+ *
+ * INLINED into every deck between the <!-- SHELL:JS --> markers by
+ * scripts/build-deck.py. Never hand-edit an inlined copy — edit this file and
+ * re-inline (ADR 0005). Zero dependencies.
+ *
+ * The deck author writes only `.deck > .slide` sections (+ optional
+ * <aside class="speaker-notes"> per slide). This runtime builds the player
+ * chrome (app bar, left rail, stage, notes panel, grid overview, help, jump,
+ * present bar, progress) and drives navigation. See ADR 0006.
+ *
+ * Keys: ← → / space / PgUp PgDn / Home End  navigate
+ *       P present (fullscreen)   G grid overview   ? help   N toggle notes
+ *       digits + Enter  jump to slide   Esc closes overlay / exits present
+ * URL hash #/N deep-links to slide N (1-based).
+ */
+(function () {
+  'use strict';
 
-<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+  var DESIGN_W = 1280, DESIGN_H = 720;
 
-<script>
-class SlidePresentation {
-  constructor() {
-    this.slides = Array.from(document.querySelectorAll('.slide'));
-    this.dots = document.getElementById('navDots');
-    this.progress = document.getElementById('progress');
-    this.overview = document.getElementById('overview');
-    this.index = 0;
-    this.buildDots(); this.buildOverview(); this.bind(); this.update();
+  var IC = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>',
+    next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>'
+  };
+
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
   }
-  buildDots() {
-    this.slides.forEach((s, i) => {
-      const b = document.createElement('button');
-      b.setAttribute('aria-label', `Go to slide ${i + 1}`);
-      b.addEventListener('click', () => this.goTo(i));
-      this.dots.appendChild(b);
-    });
+  function el(tag, cls, html) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
   }
-  buildOverview() {
-    this.slides.forEach((s, i) => {
-      const c = document.createElement('button');
-      c.className = 'ov-card';
-      c.setAttribute('aria-label', `Slide ${i + 1}: ${s.dataset.title || ''}`);
-      const thumb = document.createElement('div');
-      thumb.className = 'ov-thumb';
-      const clone = s.cloneNode(true);
-      clone.classList.add('clone');
-      thumb.appendChild(clone);
-      const thumbTitle = document.createElement('div');
-      thumbTitle.className = 'ov-thumb-title';
-      thumbTitle.textContent = s.dataset.title || `Slide ${i + 1}`;
-      thumb.appendChild(thumbTitle);
-      const label = document.createElement('div');
-      label.className = 'ov-label';
-      label.innerHTML = `<strong>${String(i + 1).padStart(2, '0')}</strong><span>${s.dataset.title || ''}</span>`;
-      c.append(thumb, label);
-      c.addEventListener('click', () => { this.toggleOverview(false); this.goTo(i); });
-      this.overview.appendChild(c);
+
+  ready(function () {
+    var deck = document.querySelector('.deck');
+    if (!deck) return;
+    var slides = [].slice.call(deck.querySelectorAll('.slide'));
+    if (!slides.length) return;
+
+    // Authored snapshot taken BEFORE any chrome is built or slides are moved.
+    // Used by the editor's save to reconstruct the authored file (ADR: living-deck).
+    var PRISTINE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    var total = slides.length;
+    var idx = 0;
+    var deckTitle = deck.getAttribute('data-deck-title') || document.title || 'Slides';
+
+    var fixedStage = deck.getAttribute('data-stage') === 'fixed';
+    var dcs = getComputedStyle(deck);
+    if (fixedStage) {
+      DESIGN_W = parseInt(dcs.getPropertyValue('--stage-w'), 10) || 1280;
+      DESIGN_H = parseInt(dcs.getPropertyValue('--stage-h'), 10) || 720;
+    }
+
+    /* ---------- build chrome ---------- */
+    var appBar = el('header', 'app-bar');
+    var menuBtn = el('button', 'shell-btn icon menu-btn', IC.menu);
+    menuBtn.setAttribute('aria-label', 'Toggle slide rail');
+    var titleEl = el('span', 'deck-title'); titleEl.textContent = deckTitle;
+    var counter = el('span', 'counter');
+    var spacer = el('span', 'spacer');
+    var gridBtn = el('button', 'shell-btn icon', IC.grid); gridBtn.setAttribute('aria-label', 'Grid overview');
+    var helpBtn = el('button', 'shell-btn icon', '?'); helpBtn.setAttribute('aria-label', 'Keyboard shortcuts');
+    var presentBtn = el('button', 'shell-btn primary', IC.play + '<span>Present</span>');
+    var editBtn = el('button', 'shell-btn', 'Edit'); editBtn.setAttribute('aria-label', 'Toggle edit mode');
+    var saveBtn = el('button', 'shell-btn', 'Save'); saveBtn.setAttribute('aria-label', 'Save edits to file'); saveBtn.style.display = 'none';
+    appBar.appendChild(menuBtn); appBar.appendChild(titleEl); appBar.appendChild(counter);
+    appBar.appendChild(spacer); appBar.appendChild(editBtn); appBar.appendChild(saveBtn);
+    appBar.appendChild(gridBtn); appBar.appendChild(helpBtn); appBar.appendChild(presentBtn);
+
+    var rail = el('nav', 'rail'); rail.setAttribute('aria-label', 'Slides');
+    var stage = el('div', 'stage');
+    var stageArea = el('div', 'stage-area'); stageArea.appendChild(stage);
+    var notesPanel = el('aside', 'notes-panel collapsed',
+      '<div class="notes-label">Speaker notes<span class="hint">hidden when presenting</span></div><div class="notes-body"></div>');
+    var notesBody = notesPanel.querySelector('.notes-body');
+    var stageWrap = el('div', 'stage-wrap'); stageWrap.appendChild(stageArea); stageWrap.appendChild(notesPanel);
+    var appBody = el('div', 'app-body'); appBody.appendChild(rail); appBody.appendChild(stageWrap);
+
+    /* move slides into the stage */
+    slides.forEach(function (s) { stage.appendChild(s); });
+    deck.appendChild(appBar);
+    deck.appendChild(appBody);
+
+    var progress = el('div', 'progress-bar', '<span></span>');
+    var progressFill = progress.querySelector('span');
+    var presentBar = el('div', 'present-bar');
+    var exitBtn = el('button', '', IC.x + 'Exit'); exitBtn.setAttribute('aria-label', 'Exit present mode');
+    var pPrev = el('button', 'nav', IC.prev); pPrev.setAttribute('aria-label', 'Previous slide');
+    var pCount = el('span', 'pcount');
+    var pNext = el('button', 'nav', IC.next); pNext.setAttribute('aria-label', 'Next slide');
+    var pSpacer = el('span', 'spacer');
+    presentBar.appendChild(exitBtn); presentBar.appendChild(pSpacer);
+    presentBar.appendChild(pPrev); presentBar.appendChild(pCount); presentBar.appendChild(pNext);
+
+    var gridOv = el('div', 'grid-overview'); gridOv.setAttribute('aria-hidden', 'true');
+    var helpOv = el('div', 'help-overlay');
+    helpOv.innerHTML = '<div class="help-card"><h2>Keyboard shortcuts</h2>' +
+      '<div class="help-row"><span>Next / previous</span><span><kbd>→</kbd> <kbd>←</kbd> <kbd>Space</kbd></span></div>' +
+      '<div class="help-row"><span>First / last</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>' +
+      '<div class="help-row"><span>Jump to slide</span><span><kbd>1</kbd>…<kbd>9</kbd> <kbd>Enter</kbd></span></div>' +
+      '<div class="help-row"><span>Present (fullscreen)</span><span><kbd>P</kbd></span></div>' +
+      '<div class="help-row"><span>Grid overview</span><span><kbd>G</kbd></span></div>' +
+      '<div class="help-row"><span>Toggle notes</span><span><kbd>N</kbd></span></div>' +
+      '<div class="help-row"><span>Help / close</span><span><kbd>?</kbd> <kbd>Esc</kbd></span></div></div>';
+    var jump = el('div', 'jump-input', '<span class="lbl">Go to</span><input type="text" inputmode="numeric" aria-label="Jump to slide number">');
+    var jumpField = jump.querySelector('input');
+
+    document.body.appendChild(progress);
+    document.body.appendChild(presentBar);
+    document.body.appendChild(gridOv);
+    document.body.appendChild(helpOv);
+    document.body.appendChild(jump);
+
+    /* ---------- thumbnails ---------- */
+    function makeMini(slide) {
+      var mini = el('div', 'mini');
+      mini.setAttribute('aria-hidden', 'true');
+      mini.style.width = DESIGN_W + 'px';
+      mini.style.height = DESIGN_H + 'px';
+      var clone = slide.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.classList.add('is-active');
+      clone.style.opacity = '1';
+      clone.style.transform = 'none';
+      clone.style.transition = 'none';
+      [].forEach.call(clone.querySelectorAll('.reveal,[data-anim]'), function (n) {
+        n.style.opacity = '1'; n.style.transform = 'none'; n.classList.add('visible');
+      });
+      mini.appendChild(clone);
+      return mini;
+    }
+    function scaleMini(frame, mini) {
+      var w = frame.clientWidth;
+      if (w) mini.style.transform = 'scale(' + (w / DESIGN_W) + ')';
+    }
+
+    var railThumbs = [];
+    function buildRail() {
+      rail.innerHTML = '';
+      railThumbs = [];
+      slides.forEach(function (slide, i) {
+        var btn = el('button', 'rail-thumb');
+        btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+        var num = el('span', 'num'); num.textContent = (i + 1);
+        var frame = el('span', 'frame');
+        var mini = makeMini(slide);
+        frame.appendChild(mini);
+        btn.appendChild(num); btn.appendChild(frame);
+        btn.addEventListener('click', function () { go(i); closeRail(); });
+        rail.appendChild(btn);
+        railThumbs.push({ btn: btn, frame: frame, mini: mini });
+      });
+    }
+    buildRail();
+    function rescaleThumbs() { railThumbs.forEach(function (t) { scaleMini(t.frame, t.mini); }); }
+
+    /* fixed-canvas stage: scale the design-size stage to fit the area/viewport */
+    function fitStage() {
+      if (!fixedStage) return;
+      var aw = stageArea.clientWidth, ah = stageArea.clientHeight;
+      var sw = stage.offsetWidth || DESIGN_W, sh = stage.offsetHeight || DESIGN_H;
+      if (aw && ah && sw && sh) stage.style.setProperty('--stage-scale', Math.min(aw / sw, ah / sh));
+    }
+
+    /* ---------- grid overview ---------- */
+    var gridThumbs = [];
+    function buildGrid() {
+      gridOv.innerHTML = '';
+      gridThumbs = [];
+      slides.forEach(function (slide, i) {
+        var cell = el('button', 'gthumb');
+        cell.setAttribute('aria-label', 'Slide ' + (i + 1));
+        var mini = makeMini(slide);
+        var badge = el('span', 'badge'); badge.textContent = (i + 1);
+        cell.appendChild(mini); cell.appendChild(badge);
+        cell.addEventListener('click', function () { go(i); toggleGrid(false); });
+        gridOv.appendChild(cell);
+        gridThumbs.push({ frame: cell, mini: mini });
+      });
+    }
+    function rescaleGrid() { gridThumbs.forEach(function (t) { scaleMini(t.frame, t.mini); }); }
+
+    /* ---------- navigation ---------- */
+    function go(n, opts) {
+      opts = opts || {};
+      n = Math.max(0, Math.min(total - 1, n));
+      slides.forEach(function (s, i) {
+        if (opts.immediate) s.style.transition = 'none';
+        s.classList.toggle('is-active', i === n);
+        s.classList.toggle('is-prev', i < n);
+        // also toggle `visible` on the active slide so themes using the
+        // `.slide.visible .reveal` contract (June-12 micron themes) animate too.
+        s.classList.toggle('visible', i === n);
+        if (opts.immediate) { void s.offsetWidth; s.style.transition = ''; }
+      });
+      idx = n;
+      counter.textContent = (n + 1) + ' / ' + total;
+      pCount.textContent = (n + 1) + ' / ' + total;
+      progressFill.style.width = ((n + 1) / total * 100) + '%';
+      railThumbs.forEach(function (t, i) {
+        t.btn.classList.toggle('is-active', i === n);
+        if (i === n) t.btn.scrollIntoView({ block: 'nearest' });
+      });
+      if (gridThumbs.length) gridThumbs.forEach(function (t, i) { t.frame.classList.toggle('is-active', i === n); });
+      var note = slides[n].querySelector('.speaker-notes, aside.notes, .notes');
+      notesBody.innerHTML = note ? note.innerHTML : '';
+      revealIn(slides[n]);
+      var hash = '#/' + (n + 1);
+      if (location.hash !== hash) history.replaceState(null, '', hash);
+    }
+    function revealIn(slide) {
+      [].forEach.call(slide.querySelectorAll('.reveal'), function (n, i) {
+        n.classList.remove('visible'); void n.offsetWidth;
+        n.style.transitionDelay = (i * 60) + 'ms';
+        n.classList.add('visible');
+      });
+    }
+
+    /* ---------- present mode ---------- */
+    var barTimer = null;
+    function showBar() {
+      deck.classList.add('bar-show');
+      if (barTimer) clearTimeout(barTimer);
+      barTimer = setTimeout(function () { deck.classList.remove('bar-show'); }, 2200);
+    }
+    function enterPresent() {
+      deck.classList.add('presenting');
+      showBar();
+      var elx = document.documentElement;
+      if (elx.requestFullscreen) elx.requestFullscreen().catch(function () {});
+      requestAnimationFrame(function () { fitStage(); go(idx, { immediate: true }); });
+    }
+    function exitPresent() {
+      deck.classList.remove('presenting', 'bar-show');
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+      requestAnimationFrame(fitStage);
+    }
+    function togglePresent() { deck.classList.contains('presenting') ? exitPresent() : enterPresent(); }
+    document.addEventListener('fullscreenchange', function () {
+      if (!document.fullscreenElement) deck.classList.remove('presenting', 'bar-show');
     });
-    requestAnimationFrame(() => this.scaleOverviewThumbs());
-  }
-  scaleOverviewThumbs() {
-    this.overview.querySelectorAll('.ov-thumb').forEach((thumb) => {
-      const clone = thumb.querySelector('.clone');
-      const rect = this.slides[0].getBoundingClientRect();
-      clone.style.width = `${rect.width}px`;
-      clone.style.height = `${rect.height}px`;
-      clone.style.transform = `scale(${thumb.clientWidth / rect.width})`;
+
+    /* ---------- overlays ---------- */
+    function toggleGrid(force) {
+      var open = force !== undefined ? force : !gridOv.classList.contains('open');
+      if (open && !gridThumbs.length) buildGrid();
+      gridOv.classList.toggle('open', open);
+      gridOv.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) requestAnimationFrame(rescaleGrid);
+    }
+    function toggleHelp(force) {
+      helpOv.classList.toggle('open', force !== undefined ? force : !helpOv.classList.contains('open'));
+    }
+    function toggleNotes(force) {
+      notesPanel.classList.toggle('collapsed', force !== undefined ? !force : !notesPanel.classList.contains('collapsed'));
+    }
+    function closeRail() { deck.classList.remove('rail-open'); }
+    function anyOverlayOpen() { return gridOv.classList.contains('open') || helpOv.classList.contains('open') || jump.classList.contains('open'); }
+
+    /* ---------- jump to slide ---------- */
+    var jumpBuf = '';
+    function openJump(first) {
+      jumpBuf = first || '';
+      jumpField.value = jumpBuf;
+      jump.classList.add('open');
+      jumpField.focus();
+    }
+    function closeJump() { jump.classList.remove('open'); jumpBuf = ''; }
+    jumpField.addEventListener('keydown', function (e) {
+      e.stopPropagation();
+      if (e.key === 'Enter') { var n = parseInt(jumpField.value, 10); if (n >= 1) go(n - 1); closeJump(); }
+      else if (e.key === 'Escape') closeJump();
     });
-  }
-  bind() {
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') this.toggleOverview(this.overview.getAttribute('aria-hidden') === 'true');
-      if (['ArrowDown','ArrowRight',' '].includes(e.key)) { e.preventDefault(); this.goTo(this.index + 1); }
-      if (['ArrowUp','ArrowLeft'].includes(e.key)) { e.preventDefault(); this.goTo(this.index - 1); }
+
+    /* ---------- buttons ---------- */
+    presentBtn.addEventListener('click', enterPresent);
+    exitBtn.addEventListener('click', exitPresent);
+    pPrev.addEventListener('click', function () { go(idx - 1); showBar(); });
+    pNext.addEventListener('click', function () { go(idx + 1); showBar(); });
+    gridBtn.addEventListener('click', function () { toggleGrid(); });
+    helpBtn.addEventListener('click', function () { toggleHelp(); });
+    menuBtn.addEventListener('click', function () { deck.classList.toggle('rail-open'); });
+
+    /* ---------- keyboard ---------- */
+    document.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var kt = e.target;
+      if (kt && (kt.isContentEditable || kt.tagName === 'INPUT' || kt.tagName === 'TEXTAREA')) {
+        if (e.key === 'Escape') kt.blur();
+        return;
+      }
+      if (jump.classList.contains('open')) return;
+      if (/^[0-9]$/.test(e.key)) { openJump(e.key); return; }
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': go(idx + 1); showBar(); e.preventDefault(); break;
+        case 'ArrowLeft': case 'ArrowUp': case 'PageUp': go(idx - 1); showBar(); e.preventDefault(); break;
+        case 'Home': go(0); break;
+        case 'End': go(total - 1); break;
+        case 'p': case 'P': togglePresent(); break;
+        case 'g': case 'G': toggleGrid(); break;
+        case 'e': case 'E': toggleEditMode(); break;
+        case 'n': case 'N': toggleNotes(); break;
+        case '?': toggleHelp(); break;
+        case 'Escape':
+          if (jump.classList.contains('open')) closeJump();
+          else if (helpOv.classList.contains('open')) toggleHelp(false);
+          else if (gridOv.classList.contains('open')) toggleGrid(false);
+          else if (deck.classList.contains('presenting')) exitPresent();
+          break;
+      }
     });
-    window.addEventListener('scroll', () => {
-      const i = this.slides.findIndex(s => s.getBoundingClientRect().top >= -1);
-      if (i >= 0 && i !== this.index) { this.index = i; this.update(); }
+
+    /* ---------- pointer: present-bar wake + touch swipe ---------- */
+    document.addEventListener('mousemove', function () { if (deck.classList.contains('presenting')) showBar(); });
+    var tx = 0, ty = 0;
+    stage.addEventListener('touchstart', function (e) { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
     }, { passive: true });
-  }
-  goTo(i, { immediate = false } = {}) {
-    i = Math.max(0, Math.min(this.slides.length - 1, i));
-    this.index = i;
-    this.slides[i].scrollIntoView({ behavior: immediate ? 'instant' : 'smooth', block: 'start' });
-    this.update();
-  }
-  toggleOverview(open) { this.overview.setAttribute('aria-hidden', open ? 'false' : 'true'); }
-  update() {
-    this.dots.querySelectorAll('button').forEach((d, i) => d.setAttribute('aria-current', i === this.index ? 'true' : 'false'));
-    this.progress.style.width = `${((this.index + 1) / this.slides.length) * 100}%`;
-  }
-}
-window.presentation = new SlidePresentation();
+
+    /* ---------- hash deep-link ---------- */
+    function fromHash() {
+      var m = /^#\/(\d+)/.exec(location.hash || '');
+      if (m) { var n = parseInt(m[1], 10) - 1; if (n >= 0 && n < total) idx = n; }
+    }
+    window.addEventListener('hashchange', function () { fromHash(); go(idx); });
+
+    /* ---------- resize ---------- */
+    var rzTimer = null;
+    window.addEventListener('resize', function () {
+      if (rzTimer) clearTimeout(rzTimer);
+      rzTimer = setTimeout(function () { fitStage(); rescaleThumbs(); if (gridOv.classList.contains('open')) rescaleGrid(); }, 120);
+    });
+
+    /* ---------- init ---------- */
+    fromHash();
+    requestAnimationFrame(function () { fitStage(); rescaleThumbs(); go(idx, { immediate: true }); });
+
+    /* ====================== LIVING EDITOR (ADR: living-deck) ======================
+       Inert until the user enters edit mode. Edits slide CONTENT and ORDER only.
+       Save reconstructs the AUTHORED form from PRISTINE_HTML + the current slides,
+       never the runtime-expanded DOM. */
+    var EDIT_SEL = 'h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,figcaption,.eyebrow';
+    var editActive = false;
+    function railEditUI(on) {
+      railThumbs.forEach(function (t, i) {
+        t.btn.setAttribute('draggable', on ? 'true' : 'false');
+        var tools = t.btn.querySelector('.thumb-tools');
+        if (on && !tools) {
+          tools = el('span', 'thumb-tools');
+          var dup = el('button', 'thumb-dup', '+'); dup.title = 'Duplicate slide'; dup.setAttribute('aria-label', 'Duplicate slide ' + (i + 1));
+          var del = el('button', 'thumb-del', '×'); del.title = 'Delete slide'; del.setAttribute('aria-label', 'Delete slide ' + (i + 1));
+          dup.addEventListener('click', function (e) { e.stopPropagation(); duplicateSlide(i); });
+          del.addEventListener('click', function (e) { e.stopPropagation(); deleteSlide(i); });
+          tools.appendChild(dup); tools.appendChild(del);
+          t.btn.appendChild(tools);
+        } else if (!on && tools) {
+          tools.remove();
+        }
+      });
+    }
+
+    function rebuildNav() {
+      slides = [].slice.call(stage.querySelectorAll('.slide'));
+      total = slides.length;
+      buildRail();
+      railEditUI(editActive);
+      setEditable(editActive);
+      gridThumbs = []; gridOv.innerHTML = ''; gridOv.classList.remove('open'); gridOv.setAttribute('aria-hidden', 'true');
+      idx = Math.max(0, Math.min(total - 1, idx));
+      go(idx, { immediate: true });
+      requestAnimationFrame(rescaleThumbs);
+    }
+
+    function moveSlide(from, to) {
+      if (from === to || from < 0 || to < 0 || from >= total || to >= total) return;
+      var node = slides[from], ref = slides[to];
+      if (from < to) stage.insertBefore(node, ref.nextSibling);
+      else stage.insertBefore(node, ref);
+      idx = to;
+      rebuildNav();
+    }
+    function duplicateSlide(i) {
+      if (i < 0 || i >= total) return;
+      var clone = slides[i].cloneNode(true);
+      clone.classList.remove('is-active', 'is-prev', 'visible');
+      clone.removeAttribute('id');
+      stage.insertBefore(clone, slides[i].nextSibling);
+      idx = i + 1;
+      rebuildNav();
+    }
+    function deleteSlide(i) {
+      if (total <= 1 || i < 0 || i >= total) return;
+      stage.removeChild(slides[i]);
+      idx = Math.max(0, i - 1);
+      rebuildNav();
+    }
+
+    var fileHandle = null;
+    function cleanInto(doc, slide) {
+      var c = doc.importNode(slide, true);
+      c.classList.remove('is-active', 'is-prev', 'visible');
+      c.removeAttribute('contenteditable');
+      [].forEach.call(c.querySelectorAll('[contenteditable]'), function (n) { n.removeAttribute('contenteditable'); });
+      [].forEach.call(c.querySelectorAll('.reveal'), function (n) {
+        n.classList.remove('visible'); n.style.transitionDelay = '';
+        if (!n.getAttribute('style')) n.removeAttribute('style');
+      });
+      if (!c.getAttribute('style')) c.removeAttribute('style');
+      if (!c.getAttribute('class')) c.removeAttribute('class');
+      return c;
+    }
+    function serializeAuthored() {
+      var doc = new DOMParser().parseFromString(PRISTINE_HTML, 'text/html');
+      var pdeck = doc.querySelector('.deck');
+      pdeck.innerHTML = '';
+      slides.forEach(function (s) { pdeck.appendChild(cleanInto(doc, s)); });
+      return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    }
+    function fileBase() { return (document.title || 'deck').replace(/\s+/g, '-').toLowerCase(); }
+    function downloadHtml(html) {
+      var blob = new Blob([html], { type: 'text/html' });
+      var a = el('a'); a.href = URL.createObjectURL(blob); a.download = fileBase() + '.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }
+    function flashSave(msg) { saveBtn.textContent = msg; setTimeout(function () { saveBtn.textContent = 'Save'; }, 1400); }
+    function saveToFile() {
+      var html = serializeAuthored();
+      if (window.showSaveFilePicker) {
+        (function () {
+          (async function () {
+            try {
+              if (!fileHandle) {
+                fileHandle = await window.showSaveFilePicker({
+                  suggestedName: fileBase() + '.html',
+                  types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }]
+                });
+              }
+              var w = await fileHandle.createWritable();
+              await w.write(html); await w.close();
+              flashSave('Saved');
+            } catch (err) {
+              if (err && err.name === 'AbortError') return;
+              downloadHtml(html); flashSave('Downloaded');
+            }
+          })();
+        })();
+      } else {
+        downloadHtml(html); flashSave('Downloaded');
+      }
+    }
+    saveBtn.addEventListener('click', saveToFile);
+
+    var dragFrom = -1;
+    rail.addEventListener('dragstart', function (e) {
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn || !editActive) return;
+      dragFrom = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    });
+    rail.addEventListener('dragover', function (e) { if (editActive && dragFrom > -1) e.preventDefault(); });
+    rail.addEventListener('drop', function (e) {
+      if (!editActive || dragFrom < 0) return;
+      e.preventDefault();
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn) { dragFrom = -1; return; }
+      var to = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (to > -1 && to !== dragFrom) moveSlide(dragFrom, to);
+      dragFrom = -1;
+    });
+
+    function setEditable(on) {
+      slides.forEach(function (s) {
+        [].forEach.call(s.querySelectorAll(EDIT_SEL), function (n) {
+          if (on) n.setAttribute('contenteditable', 'true');
+          else n.removeAttribute('contenteditable');
+        });
+      });
+    }
+    function toggleEditMode(force) {
+      editActive = (force !== undefined) ? force : !editActive;
+      document.body.classList.toggle('edit-active', editActive);
+      editBtn.classList.toggle('active', editActive);
+      saveBtn.style.display = editActive ? '' : 'none';
+      setEditable(editActive);
+      railEditUI(editActive);
+      if (editActive) deck.classList.add('rail-open');
+    }
+    editBtn.addEventListener('click', function () { toggleEditMode(); });
+
+    window.presentation = {
+      goTo: function (n, opts) { go(n, opts); },
+      next: function () { go(idx + 1); },
+      prev: function () { go(idx - 1); },
+      present: enterPresent,
+      get current() { return idx; },
+      get total() { return total; },
+      editor: {
+        toggle: function (f) { toggleEditMode(f); },
+        get isActive() { return editActive; },
+        move: moveSlide,
+        duplicate: duplicateSlide,
+        remove: deleteSlide,
+        serialize: serializeAuthored,
+        save: saveToFile
+      }
+    };
+  });
+})();
 </script>
+<!-- /SHELL:JS -->
 </body>
 </html>

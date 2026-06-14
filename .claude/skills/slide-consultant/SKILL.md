@@ -21,7 +21,9 @@ being called by another skill defaults to what that skill asked for.
 
 ## Accepted inputs
 
-- Outline markdown (`# | title | layout | key points` table)
+- Outline markdown table — preserve whatever columns you receive (e.g.
+  `# | action title | exhibit | key points` from slide-quick, or
+  `# | title | layout | key points` standalone)
 - Wireframe or deck HTML (read the file)
 - `.pptx` — extract text first: `python -m markitdown deck.pptx`
   (needs `pip install "markitdown[pptx]"`; see the pptx skill)
@@ -40,15 +42,25 @@ being called by another skill defaults to what that skill asked for.
      ≤12 words; read titles alone ("skim test") — they must retell the
      argument. Data slides carry the key number in the title — but ONLY a
      number already present in the source; if the source has no number,
-     state the direction/claim, not a fabricated figure.
+     state the direction/claim, not a fabricated figure. When the input is an
+     outline with no backing source, treat its numbers as UNVERIFIED: keep them
+     but do not newly coin or round them, and if one looks like a placeholder
+     (suspiciously round, or it contradicts another slide) FLAG it rather than
+     promoting it into a title.
    - One message per slide; body argues the title, nothing else.
    - So-what test: if the slide vanished, would the argument miss it?
    - MECE grouping: one cutting dimension, 2–5 items, no overlap, one
      rhetorical type per list.
    - Evidence honesty: every number/quote traced or labeled "Illustrative".
      NEVER invent a stat, quote, or source to strengthen copy.
-   - Chart & number integrity: see `references/frameworks.md`.
-   - Comparison integrity: see `references/frameworks.md`.
+   - Chart & number integrity: the number in a title must match the visual it
+     labels (mismatch = P0); percentages need a visible/inferable denominator;
+     FLAG (don't fix) truncated/non-zero baselines, mismatched dual axes, and
+     cherry-picked ranges; never change a value to fit a title — reframe the
+     title. (details: `references/frameworks.md`)
+   - Comparison integrity: both sides share unit, timeframe, scope, and the same
+     dimension count; the baseline must be real, not a strawman; one comparison
+     axis per slide. (details: `references/frameworks.md`)
 4. Output per mode (formats below).
 
 ## Output contracts
@@ -65,8 +77,19 @@ Fix: "Three services share one queue — the queue is the bottleneck."
 Severity: P0 fabricated/contradictory content · P1 storyline breaks,
 uninterpretable slide · P2 weak but understandable · P3 polish.
 
-`improve` mode — apply the fixes directly to the artifact (Edit the file, or
-return the rewritten outline if given inline), then a short change log:
+`improve` mode — apply the fixes, then a short change log. HOW you return
+depends on the input:
+- **File** (wireframe / deck HTML): Edit the file in place, then print the log.
+- **Inline outline** (slide-quick's call — the table was pasted in, not a file):
+  return the FULL rewritten outline as a markdown table, echoing back the EXACT
+  column headers you received — never rename, add, drop, or reorder a column, and
+  preserve verbatim any column you do not edit (e.g. slide-quick's `exhibit`).
+  EVERY row present, rewritten in place — then the change log. Typical headers:
+  `# | action title | exhibit | key points` (slide-quick) or
+  `# | title | layout | key points` (standalone). Do NOT return only the changed
+  rows or a bare findings list; the caller pastes the whole table back verbatim.
+- **`.pptx`** (text extracted, not editable here): same as inline — full rewritten
+  outline table + log (see Hard rules).
 
 ```
 CHANGES
@@ -88,6 +111,6 @@ not manufacture findings to fill space.
 - Keep the user's language (English copy stays English, etc.).
 - In `improve` mode on a file, edit the file; do not just describe edits.
 - For `.pptx` inputs (text was extracted, not editable in place): do NOT
-  Edit the .pptx. Return the rewritten copy as a slide-by-slide outline
-  table plus the change log, and tell the caller to apply these during the
-  build step.
+  Edit the .pptx. Return the FULL rewritten outline table + change log in the
+  same canonical format as the inline case above (every row, same columns), and
+  tell the caller to apply these during the build step.

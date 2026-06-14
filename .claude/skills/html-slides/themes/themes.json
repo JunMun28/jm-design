@@ -130,12 +130,7 @@
         "require_logo_on_content_slides": false,
         "forbid_chart_on_gradient": true,
         "headline_contrast_min": 4.5,
-        "palette_lock": true,
-        "require_fixed_stage": true,
-        "stage_width": 1280,
-        "stage_height": 720,
-        "enforce_stage_overflow": true,
-        "min_touch_target_px": 44
+        "palette_lock": true
       }
     },
     {
@@ -160,6 +155,36 @@
           "--font-body"
         ],
         "accent_rgb": "255, 107, 107",
+        "accent_max_per_slide": 8,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": false,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true
+      }
+    },
+    {
+      "id": "hand-drawn",
+      "name": "Hand-drawn",
+      "status": "stable",
+      "role": "education",
+      "when": "Sketchnote style for teaching, explainers, and video lessons: handwriting display, wobbly ink strokes, paper dot-grid, marker highlights. Casual look, serious recall — not for boards or investors.",
+      "design": "themes/hand-drawn/design.md",
+      "example": "themes/hand-drawn/example.html",
+      "preview": "themes/hand-drawn/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": [
+          "--bg",
+          "--ink",
+          "--accent",
+          "--accent-2",
+          "--accent-3",
+          "--marker",
+          "--font-display",
+          "--font-body"
+        ],
+        "accent_rgb": "214, 69, 59",
         "accent_max_per_slide": 8,
         "logo_pattern": null,
         "require_logo_on_content_slides": false,

@@ -800,6 +800,15 @@ artifact — its HEADER, NARRATIVE ARC, DESIGN INTENT, per-slide `COPY` and
 theme/template is _not_ in here by design — `html-slides` selects it after
 handoff (using any `STYLE NOTE:` line as a hint).
 
+The wireframe is a **durable, returnable content source**, not a one-shot handoff.
+You can come back to it any time to refine content/structure, then regenerate
+styled decks from it — in the same theme or a different one. Each regeneration is
+non-destructive: `html-slides` writes a new `<topic>.<theme>.html` variant and
+stamps it with a `<!-- SOURCE: … -->` link back to this wireframe. Because the
+wireframe is theme-free, one wireframe can drive many design styles. Content
+changes that should apply to every style belong here in the wireframe; per-style
+polish is done later on the styled deck (which is itself editable in the browser).
+
 Only after explicit brainstorm approval (and, for persuasion decks, a PASS or waived
 rigor audit):
 
@@ -900,6 +909,8 @@ Never:
 - [ ] Phase 4: user explicitly approved the brainstorm HTML
 - [ ] Phase 5: brainstorm HTML is current, CHANGES logged, delivery format
       confirmed
+- [ ] Phase 5: the wireframe is kept as the returnable content source; restyling
+      regenerates a new variant (never overwrites) and stamps the source link
 
 When all boxes are checked, invoke `html-slides` with the brainstorm HTML
 path. PPTX delivery converts the gated HTML deck afterwards via

@@ -1,18 +1,599 @@
-<!doctype html>
+<!DOCTYPE html>
+<!--
+  EXAMPLE: aurora-glass — midnight product-launch keynote (glassmorphism / aurora
+  gradients), on the universal Slide Player shell. The shell (app bar, left rail,
+  present mode, grid overview) is INLINED from assets/shell.{css,js} between the
+  SHELL markers — never edit it here; edit the canonical files and re-inline with
+  scripts/build-deck.py. This theme is FLUID: fixed-px type, no fixed canvas; the
+  content fills the 16:9 stage. Visual precedent — copy/adapt, do not use verbatim.
+-->
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Orbit 2.0 — aurora-glass example</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="tokens.css">
-<style>
-  /* ============================================================
-     UNIVERSAL SKELETON
-     ============================================================ */
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+<!-- SHELL:CSS -->
+<style id="shell-css">
+/* html-slides :: shell.css — universal Slide Player shell (theme-independent)
+ *
+ * This is the canonical chrome + slide-system CSS. It is INLINED into every
+ * deck between the <!-- SHELL:CSS --> markers by scripts/build-deck.py. Never
+ * hand-edit an inlined copy — edit this file and re-inline (see ADR 0005).
+ *
+ * Everything here is token-driven. A theme overrides the look by setting the
+ * tokens below in its own :root block; it never re-authors the shell.
+ * See ADR 0006 for the Slide Player / Present Mode design.
+ */
 
+:root {
+  /* --- theme-overridable tokens (defaults: clean neutral light) --- */
+  --bg: #ffffff;
+  --ink: #15171c;
+  --muted: #5a5f6e;
+  --faint: #8a8f9e;
+  --accent: #3b6cff;
+  --panel: #f6f7f9;
+  --line: rgba(0, 0, 0, .10);
+  --line-strong: rgba(0, 0, 0, .18);
+
+  /* --- shell chrome geometry (themes rarely touch these) --- */
+  --rail-w: 164px;
+  --appbar-h: 52px;
+  --notes-max-h: 132px;
+  --shell-radius: 10px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  --font-body: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+img, svg, video { max-width: 100%; display: block; }
+button { font-family: inherit; }
+
+/* speaker notes are source-of-truth content; the shell renders them into the
+   notes panel and never shows them in place. */
+.speaker-notes, aside.notes, .notes { display: none !important; }
+
+/* ===================== PLAYER LAYOUT ===================== */
+.deck {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.app-bar {
+  flex: 0 0 var(--appbar-h);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  z-index: 30;
+}
+.app-bar .menu-btn { display: none; }
+.app-bar .deck-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 42vw;
+}
+.app-bar .counter {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+.app-bar .spacer { margin-left: auto; }
+
+.shell-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1;
+  padding: 7px 13px;
+  border-radius: var(--shell-radius);
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color .15s var(--ease), background .15s var(--ease);
+}
+.shell-btn:hover { border-color: var(--line-strong); }
+.shell-btn.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.shell-btn.icon { width: 32px; height: 32px; justify-content: center; padding: 0; color: var(--muted); }
+.shell-btn svg { width: 15px; height: 15px; }
+
+.app-body { flex: 1 1 auto; display: flex; min-height: 0; }
+
+/* ----- left rail ----- */
+.rail {
+  flex: 0 0 var(--rail-w);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  scrollbar-width: thin;
+}
+.rail-thumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+}
+.rail-thumb .num {
+  flex: 0 0 15px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--faint);
+  text-align: right;
+}
+.rail-thumb .frame {
+  flex: 1 1 auto;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.rail-thumb .mini { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+.rail-thumb.is-active .frame { border: 2px solid var(--ink); }
+.rail-thumb.is-active .num { color: var(--ink); font-weight: 600; }
+
+/* ----- stage ----- */
+.stage-wrap { flex: 1 1 auto; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.stage-area { flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: 18px; min-height: 0; overflow: hidden; }
+.stage {
+  position: relative;
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .12);
+  border: 1px solid var(--line);
+  border-radius: var(--shell-radius);
+}
+
+/* fixed-canvas stage: themes that author at a fixed design size (e.g. Micron
+   1600x900) set data-stage="fixed" + --stage-w/--stage-h. shell.js computes
+   --stage-scale so the canvas fits the stage area / viewport. */
+.deck[data-stage="fixed"] .stage {
+  width: var(--stage-w, 1280px);
+  height: var(--stage-h, 720px);
+  aspect-ratio: auto;
+  max-height: none;
+  flex: 0 0 auto;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: center center;
+}
+.deck.presenting[data-stage="fixed"] .stage { max-height: none; }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(28px, 5vw, 64px);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(22px);
+  transition: opacity .42s var(--ease), transform .42s var(--ease);
+  overflow: hidden;
+}
+.slide.is-active { opacity: 1; pointer-events: auto; transform: none; z-index: 2; }
+.slide.is-prev { transform: translateX(-22px); }
+
+/* ----- notes panel (player only) ----- */
+.notes-panel {
+  flex: 0 0 auto;
+  max-height: var(--notes-max-h);
+  overflow: auto;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  padding: 10px 16px 12px;
+}
+.notes-panel.collapsed { display: none; }
+.notes-panel .notes-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 5px;
+}
+.notes-panel .notes-label .hint { margin-left: auto; text-transform: none; letter-spacing: 0; }
+.notes-panel .notes-body { font-size: 14px; line-height: 1.65; color: var(--muted); }
+.notes-panel .notes-body:empty::before { content: 'No notes for this slide.'; color: var(--faint); font-style: italic; }
+
+/* ===================== PROGRESS ===================== */
+.progress-bar { position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: transparent; z-index: 60; }
+.progress-bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s var(--ease); }
+
+/* ===================== GRID OVERVIEW ===================== */
+.grid-overview {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  padding: 40px;
+  overflow: auto;
+  background: color-mix(in srgb, var(--bg) 86%, #000);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.grid-overview.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; align-content: start; }
+.grid-overview .gthumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg);
+  transition: transform .18s var(--ease);
+}
+.grid-overview .gthumb:hover { transform: scale(1.03); }
+.grid-overview .gthumb.is-active { outline: 2px solid var(--accent); outline-offset: -2px; }
+.grid-overview .gthumb .mini { position: absolute; top: 0; left: 0; transform-origin: top left; pointer-events: none; }
+.grid-overview .gthumb .badge {
+  position: absolute; top: 8px; left: 10px; z-index: 3;
+  font: 600 13px/1 var(--font-mono); color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .8);
+}
+
+/* ===================== HELP OVERLAY ===================== */
+.help-overlay { position: fixed; inset: 0; z-index: 90; display: none; align-items: center; justify-content: center; background: color-mix(in srgb, var(--bg) 82%, #000); }
+.help-overlay.open { display: flex; }
+.help-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px 28px; max-width: 440px; width: calc(100% - 48px); }
+.help-card h2 { margin: 0 0 14px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.help-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.help-row:last-child { border-bottom: none; }
+.help-card kbd { font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px; }
+
+/* ===================== JUMP-TO-SLIDE ===================== */
+.jump-input { position: fixed; left: 50%; top: 22px; transform: translateX(-50%); z-index: 95; display: none; align-items: center; gap: 8px; padding: 8px 12px; background: var(--panel); border: 1px solid var(--line-strong); border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, .18); }
+.jump-input.open { display: flex; }
+.jump-input input { width: 64px; border: none; background: transparent; color: var(--ink); font-family: var(--font-mono); font-size: 15px; outline: none; }
+.jump-input .lbl { font-size: 12px; color: var(--faint); }
+
+/* ===================== PRESENT MODE ===================== */
+.deck.presenting .app-bar,
+.deck.presenting .rail,
+.deck.presenting .notes-panel { display: none; }
+.deck.presenting .stage-area { padding: 0; }
+.deck.presenting .stage { max-height: 100vh; max-height: 100dvh; box-shadow: none; border: none; border-radius: 0; }
+
+.present-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+  display: none; align-items: center; gap: 16px; padding: 10px 18px;
+  background: color-mix(in srgb, #000 58%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, .82);
+  opacity: 0; transition: opacity .3s var(--ease);
+}
+.deck.presenting .present-bar { display: flex; }
+.deck.presenting.bar-show .present-bar { opacity: 1; }
+.present-bar .pcount { font-family: var(--font-mono); font-size: 14px; color: rgba(255, 255, 255, .82); }
+.present-bar .spacer { margin-left: auto; }
+.present-bar button { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid rgba(255, 255, 255, .18); color: rgba(255, 255, 255, .82); font-size: 13px; padding: 5px 11px; border-radius: 8px; cursor: pointer; }
+.present-bar button.nav { border: none; font-size: 20px; padding: 2px 6px; }
+.present-bar button svg { width: 15px; height: 15px; }
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 820px) {
+  .app-bar .menu-btn { display: inline-flex; }
+  .app-bar .deck-title { max-width: 32vw; }
+  .rail {
+    position: fixed; top: var(--appbar-h); left: 0; bottom: 0; width: 220px; z-index: 50;
+    transform: translateX(-100%); transition: transform .25s var(--ease);
+  }
+  .deck.rail-open .rail { transform: none; }
+  .notes-panel { display: none; }
+}
+
+/* ===================== REDUCED MOTION ===================== */
+@media (prefers-reduced-motion: reduce) {
+  .slide, .progress-bar > span, .rail, .grid-overview .gthumb, .present-bar { transition: none !important; }
+  .slide { transform: none !important; }
+}
+
+/* ===================== PRINT ===================== */
+@media print {
+  body { overflow: visible; }
+  .app-bar, .rail, .notes-panel, .progress-bar, .present-bar, .grid-overview, .help-overlay, .jump-input { display: none !important; }
+  .deck, .app-body, .stage-wrap, .stage-area { display: block; height: auto; }
+  .stage { box-shadow: none; border: none; border-radius: 0; aspect-ratio: auto; }
+  .slide { position: relative; inset: auto; opacity: 1 !important; transform: none !important; page-break-after: always; height: 100vh; }
+}
+
+/* ===================== DEFAULT CONTENT TYPOGRAPHY =====================
+   Minimal readable defaults so a theme-less deck still renders. Deliberately
+   LOW specificity (bare element selectors) so any theme rule — even a plain
+   `.eyebrow {}` — wins by source order, since the theme <style> is inlined
+   AFTER this shell block. Never raise these to `.slide x`; that would fight
+   themes (see the migration note in ADR 0006). */
+:where(.slide h1) { font: 800 clamp(44px, 6.2vw, 84px)/1.05 inherit; letter-spacing: -.02em; margin: 0 0 .35em; }
+:where(.slide h2) { font: 700 clamp(40px, 4.8vw, 60px)/1.1 inherit; letter-spacing: -.015em; margin: 0 0 .35em; }
+:where(.slide p, .slide li) { font-size: clamp(20px, 1.95vw, 26px); line-height: 1.5; color: var(--muted); margin: 0 0 .5em; }
+:where(.slide .eyebrow) { font-size: clamp(18px, 1.6vw, 22px); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); margin: 0 0 .7em; }
+:where(.slide ul) { margin: 0; padding-left: 1.1em; }
+:where(.slide .grid) { display: grid; gap: clamp(12px, 1.6vw, 22px); }
+:where(.slide .g2) { grid-template-columns: repeat(2, 1fr); }
+:where(.slide .g3) { grid-template-columns: repeat(3, 1fr); }
+:where(.slide .card) { background: var(--panel); border: 1px solid var(--line); border-radius: var(--shell-radius); padding: clamp(14px, 1.8vw, 24px); }
+
+/* ===================== LIVING EDITOR ===================== */
+.app-bar .shell-btn.active { border-color: var(--ink); color: var(--ink); }
+body.edit-active [contenteditable="true"] { outline: 1px dashed var(--accent); outline-offset: 3px; border-radius: 3px; cursor: text; }
+body.edit-active [contenteditable="true"]:focus { outline: 2px solid var(--accent); }
+body.edit-active .reveal { transition: none !important; }
+body.edit-active .rail-thumb { cursor: grab; }
+.rail-thumb .thumb-tools { display: none; }
+body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 auto; margin-left: 2px; }
+.rail-thumb .thumb-tools button {
+  width: 18px; height: 18px; line-height: 1; padding: 0;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+  color: var(--muted); font-size: 12px; cursor: pointer;
+}
+.rail-thumb .thumb-tools button:hover { border-color: var(--line-strong); color: var(--ink); }
+@media print { body.edit-active [contenteditable] { outline: none !important; } }
+</style>
+<!-- /SHELL:CSS -->
+<style id="theme-tokens">
+  /* ============================================================
+     AURORA-GLASS TOKENS (frozen) — inlined from tokens.css
+     ============================================================ */
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    /* Palette */
+    --bg: #08090A;                          /* near-black, blue-tinted canvas */
+    --surface: rgba(255, 255, 255, 0.04);   /* frosted glass card fill */
+    --surface-solid: #16171B;               /* opaque ground for charts + export */
+    --ink: #F7F8F8;                         /* primary text — 18.7:1 on bg */
+    --ink-muted: #8A8F98;                   /* secondary text — 6.1:1 on bg */
+    --accent: #5E6AD2;                      /* indigo — fills and dots ONLY, never text (4.2:1) */
+    --accent-text: #828FFF;                 /* brightened indigo for links and stats — 6.9:1 */
+    --aurora-1: #00D2FF;                    /* cyan orb / gradient stop */
+    --aurora-2: #C47BFF;                    /* magenta orb / gradient stop */
+    --aurora-3: #2DD4BF;                    /* teal orb for section moods */
+    --rule: #2A2C33;                        /* hairline borders */
+
+    --font-display: "Space Grotesk", system-ui, -apple-system, sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+
+    --scale-ratio: 1.333;
+    --col-count: 12;
+    --col-gap: 24px;
+    --margin-outer: 96px;
+
+    /* Fixed px type — never vw-clamped. */
+    --title-size: 112px;
+    --section-size: 80px;
+    --headline-size: 60px;
+    --body-size: 26px;
+
+    --radius: 16px;
+    --glass-blur: 20px;
+
+    /* The single lit-hairline gradient. Always applied as a 1px ::before strip. */
+    --hairline-gradient: linear-gradient(90deg, transparent, var(--aurora-1) 30%, var(--aurora-2) 72%, transparent);
+
+    --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+    --duration-normal: .6s;
+
+    /* === Shell chrome tokens mapped to the aurora-glass palette, so the rail,
+       app bar, and notes panel read as native frosted-glass surfaces. === */
+    --bg: #08090A;
+    --ink: #F7F8F8;
+    --muted: #8A8F98;
+    --faint: rgba(138, 143, 152, 0.72);
+    --accent: #5E6AD2;
+    --panel: rgba(255, 255, 255, 0.035);
+    --line: #2A2C33;
+    --line-strong: rgba(255, 255, 255, 0.16);
+    --font-body: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: var(--body-size);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     CONTENT TYPOGRAPHY — bare selectors only (never .slide x).
+     ============================================================ */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+
+  /* Pill-badge eyebrow — mono uppercase chrome above every headline.
+     Carries the pulsing 6px accent dot (markup: <span class="dot"></span>). */
+  .eyebrow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .eyebrow::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--hairline-gradient);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+  .eyebrow .dot {
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: aurora-dot-pulse 2.6s var(--ease-out-expo) infinite;
+  }
+  /* Filled chip variant — the ONLY sanctioned indigo fill besides the dot. */
+  .eyebrow.fill {
+    background: rgba(94, 106, 210, 0.16);
+    border-color: rgba(94, 106, 210, 0.35);
+    color: var(--accent-text);
+  }
+
+  /* Frosted glass panel on a lit gradient hairline. */
+  .glass {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  .glass::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--hairline-gradient);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* Opaque sheet — mandatory ground for charts; export-safe by construction. */
+  .sheet {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-solid);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .sheet::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--hairline-gradient);
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  /* One-orb light system. Always inside a clipping .orb-layer so blur and
+     off-canvas positions never create scroll overflow. One orb per slide. */
+  .orb-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb {
+    position: absolute;
+    width: 640px;
+    height: 640px;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: 0.4;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 210, 255, 0.85), rgba(0, 210, 255, 0) 65%);
+    animation: aurora-orb-drift 26s var(--ease-out-expo) infinite alternate;
+    will-change: transform;
+  }
+  /* Contrast guard: any orb that sits behind a text panel uses this cap. */
+  .orb.faint { opacity: 0.15; }
+
+  /* Rationed gradient text — AT MOST one word or one stat per slide. */
+  .grad {
+    background: linear-gradient(92deg, var(--aurora-1), var(--aurora-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .muted { color: var(--ink-muted); }
+  .accent-text { color: var(--accent-text); }
+
+  @keyframes aurora-orb-drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(-48px, 36px, 0) scale(1.07); }
+  }
+  @keyframes aurora-orb-rise {
+    from { transform: translate3d(0, 24px, 0); }
+    to   { transform: translate3d(0, -24px, 0); }
+  }
+  @keyframes aurora-dot-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.55); opacity: 0.55; }
+  }
+
+  /* ============================================================
+     REVEAL — the shell toggles is-active + visible on the active slide.
+     ============================================================ */
   .reveal {
     opacity: 0;
     transform: translateY(24px);
@@ -27,42 +608,14 @@
   .reveal:nth-child(4) { transition-delay: 0.35s; }
   .reveal:nth-child(5) { transition-delay: 0.45s; }
 
-  html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
-  html, body { overflow-x: hidden; }
-  body { background: var(--bg); }
-  html, body, #overview { scrollbar-width: none; -ms-overflow-style: none; }
-  html::-webkit-scrollbar, body::-webkit-scrollbar, #overview::-webkit-scrollbar {
-    display: none; width: 0; height: 0;
-  }
-
-  .progress-bar {
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: 2px;
-    z-index: 60;
-    background: linear-gradient(90deg, var(--aurora-1), var(--aurora-2));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.25s var(--ease-out-expo);
-  }
-
-  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
-  a { cursor: pointer; }
-
   /* ============================================================
-     DECK LAYOUT
+     SLIDE SURFACE + LAYOUT — the .slide is the painted aurora canvas.
+     The shell positions/sizes .slide; the theme paints + lays out content.
      ============================================================ */
   .slide {
-    position: relative;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    background: var(--bg);
     padding: 88px var(--margin-outer);
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
+    justify-content: center;
   }
   .slide-content {
     position: relative;
@@ -98,143 +651,6 @@
     text-transform: uppercase;
     color: rgba(138, 143, 152, 0.8);
   }
-
-  /* ============================================================
-     CHROME — progress rail, present pill, overview
-     ============================================================ */
-  .nav-dots {
-    position: fixed;
-    right: 22px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    z-index: 65;
-  }
-  .nav-dots button {
-    width: 6px;
-    height: 6px;
-    padding: 0;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.22);
-    transition: height 0.35s var(--ease-out-expo), background 0.35s var(--ease-out-expo);
-  }
-  .nav-dots button.active { height: 24px; background: var(--accent); }
-  .nav-dots button:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
-
-  .presentation-hotspot {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 220px;
-    height: 96px;
-    z-index: 70;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    padding: 20px 24px;
-  }
-  .present-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    background: rgba(22, 23, 27, 0.9);
-    color: var(--ink);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    opacity: 0;
-    transform: translateY(-4px);
-    transition: opacity 0.25s var(--ease-out-expo), transform 0.25s var(--ease-out-expo);
-  }
-  .presentation-hotspot:hover .present-toggle,
-  .present-toggle:focus-visible { opacity: 1; transform: none; }
-  .present-toggle:focus-visible { outline: 2px solid var(--accent-text); outline-offset: 3px; }
-  .present-icon { width: 11px; height: 11px; fill: currentColor; }
-
-  #overview {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(8, 9, 10, 0.97);
-    padding: 44px 48px;
-    overflow: auto;
-    display: none;
-  }
-  #overview[aria-hidden="false"] { display: block; }
-  .ov-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    margin-bottom: 26px;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-  }
-  .ov-head b { color: var(--ink); font-weight: 600; }
-  .ov-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-  .ov-card {
-    position: relative;
-    overflow: hidden;
-    padding: 0;
-    text-align: left;
-    background: var(--surface-solid);
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    transition: transform 0.2s var(--ease-out-expo), border-color 0.2s var(--ease-out-expo);
-  }
-  .ov-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    z-index: 2;
-    background: var(--hairline-gradient);
-    opacity: 0.7;
-    pointer-events: none;
-  }
-  .ov-card:hover, .ov-card:focus-visible { transform: translateY(-2px); border-color: #3A3D47; outline: none; }
-  .ov-card.active { border-color: var(--accent); }
-  .ov-thumb {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: var(--bg);
-  }
-  .ov-thumb .clone {
-    position: absolute;
-    top: 0; left: 0;
-    transform-origin: top left;
-    pointer-events: none;
-  }
-  .ov-label {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 11px 14px;
-    border-top: 1px solid var(--rule);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-  }
-  .ov-label b { color: var(--ink); font-weight: 600; }
 
   /* ============================================================
      ORBS — one per slide, repositioned + recolored per archetype.
@@ -405,6 +821,14 @@
   .ax { font-family: var(--font-mono); font-size: 20px; letter-spacing: 0.06em; fill: var(--ink-muted); }
   .takeaway { margin-top: 18px; font-size: 26px; color: var(--ink-muted); max-width: 62ch; }
   .takeaway b { color: var(--accent-text); font-weight: 600; }
+  /* The chart's proof line. Animates on transform only — it never drops to
+     opacity 0, so it stays the chart's always-legible "so what". */
+  .takeaway-in {
+    transform: translateY(16px);
+    transition: transform var(--duration-normal) var(--ease-out-expo);
+    transition-delay: 0.35s;
+  }
+  .slide.visible .takeaway-in { transform: none; }
 
   /* Quote — glass panel + ghosted quote mark */
   .quote-panel { margin-top: 10px; padding: 72px 80px 56px; }
@@ -500,6 +924,33 @@
   .s-closing .footer { color: rgba(247, 248, 248, 0.75); }
 
   /* ============================================================
+     EXPORT MODE — backdrop-filter and heavy blur are fragile in
+     print/PDF/raster pipelines. Set <html data-export="true">.
+     ============================================================ */
+  html[data-export="true"] .glass {
+    background: var(--surface-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  html[data-export="true"] .orb {
+    filter: none;
+    animation: none;
+    opacity: 0.25;
+  }
+  html[data-export="true"] .orb.faint { opacity: 0.1; }
+  html[data-export="true"] .eyebrow .dot { animation: none; }
+  html[data-export="true"] .grad {
+    background: none;
+    color: var(--accent-text);
+    -webkit-text-fill-color: var(--accent-text);
+  }
+  html[data-export="true"] .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* ============================================================
      SMALL SCREENS — fixed px again, just smaller.
      ============================================================ */
   @media (max-width: 760px) {
@@ -510,8 +961,6 @@
     h1 { font-size: 46px; }
     h2 { font-size: 32px; }
     .subtitle { font-size: 17px; margin-top: 16px; }
-    .nav-dots { right: 10px; gap: 8px; }
-    .presentation-hotspot { width: 120px; height: 64px; padding: 12px; }
 
     .agenda { gap: 10px; }
     .agenda-row { grid-template-columns: 42px minmax(0, 1fr); gap: 12px; padding: 14px 16px; }
@@ -550,8 +999,6 @@
     .s-closing .cta { font-size: 14px; margin-top: 22px; }
     .horizon-rule { bottom: 120px; }
     .orb.horizon { top: calc(100% - 120px); }
-
-    #overview { padding: 20px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -563,25 +1010,14 @@
     .orb { animation: none !important; }
     .eyebrow .dot { animation: none !important; }
     .reveal { opacity: 1 !important; transform: none !important; }
-    .ov-card:hover, .ov-card:focus-visible { transform: none; }
   }
 </style>
 </head>
 <body>
-
-<div class="progress-bar" role="progressbar" aria-label="Deck progress"></div>
-<nav class="nav-dots" aria-label="Slide navigation"></nav>
-<div class="presentation-hotspot" aria-hidden="false">
-  <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
-    <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
-    <span class="presentation-toggle-text">Present</span>
-  </button>
-</div>
-
-<main class="deck" tabindex="-1">
+<main class="deck" data-deck-title="Orbit 2.0 — release overview" data-deck-mode="standalone">
 
   <!-- 01 · Title -->
-  <section class="slide title-slide s-cover" data-slide-kind="cover" data-title="Orbit 2.0">
+  <section class="slide title-slide s-cover" data-slide-kind="cover">
     <div class="orb-layer" aria-hidden="true"><div class="orb cover"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>Orbit 2.0 · Launch keynote</span>
@@ -592,7 +1028,7 @@
   </section>
 
   <!-- 02 · Agenda -->
-  <section class="slide s-agenda" data-slide-kind="agenda" data-title="Agenda">
+  <section class="slide s-agenda" data-slide-kind="agenda">
     <div class="orb-layer" aria-hidden="true"><div class="orb faint agenda-glow"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>Agenda</span>
@@ -604,11 +1040,12 @@
         <div class="agenda-row glass"><span class="idx">04</span><b>Rollout</b><span class="meta">Dates, pricing, migration</span></div>
       </div>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>02 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>Agenda</span></footer>
+    <aside class="speaker-notes">Four acts: highlights, the platform underneath, ninety days of beta numbers, then rollout. Spend most of the time on highlights and numbers.</aside>
   </section>
 
   <!-- 03 · Bento features -->
-  <section class="slide s-bento" data-slide-kind="features" data-title="Highlights">
+  <section class="slide s-bento" data-slide-kind="features">
     <div class="orb-layer" aria-hidden="true"><div class="orb faint bento-glow"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>01 · Highlights</span>
@@ -627,11 +1064,12 @@
         <div class="cell glass"><h3>Scoped tokens</h3><p>Per-env secrets, rotated nightly.</p></div>
       </div>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>03 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>Highlights</span></footer>
+    <aside class="speaker-notes">Lead with preview environments — the hero cell. The other four are supporting wins; name them, do not dwell. The 38s build time is sample data.</aside>
   </section>
 
   <!-- 04 · Data chart -->
-  <section class="slide s-data" data-slide-kind="data" data-title="Cold starts">
+  <section class="slide s-data" data-slide-kind="data">
     <div class="orb-layer" aria-hidden="true"><div class="orb data-glow"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>03 · Numbers</span>
@@ -676,13 +1114,14 @@
           <text class="ax" x="1134" y="178" text-anchor="end" fill="#F7F8F8">160 ms</text>
         </svg>
       </div>
-      <p class="takeaway reveal">Median cold start fell <b>62%</b> in six releases — 420 ms down to 160 ms. Sample data.</p>
+      <p class="takeaway takeaway-in">Median cold start fell <b>62%</b> in six releases — 420 ms down to 160 ms. Sample data.</p>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>04 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>Cold starts</span></footer>
+    <aside class="speaker-notes">One glowing series carries the story: median cold start. The indigo P95 line is context, not the point. Land the 62% drop.</aside>
   </section>
 
   <!-- 05 · Quote -->
-  <section class="slide s-quote" data-slide-kind="quote" data-title="From the beta">
+  <section class="slide s-quote" data-slide-kind="quote">
     <div class="orb-layer" aria-hidden="true"><div class="orb faint quote-glow"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>From the beta</span>
@@ -692,11 +1131,12 @@
         <figcaption>Ada Reyes — Platform lead, Fieldnote · Sample quote</figcaption>
       </figure>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>05 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>From the beta</span></footer>
+    <aside class="speaker-notes">Read it slowly. The point is the absence of ceremony — releases stopped being events. A sample customer voice.</aside>
   </section>
 
   <!-- 06 · Section divider -->
-  <section class="slide s-section" data-slide-kind="section" data-title="Platform">
+  <section class="slide s-section" data-slide-kind="section">
     <div class="orb-layer" aria-hidden="true"><div class="orb section-glow"></div></div>
     <span class="ghost-index" aria-hidden="true">02</span>
     <div class="slide-content">
@@ -704,11 +1144,11 @@
       <h2 class="reveal">Built on the new runtime</h2>
       <p class="lede reveal">Snapshot scheduling, lazy module graphs, and the cold-path rewrite.</p>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>06 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>Platform</span></footer>
   </section>
 
   <!-- 07 · Metrics row -->
-  <section class="slide s-metrics" data-slide-kind="metrics" data-title="By the numbers">
+  <section class="slide s-metrics" data-slide-kind="metrics">
     <div class="orb-layer" aria-hidden="true"><div class="orb faint metrics-glow"></div></div>
     <div class="slide-content">
       <span class="eyebrow reveal"><span class="dot"></span>03 · Numbers</span>
@@ -720,11 +1160,12 @@
         <div class="stat glass"><div class="stat-v">99.98%</div><div class="stat-l">Control-plane uptime</div></div>
       </div>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — sample data</span><span>07 / 08</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — sample data</span><span>By the numbers</span></footer>
+    <aside class="speaker-notes">Four numbers, one gradient stat (−62%) gets the glow. The rest are quiet. All figures are sample data from a ninety-day beta.</aside>
   </section>
 
   <!-- 08 · Closing -->
-  <section class="slide s-closing" data-slide-kind="closing" data-title="Get started">
+  <section class="slide s-closing" data-slide-kind="closing">
     <div class="orb-layer" aria-hidden="true">
       <div class="orb horizon"></div>
       <div class="horizon-rule"></div>
@@ -734,244 +1175,533 @@
       <h2 class="reveal">Start your <span class="grad">orbit</span></h2>
       <a class="cta reveal" href="#">orbit-sample.dev/2.0 &nearr;</a>
     </div>
-    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>08 / 08 · Sample deck</span></footer>
+    <footer class="footer" aria-hidden="true"><span>Orbit 2.0 — release overview</span><span>Get started · Sample deck</span></footer>
   </section>
 
 </main>
+<!-- SHELL:JS -->
+<script id="shell-js">
+/* html-slides :: shell.js — universal Slide Player runtime (theme-independent)
+ *
+ * INLINED into every deck between the <!-- SHELL:JS --> markers by
+ * scripts/build-deck.py. Never hand-edit an inlined copy — edit this file and
+ * re-inline (ADR 0005). Zero dependencies.
+ *
+ * The deck author writes only `.deck > .slide` sections (+ optional
+ * <aside class="speaker-notes"> per slide). This runtime builds the player
+ * chrome (app bar, left rail, stage, notes panel, grid overview, help, jump,
+ * present bar, progress) and drives navigation. See ADR 0006.
+ *
+ * Keys: ← → / space / PgUp PgDn / Home End  navigate
+ *       P present (fullscreen)   G grid overview   ? help   N toggle notes
+ *       digits + Enter  jump to slide   Esc closes overlay / exits present
+ * URL hash #/N deep-links to slide N (1-based).
+ */
+(function () {
+  'use strict';
 
-<div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+  var DESIGN_W = 1280, DESIGN_H = 720;
 
-<script>
-  class SlidePresentation {
-    constructor() {
-      this.slides = Array.from(document.querySelectorAll(".deck > .slide"));
-      this.currentSlide = 0;
-      this.locked = false;
-      this.programmaticScroll = false;
-      this.overviewOpen = false;
-      this.lastFocus = null;
-      this.deck = document.querySelector(".deck");
-      this.navDotsContainer = document.querySelector(".nav-dots");
-      this.progressBar = document.querySelector(".progress-bar");
-      this.presentToggle = document.querySelector(".present-toggle");
-      this.overview = document.getElementById("overview");
+  var IC = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+    grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>',
+    next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>'
+  };
 
-      this.setupNavDots();
-      this.setupIntersectionObserver();
-      this.setupKeyboardNav();
-      this.setupWheelNav();
-      this.setupTouchNav();
-      this.setupPresentationMode();
-      this.applySlide(0);
-    }
-
-    clamp(i) { return Math.max(0, Math.min(this.slides.length - 1, i)); }
-
-    applySlide(i) {
-      this.currentSlide = i;
-      this.slides.forEach((s, idx) => {
-        s.classList.toggle("active", idx === i);
-        s.classList.toggle("visible", idx === i);
-      });
-      this.navDotsContainer.querySelectorAll("button").forEach((d, idx) => {
-        d.classList.toggle("active", idx === i);
-        d.setAttribute("aria-current", idx === i ? "true" : "false");
-      });
-      if (this.progressBar) {
-        this.progressBar.style.transform = `scaleX(${(i + 1) / this.slides.length})`;
-      }
-    }
-
-    goTo(i, options = {}) {
-      const next = this.clamp(i);
-      if (this.locked && !options.immediate) return;
-      this.applySlide(next);
-      this.programmaticScroll = true;
-      this.slides[next].scrollIntoView({
-        behavior: options.immediate ? "auto" : "smooth",
-        block: "start",
-      });
-      if (!options.immediate) {
-        this.locked = true;
-        window.setTimeout(() => {
-          this.locked = false;
-          this.programmaticScroll = false;
-        }, 650);
-      } else {
-        requestAnimationFrame(() => { this.programmaticScroll = false; });
-      }
-    }
-
-    next() { this.goTo(this.currentSlide + 1); }
-    prev() { this.goTo(this.currentSlide - 1); }
-
-    setupIntersectionObserver() {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (this.programmaticScroll) return;
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              this.applySlide(this.slides.indexOf(entry.target));
-            }
-          });
-        },
-        { threshold: 0.6 },
-      );
-      this.slides.forEach((s) => observer.observe(s));
-    }
-
-    setupNavDots() {
-      this.navDotsContainer.innerHTML = "";
-      this.slides.forEach((_, i) => {
-        const dot = document.createElement("button");
-        dot.type = "button";
-        dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
-        dot.addEventListener("click", () => this.goTo(i));
-        this.navDotsContainer.appendChild(dot);
-      });
-    }
-
-    setupKeyboardNav() {
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          e.preventDefault();
-          this.toggleOverview();
-          return;
-        }
-        if (this.overviewOpen) {
-          if (e.key === "Tab") this.trapFocus(e);
-          return;
-        }
-        if (e.key.toLowerCase() === "p") {
-          e.preventDefault();
-          this.requestPresent();
-          return;
-        }
-        if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
-          e.preventDefault(); this.next();
-        } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
-          e.preventDefault(); this.prev();
-        } else if (e.key === "Home") {
-          e.preventDefault(); this.goTo(0);
-        } else if (e.key === "End") {
-          e.preventDefault(); this.goTo(this.slides.length - 1);
-        }
-      });
-    }
-
-    setupWheelNav() {
-      let wheelAcc = 0;
-      let wheelTimer = null;
-      this.deck.addEventListener("wheel", (e) => {
-        if (this.overviewOpen) return;
-        wheelAcc += e.deltaY;
-        if (Math.abs(wheelAcc) > 80) {
-          wheelAcc > 0 ? this.next() : this.prev();
-          wheelAcc = 0;
-        }
-        window.clearTimeout(wheelTimer);
-        wheelTimer = window.setTimeout(() => { wheelAcc = 0; }, 180);
-      }, { passive: true });
-    }
-
-    setupTouchNav() {
-      let startX = 0, startY = 0;
-      window.addEventListener("touchstart", (e) => {
-        const t = e.changedTouches[0];
-        startX = t.clientX; startY = t.clientY;
-      }, { passive: true });
-      window.addEventListener("touchend", (e) => {
-        if (this.overviewOpen) return;
-        const t = e.changedTouches[0];
-        const dx = t.clientX - startX, dy = t.clientY - startY;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-          dx < 0 ? this.next() : this.prev();
-        }
-      }, { passive: true });
-    }
-
-    setupPresentationMode() {
-      this.presentToggle?.addEventListener("click", () => this.requestPresent());
-    }
-
-    requestPresent() {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    }
-
-    buildOverview() {
-      this.overview.innerHTML = "";
-      const head = document.createElement("div");
-      head.className = "ov-head";
-      head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
-      this.overview.appendChild(head);
-
-      const grid = document.createElement("div");
-      grid.className = "ov-grid";
-      this.slides.forEach((slide, i) => {
-        const card = document.createElement("button");
-        card.type = "button";
-        card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
-        card.setAttribute("aria-label", `Go to slide ${i + 1}`);
-        const thumb = document.createElement("div");
-        thumb.className = "ov-thumb";
-        const clone = slide.cloneNode(true);
-        clone.classList.add("clone", "visible");
-        clone.setAttribute("aria-hidden", "true");
-        clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
-        clone.querySelectorAll("button, a, input, select, textarea, [tabindex]").forEach((el) => el.setAttribute("tabindex", "-1"));
-        thumb.appendChild(clone);
-        const label = document.createElement("div");
-        label.className = "ov-label";
-        label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.title || slide.dataset.slideKind || "slide"}</span>`;
-        card.appendChild(thumb);
-        card.appendChild(label);
-        card.addEventListener("click", () => {
-          this.toggleOverview(false);
-          this.goTo(i);
-        });
-        grid.appendChild(card);
-      });
-      this.overview.appendChild(grid);
-
-      requestAnimationFrame(() => {
-        this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
-          const clone = thumb.querySelector(".clone");
-          const slideRect = this.slides[0].getBoundingClientRect();
-          const srcW = slideRect.width || window.innerWidth;
-          const srcH = slideRect.height || window.innerHeight;
-          clone.style.width = srcW + "px";
-          clone.style.height = srcH + "px";
-          clone.style.transform = `scale(${thumb.clientWidth / srcW})`;
-        });
-      });
-    }
-
-    toggleOverview(force) {
-      this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
-      if (this.overviewOpen) {
-        this.lastFocus = document.activeElement;
-        this.buildOverview();
-        this.overview.setAttribute("aria-hidden", "false");
-        this.overview.focus({ preventScroll: true });
-      } else {
-        this.overview.setAttribute("aria-hidden", "true");
-        this.lastFocus?.focus?.({ preventScroll: true });
-      }
-    }
-
-    trapFocus(e) {
-      const focusable = this.overview.querySelectorAll("button, [tabindex]:not([tabindex='-1'])");
-      if (!focusable.length) return;
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault(); last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault(); first.focus();
-      }
-    }
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  function el(tag, cls, html) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
   }
 
-  window.presentation = new SlidePresentation();
+  ready(function () {
+    var deck = document.querySelector('.deck');
+    if (!deck) return;
+    var slides = [].slice.call(deck.querySelectorAll('.slide'));
+    if (!slides.length) return;
+
+    // Authored snapshot taken BEFORE any chrome is built or slides are moved.
+    // Used by the editor's save to reconstruct the authored file (ADR: living-deck).
+    var PRISTINE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    var total = slides.length;
+    var idx = 0;
+    var deckTitle = deck.getAttribute('data-deck-title') || document.title || 'Slides';
+
+    var fixedStage = deck.getAttribute('data-stage') === 'fixed';
+    var dcs = getComputedStyle(deck);
+    if (fixedStage) {
+      DESIGN_W = parseInt(dcs.getPropertyValue('--stage-w'), 10) || 1280;
+      DESIGN_H = parseInt(dcs.getPropertyValue('--stage-h'), 10) || 720;
+    }
+
+    /* ---------- build chrome ---------- */
+    var appBar = el('header', 'app-bar');
+    var menuBtn = el('button', 'shell-btn icon menu-btn', IC.menu);
+    menuBtn.setAttribute('aria-label', 'Toggle slide rail');
+    var titleEl = el('span', 'deck-title'); titleEl.textContent = deckTitle;
+    var counter = el('span', 'counter');
+    var spacer = el('span', 'spacer');
+    var gridBtn = el('button', 'shell-btn icon', IC.grid); gridBtn.setAttribute('aria-label', 'Grid overview');
+    var helpBtn = el('button', 'shell-btn icon', '?'); helpBtn.setAttribute('aria-label', 'Keyboard shortcuts');
+    var presentBtn = el('button', 'shell-btn primary', IC.play + '<span>Present</span>');
+    var editBtn = el('button', 'shell-btn', 'Edit'); editBtn.setAttribute('aria-label', 'Toggle edit mode');
+    var saveBtn = el('button', 'shell-btn', 'Save'); saveBtn.setAttribute('aria-label', 'Save edits to file'); saveBtn.style.display = 'none';
+    appBar.appendChild(menuBtn); appBar.appendChild(titleEl); appBar.appendChild(counter);
+    appBar.appendChild(spacer); appBar.appendChild(editBtn); appBar.appendChild(saveBtn);
+    appBar.appendChild(gridBtn); appBar.appendChild(helpBtn); appBar.appendChild(presentBtn);
+
+    var rail = el('nav', 'rail'); rail.setAttribute('aria-label', 'Slides');
+    var stage = el('div', 'stage');
+    var stageArea = el('div', 'stage-area'); stageArea.appendChild(stage);
+    var notesPanel = el('aside', 'notes-panel collapsed',
+      '<div class="notes-label">Speaker notes<span class="hint">hidden when presenting</span></div><div class="notes-body"></div>');
+    var notesBody = notesPanel.querySelector('.notes-body');
+    var stageWrap = el('div', 'stage-wrap'); stageWrap.appendChild(stageArea); stageWrap.appendChild(notesPanel);
+    var appBody = el('div', 'app-body'); appBody.appendChild(rail); appBody.appendChild(stageWrap);
+
+    /* move slides into the stage */
+    slides.forEach(function (s) { stage.appendChild(s); });
+    deck.appendChild(appBar);
+    deck.appendChild(appBody);
+
+    var progress = el('div', 'progress-bar', '<span></span>');
+    var progressFill = progress.querySelector('span');
+    var presentBar = el('div', 'present-bar');
+    var exitBtn = el('button', '', IC.x + 'Exit'); exitBtn.setAttribute('aria-label', 'Exit present mode');
+    var pPrev = el('button', 'nav', IC.prev); pPrev.setAttribute('aria-label', 'Previous slide');
+    var pCount = el('span', 'pcount');
+    var pNext = el('button', 'nav', IC.next); pNext.setAttribute('aria-label', 'Next slide');
+    var pSpacer = el('span', 'spacer');
+    presentBar.appendChild(exitBtn); presentBar.appendChild(pSpacer);
+    presentBar.appendChild(pPrev); presentBar.appendChild(pCount); presentBar.appendChild(pNext);
+
+    var gridOv = el('div', 'grid-overview'); gridOv.setAttribute('aria-hidden', 'true');
+    var helpOv = el('div', 'help-overlay');
+    helpOv.innerHTML = '<div class="help-card"><h2>Keyboard shortcuts</h2>' +
+      '<div class="help-row"><span>Next / previous</span><span><kbd>→</kbd> <kbd>←</kbd> <kbd>Space</kbd></span></div>' +
+      '<div class="help-row"><span>First / last</span><span><kbd>Home</kbd> <kbd>End</kbd></span></div>' +
+      '<div class="help-row"><span>Jump to slide</span><span><kbd>1</kbd>…<kbd>9</kbd> <kbd>Enter</kbd></span></div>' +
+      '<div class="help-row"><span>Present (fullscreen)</span><span><kbd>P</kbd></span></div>' +
+      '<div class="help-row"><span>Grid overview</span><span><kbd>G</kbd></span></div>' +
+      '<div class="help-row"><span>Toggle notes</span><span><kbd>N</kbd></span></div>' +
+      '<div class="help-row"><span>Help / close</span><span><kbd>?</kbd> <kbd>Esc</kbd></span></div></div>';
+    var jump = el('div', 'jump-input', '<span class="lbl">Go to</span><input type="text" inputmode="numeric" aria-label="Jump to slide number">');
+    var jumpField = jump.querySelector('input');
+
+    document.body.appendChild(progress);
+    document.body.appendChild(presentBar);
+    document.body.appendChild(gridOv);
+    document.body.appendChild(helpOv);
+    document.body.appendChild(jump);
+
+    /* ---------- thumbnails ---------- */
+    function makeMini(slide) {
+      var mini = el('div', 'mini');
+      mini.setAttribute('aria-hidden', 'true');
+      mini.style.width = DESIGN_W + 'px';
+      mini.style.height = DESIGN_H + 'px';
+      var clone = slide.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.classList.add('is-active');
+      clone.style.opacity = '1';
+      clone.style.transform = 'none';
+      clone.style.transition = 'none';
+      [].forEach.call(clone.querySelectorAll('.reveal,[data-anim]'), function (n) {
+        n.style.opacity = '1'; n.style.transform = 'none'; n.classList.add('visible');
+      });
+      mini.appendChild(clone);
+      return mini;
+    }
+    function scaleMini(frame, mini) {
+      var w = frame.clientWidth;
+      if (w) mini.style.transform = 'scale(' + (w / DESIGN_W) + ')';
+    }
+
+    var railThumbs = [];
+    function buildRail() {
+      rail.innerHTML = '';
+      railThumbs = [];
+      slides.forEach(function (slide, i) {
+        var btn = el('button', 'rail-thumb');
+        btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+        var num = el('span', 'num'); num.textContent = (i + 1);
+        var frame = el('span', 'frame');
+        var mini = makeMini(slide);
+        frame.appendChild(mini);
+        btn.appendChild(num); btn.appendChild(frame);
+        btn.addEventListener('click', function () { go(i); closeRail(); });
+        rail.appendChild(btn);
+        railThumbs.push({ btn: btn, frame: frame, mini: mini });
+      });
+    }
+    buildRail();
+    function rescaleThumbs() { railThumbs.forEach(function (t) { scaleMini(t.frame, t.mini); }); }
+
+    /* fixed-canvas stage: scale the design-size stage to fit the area/viewport */
+    function fitStage() {
+      if (!fixedStage) return;
+      var aw = stageArea.clientWidth, ah = stageArea.clientHeight;
+      var sw = stage.offsetWidth || DESIGN_W, sh = stage.offsetHeight || DESIGN_H;
+      if (aw && ah && sw && sh) stage.style.setProperty('--stage-scale', Math.min(aw / sw, ah / sh));
+    }
+
+    /* ---------- grid overview ---------- */
+    var gridThumbs = [];
+    function buildGrid() {
+      gridOv.innerHTML = '';
+      gridThumbs = [];
+      slides.forEach(function (slide, i) {
+        var cell = el('button', 'gthumb');
+        cell.setAttribute('aria-label', 'Slide ' + (i + 1));
+        var mini = makeMini(slide);
+        var badge = el('span', 'badge'); badge.textContent = (i + 1);
+        cell.appendChild(mini); cell.appendChild(badge);
+        cell.addEventListener('click', function () { go(i); toggleGrid(false); });
+        gridOv.appendChild(cell);
+        gridThumbs.push({ frame: cell, mini: mini });
+      });
+    }
+    function rescaleGrid() { gridThumbs.forEach(function (t) { scaleMini(t.frame, t.mini); }); }
+
+    /* ---------- navigation ---------- */
+    function go(n, opts) {
+      opts = opts || {};
+      n = Math.max(0, Math.min(total - 1, n));
+      slides.forEach(function (s, i) {
+        if (opts.immediate) s.style.transition = 'none';
+        s.classList.toggle('is-active', i === n);
+        s.classList.toggle('is-prev', i < n);
+        // also toggle `visible` on the active slide so themes using the
+        // `.slide.visible .reveal` contract (June-12 micron themes) animate too.
+        s.classList.toggle('visible', i === n);
+        if (opts.immediate) { void s.offsetWidth; s.style.transition = ''; }
+      });
+      idx = n;
+      counter.textContent = (n + 1) + ' / ' + total;
+      pCount.textContent = (n + 1) + ' / ' + total;
+      progressFill.style.width = ((n + 1) / total * 100) + '%';
+      railThumbs.forEach(function (t, i) {
+        t.btn.classList.toggle('is-active', i === n);
+        if (i === n) t.btn.scrollIntoView({ block: 'nearest' });
+      });
+      if (gridThumbs.length) gridThumbs.forEach(function (t, i) { t.frame.classList.toggle('is-active', i === n); });
+      var note = slides[n].querySelector('.speaker-notes, aside.notes, .notes');
+      notesBody.innerHTML = note ? note.innerHTML : '';
+      revealIn(slides[n]);
+      var hash = '#/' + (n + 1);
+      if (location.hash !== hash) history.replaceState(null, '', hash);
+    }
+    function revealIn(slide) {
+      [].forEach.call(slide.querySelectorAll('.reveal'), function (n, i) {
+        n.classList.remove('visible'); void n.offsetWidth;
+        n.style.transitionDelay = (i * 60) + 'ms';
+        n.classList.add('visible');
+      });
+    }
+
+    /* ---------- present mode ---------- */
+    var barTimer = null;
+    function showBar() {
+      deck.classList.add('bar-show');
+      if (barTimer) clearTimeout(barTimer);
+      barTimer = setTimeout(function () { deck.classList.remove('bar-show'); }, 2200);
+    }
+    function enterPresent() {
+      deck.classList.add('presenting');
+      showBar();
+      var elx = document.documentElement;
+      if (elx.requestFullscreen) elx.requestFullscreen().catch(function () {});
+      requestAnimationFrame(function () { fitStage(); go(idx, { immediate: true }); });
+    }
+    function exitPresent() {
+      deck.classList.remove('presenting', 'bar-show');
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+      requestAnimationFrame(fitStage);
+    }
+    function togglePresent() { deck.classList.contains('presenting') ? exitPresent() : enterPresent(); }
+    document.addEventListener('fullscreenchange', function () {
+      if (!document.fullscreenElement) deck.classList.remove('presenting', 'bar-show');
+    });
+
+    /* ---------- overlays ---------- */
+    function toggleGrid(force) {
+      var open = force !== undefined ? force : !gridOv.classList.contains('open');
+      if (open && !gridThumbs.length) buildGrid();
+      gridOv.classList.toggle('open', open);
+      gridOv.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) requestAnimationFrame(rescaleGrid);
+    }
+    function toggleHelp(force) {
+      helpOv.classList.toggle('open', force !== undefined ? force : !helpOv.classList.contains('open'));
+    }
+    function toggleNotes(force) {
+      notesPanel.classList.toggle('collapsed', force !== undefined ? !force : !notesPanel.classList.contains('collapsed'));
+    }
+    function closeRail() { deck.classList.remove('rail-open'); }
+    function anyOverlayOpen() { return gridOv.classList.contains('open') || helpOv.classList.contains('open') || jump.classList.contains('open'); }
+
+    /* ---------- jump to slide ---------- */
+    var jumpBuf = '';
+    function openJump(first) {
+      jumpBuf = first || '';
+      jumpField.value = jumpBuf;
+      jump.classList.add('open');
+      jumpField.focus();
+    }
+    function closeJump() { jump.classList.remove('open'); jumpBuf = ''; }
+    jumpField.addEventListener('keydown', function (e) {
+      e.stopPropagation();
+      if (e.key === 'Enter') { var n = parseInt(jumpField.value, 10); if (n >= 1) go(n - 1); closeJump(); }
+      else if (e.key === 'Escape') closeJump();
+    });
+
+    /* ---------- buttons ---------- */
+    presentBtn.addEventListener('click', enterPresent);
+    exitBtn.addEventListener('click', exitPresent);
+    pPrev.addEventListener('click', function () { go(idx - 1); showBar(); });
+    pNext.addEventListener('click', function () { go(idx + 1); showBar(); });
+    gridBtn.addEventListener('click', function () { toggleGrid(); });
+    helpBtn.addEventListener('click', function () { toggleHelp(); });
+    menuBtn.addEventListener('click', function () { deck.classList.toggle('rail-open'); });
+
+    /* ---------- keyboard ---------- */
+    document.addEventListener('keydown', function (e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var kt = e.target;
+      if (kt && (kt.isContentEditable || kt.tagName === 'INPUT' || kt.tagName === 'TEXTAREA')) {
+        if (e.key === 'Escape') kt.blur();
+        return;
+      }
+      if (jump.classList.contains('open')) return;
+      if (/^[0-9]$/.test(e.key)) { openJump(e.key); return; }
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': go(idx + 1); showBar(); e.preventDefault(); break;
+        case 'ArrowLeft': case 'ArrowUp': case 'PageUp': go(idx - 1); showBar(); e.preventDefault(); break;
+        case 'Home': go(0); break;
+        case 'End': go(total - 1); break;
+        case 'p': case 'P': togglePresent(); break;
+        case 'g': case 'G': toggleGrid(); break;
+        case 'e': case 'E': toggleEditMode(); break;
+        case 'n': case 'N': toggleNotes(); break;
+        case '?': toggleHelp(); break;
+        case 'Escape':
+          if (jump.classList.contains('open')) closeJump();
+          else if (helpOv.classList.contains('open')) toggleHelp(false);
+          else if (gridOv.classList.contains('open')) toggleGrid(false);
+          else if (deck.classList.contains('presenting')) exitPresent();
+          break;
+      }
+    });
+
+    /* ---------- pointer: present-bar wake + touch swipe ---------- */
+    document.addEventListener('mousemove', function () { if (deck.classList.contains('presenting')) showBar(); });
+    var tx = 0, ty = 0;
+    stage.addEventListener('touchstart', function (e) { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }, { passive: true });
+    stage.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    /* ---------- hash deep-link ---------- */
+    function fromHash() {
+      var m = /^#\/(\d+)/.exec(location.hash || '');
+      if (m) { var n = parseInt(m[1], 10) - 1; if (n >= 0 && n < total) idx = n; }
+    }
+    window.addEventListener('hashchange', function () { fromHash(); go(idx); });
+
+    /* ---------- resize ---------- */
+    var rzTimer = null;
+    window.addEventListener('resize', function () {
+      if (rzTimer) clearTimeout(rzTimer);
+      rzTimer = setTimeout(function () { fitStage(); rescaleThumbs(); if (gridOv.classList.contains('open')) rescaleGrid(); }, 120);
+    });
+
+    /* ---------- init ---------- */
+    fromHash();
+    requestAnimationFrame(function () { fitStage(); rescaleThumbs(); go(idx, { immediate: true }); });
+
+    /* ====================== LIVING EDITOR (ADR: living-deck) ======================
+       Inert until the user enters edit mode. Edits slide CONTENT and ORDER only.
+       Save reconstructs the AUTHORED form from PRISTINE_HTML + the current slides,
+       never the runtime-expanded DOM. */
+    var EDIT_SEL = 'h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,figcaption,.eyebrow';
+    var editActive = false;
+    function railEditUI(on) {
+      railThumbs.forEach(function (t, i) {
+        t.btn.setAttribute('draggable', on ? 'true' : 'false');
+        var tools = t.btn.querySelector('.thumb-tools');
+        if (on && !tools) {
+          tools = el('span', 'thumb-tools');
+          var dup = el('button', 'thumb-dup', '+'); dup.title = 'Duplicate slide'; dup.setAttribute('aria-label', 'Duplicate slide ' + (i + 1));
+          var del = el('button', 'thumb-del', '×'); del.title = 'Delete slide'; del.setAttribute('aria-label', 'Delete slide ' + (i + 1));
+          dup.addEventListener('click', function (e) { e.stopPropagation(); duplicateSlide(i); });
+          del.addEventListener('click', function (e) { e.stopPropagation(); deleteSlide(i); });
+          tools.appendChild(dup); tools.appendChild(del);
+          t.btn.appendChild(tools);
+        } else if (!on && tools) {
+          tools.remove();
+        }
+      });
+    }
+
+    function rebuildNav() {
+      slides = [].slice.call(stage.querySelectorAll('.slide'));
+      total = slides.length;
+      buildRail();
+      railEditUI(editActive);
+      setEditable(editActive);
+      gridThumbs = []; gridOv.innerHTML = ''; gridOv.classList.remove('open'); gridOv.setAttribute('aria-hidden', 'true');
+      idx = Math.max(0, Math.min(total - 1, idx));
+      go(idx, { immediate: true });
+      requestAnimationFrame(rescaleThumbs);
+    }
+
+    function moveSlide(from, to) {
+      if (from === to || from < 0 || to < 0 || from >= total || to >= total) return;
+      var node = slides[from], ref = slides[to];
+      if (from < to) stage.insertBefore(node, ref.nextSibling);
+      else stage.insertBefore(node, ref);
+      idx = to;
+      rebuildNav();
+    }
+    function duplicateSlide(i) {
+      if (i < 0 || i >= total) return;
+      var clone = slides[i].cloneNode(true);
+      clone.classList.remove('is-active', 'is-prev', 'visible');
+      clone.removeAttribute('id');
+      stage.insertBefore(clone, slides[i].nextSibling);
+      idx = i + 1;
+      rebuildNav();
+    }
+    function deleteSlide(i) {
+      if (total <= 1 || i < 0 || i >= total) return;
+      stage.removeChild(slides[i]);
+      idx = Math.max(0, i - 1);
+      rebuildNav();
+    }
+
+    var fileHandle = null;
+    function cleanInto(doc, slide) {
+      var c = doc.importNode(slide, true);
+      c.classList.remove('is-active', 'is-prev', 'visible');
+      c.removeAttribute('contenteditable');
+      [].forEach.call(c.querySelectorAll('[contenteditable]'), function (n) { n.removeAttribute('contenteditable'); });
+      [].forEach.call(c.querySelectorAll('.reveal'), function (n) {
+        n.classList.remove('visible'); n.style.transitionDelay = '';
+        if (!n.getAttribute('style')) n.removeAttribute('style');
+      });
+      if (!c.getAttribute('style')) c.removeAttribute('style');
+      if (!c.getAttribute('class')) c.removeAttribute('class');
+      return c;
+    }
+    function serializeAuthored() {
+      var doc = new DOMParser().parseFromString(PRISTINE_HTML, 'text/html');
+      var pdeck = doc.querySelector('.deck');
+      pdeck.innerHTML = '';
+      slides.forEach(function (s) { pdeck.appendChild(cleanInto(doc, s)); });
+      return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    }
+    function fileBase() { return (document.title || 'deck').replace(/\s+/g, '-').toLowerCase(); }
+    function downloadHtml(html) {
+      var blob = new Blob([html], { type: 'text/html' });
+      var a = el('a'); a.href = URL.createObjectURL(blob); a.download = fileBase() + '.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }
+    function flashSave(msg) { saveBtn.textContent = msg; setTimeout(function () { saveBtn.textContent = 'Save'; }, 1400); }
+    function saveToFile() {
+      var html = serializeAuthored();
+      if (window.showSaveFilePicker) {
+        (function () {
+          (async function () {
+            try {
+              if (!fileHandle) {
+                fileHandle = await window.showSaveFilePicker({
+                  suggestedName: fileBase() + '.html',
+                  types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }]
+                });
+              }
+              var w = await fileHandle.createWritable();
+              await w.write(html); await w.close();
+              flashSave('Saved');
+            } catch (err) {
+              if (err && err.name === 'AbortError') return;
+              downloadHtml(html); flashSave('Downloaded');
+            }
+          })();
+        })();
+      } else {
+        downloadHtml(html); flashSave('Downloaded');
+      }
+    }
+    saveBtn.addEventListener('click', saveToFile);
+
+    var dragFrom = -1;
+    rail.addEventListener('dragstart', function (e) {
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn || !editActive) return;
+      dragFrom = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    });
+    rail.addEventListener('dragover', function (e) { if (editActive && dragFrom > -1) e.preventDefault(); });
+    rail.addEventListener('drop', function (e) {
+      if (!editActive || dragFrom < 0) return;
+      e.preventDefault();
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn) { dragFrom = -1; return; }
+      var to = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (to > -1 && to !== dragFrom) moveSlide(dragFrom, to);
+      dragFrom = -1;
+    });
+
+    function setEditable(on) {
+      slides.forEach(function (s) {
+        [].forEach.call(s.querySelectorAll(EDIT_SEL), function (n) {
+          if (on) n.setAttribute('contenteditable', 'true');
+          else n.removeAttribute('contenteditable');
+        });
+      });
+    }
+    function toggleEditMode(force) {
+      editActive = (force !== undefined) ? force : !editActive;
+      document.body.classList.toggle('edit-active', editActive);
+      editBtn.classList.toggle('active', editActive);
+      saveBtn.style.display = editActive ? '' : 'none';
+      setEditable(editActive);
+      railEditUI(editActive);
+      if (editActive) deck.classList.add('rail-open');
+    }
+    editBtn.addEventListener('click', function () { toggleEditMode(); });
+
+    window.presentation = {
+      goTo: function (n, opts) { go(n, opts); },
+      next: function () { go(idx + 1); },
+      prev: function () { go(idx - 1); },
+      present: enterPresent,
+      get current() { return idx; },
+      get total() { return total; },
+      editor: {
+        toggle: function (f) { toggleEditMode(f); },
+        get isActive() { return editActive; },
+        move: moveSlide,
+        duplicate: duplicateSlide,
+        remove: deleteSlide,
+        serialize: serializeAuthored,
+        save: saveToFile
+      }
+    };
+  });
+})();
 </script>
+<!-- /SHELL:JS -->
 </body>
 </html>
