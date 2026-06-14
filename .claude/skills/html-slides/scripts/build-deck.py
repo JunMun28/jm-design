@@ -103,6 +103,13 @@ def build_new(args: argparse.Namespace) -> Path:
         mode=args.mode, slides=slides,
     )
     html = shell_mod.inline_shell(html)
+    if args.source or args.theme:
+        import datetime
+        import importlib.util
+        _spec = importlib.util.spec_from_file_location("deck_meta", str(Path(__file__).with_name("deck_meta.py")))
+        _dm = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_dm)
+        _date = args.date or datetime.date.today().isoformat()
+        html = _dm.stamp(html, args.source or "(unspecified)", args.theme or "(unspecified)", _date)
     out = args.output or Path(f"{args.title.lower().replace(' ', '-')}.html")
     out.write_text(html, encoding="utf-8")
     return out
@@ -117,6 +124,9 @@ def main() -> None:
     p_new.add_argument("--dark", action="store_true", help="emit a dark token block")
     p_new.add_argument("--mode", choices=["live", "standalone"], default="live")
     p_new.add_argument("-o", "--output", type=Path)
+    p_new.add_argument("--source", default=None, help="Path to the source wireframe; recorded in a <!-- SOURCE: --> stamp.")
+    p_new.add_argument("--theme", default=None, help="Theme id; recorded in the source stamp and used for the variant filename hint.")
+    p_new.add_argument("--date", default=None, help="Generation date (YYYY-MM-DD) for the stamp; defaults to today.")
 
     p_re = sub.add_parser("reshell", help="re-inline the latest shell into a marked deck")
     p_re.add_argument("deck", type=Path)

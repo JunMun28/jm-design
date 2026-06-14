@@ -358,6 +358,22 @@ button { font-family: inherit; }
 :where(.slide .g2) { grid-template-columns: repeat(2, 1fr); }
 :where(.slide .g3) { grid-template-columns: repeat(3, 1fr); }
 :where(.slide .card) { background: var(--panel); border: 1px solid var(--line); border-radius: var(--shell-radius); padding: clamp(14px, 1.8vw, 24px); }
+
+/* ===================== LIVING EDITOR ===================== */
+.app-bar .shell-btn.active { border-color: var(--ink); color: var(--ink); }
+body.edit-active [contenteditable="true"] { outline: 1px dashed var(--accent); outline-offset: 3px; border-radius: 3px; cursor: text; }
+body.edit-active [contenteditable="true"]:focus { outline: 2px solid var(--accent); }
+body.edit-active .reveal { transition: none !important; }
+body.edit-active .rail-thumb { cursor: grab; }
+.rail-thumb .thumb-tools { display: none; }
+body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 auto; margin-left: 2px; }
+.rail-thumb .thumb-tools button {
+  width: 18px; height: 18px; line-height: 1; padding: 0;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+  color: var(--muted); font-size: 12px; cursor: pointer;
+}
+.rail-thumb .thumb-tools button:hover { border-color: var(--line-strong); color: var(--ink); }
+@media print { body.edit-active [contenteditable] { outline: none !important; } }
 </style>
 <!-- /SHELL:CSS -->
 <style id="theme-tokens">
@@ -796,6 +812,10 @@ button { font-family: inherit; }
     var slides = [].slice.call(deck.querySelectorAll('.slide'));
     if (!slides.length) return;
 
+    // Authored snapshot taken BEFORE any chrome is built or slides are moved.
+    // Used by the editor's save to reconstruct the authored file (ADR: living-deck).
+    var PRISTINE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
     var total = slides.length;
     var idx = 0;
     var deckTitle = deck.getAttribute('data-deck-title') || document.title || 'Slides';
@@ -817,8 +837,11 @@ button { font-family: inherit; }
     var gridBtn = el('button', 'shell-btn icon', IC.grid); gridBtn.setAttribute('aria-label', 'Grid overview');
     var helpBtn = el('button', 'shell-btn icon', '?'); helpBtn.setAttribute('aria-label', 'Keyboard shortcuts');
     var presentBtn = el('button', 'shell-btn primary', IC.play + '<span>Present</span>');
+    var editBtn = el('button', 'shell-btn', 'Edit'); editBtn.setAttribute('aria-label', 'Toggle edit mode');
+    var saveBtn = el('button', 'shell-btn', 'Save'); saveBtn.setAttribute('aria-label', 'Save edits to file'); saveBtn.style.display = 'none';
     appBar.appendChild(menuBtn); appBar.appendChild(titleEl); appBar.appendChild(counter);
-    appBar.appendChild(spacer); appBar.appendChild(gridBtn); appBar.appendChild(helpBtn); appBar.appendChild(presentBtn);
+    appBar.appendChild(spacer); appBar.appendChild(editBtn); appBar.appendChild(saveBtn);
+    appBar.appendChild(gridBtn); appBar.appendChild(helpBtn); appBar.appendChild(presentBtn);
 
     var rail = el('nav', 'rail'); rail.setAttribute('aria-label', 'Slides');
     var stage = el('div', 'stage');
@@ -888,18 +911,23 @@ button { font-family: inherit; }
     }
 
     var railThumbs = [];
-    slides.forEach(function (slide, i) {
-      var btn = el('button', 'rail-thumb');
-      btn.setAttribute('aria-label', 'Slide ' + (i + 1));
-      var num = el('span', 'num'); num.textContent = (i + 1);
-      var frame = el('span', 'frame');
-      var mini = makeMini(slide);
-      frame.appendChild(mini);
-      btn.appendChild(num); btn.appendChild(frame);
-      btn.addEventListener('click', function () { go(i); closeRail(); });
-      rail.appendChild(btn);
-      railThumbs.push({ btn: btn, frame: frame, mini: mini });
-    });
+    function buildRail() {
+      rail.innerHTML = '';
+      railThumbs = [];
+      slides.forEach(function (slide, i) {
+        var btn = el('button', 'rail-thumb');
+        btn.setAttribute('aria-label', 'Slide ' + (i + 1));
+        var num = el('span', 'num'); num.textContent = (i + 1);
+        var frame = el('span', 'frame');
+        var mini = makeMini(slide);
+        frame.appendChild(mini);
+        btn.appendChild(num); btn.appendChild(frame);
+        btn.addEventListener('click', function () { go(i); closeRail(); });
+        rail.appendChild(btn);
+        railThumbs.push({ btn: btn, frame: frame, mini: mini });
+      });
+    }
+    buildRail();
     function rescaleThumbs() { railThumbs.forEach(function (t) { scaleMini(t.frame, t.mini); }); }
 
     /* fixed-canvas stage: scale the design-size stage to fit the area/viewport */
@@ -1032,6 +1060,11 @@ button { font-family: inherit; }
     /* ---------- keyboard ---------- */
     document.addEventListener('keydown', function (e) {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      var kt = e.target;
+      if (kt && (kt.isContentEditable || kt.tagName === 'INPUT' || kt.tagName === 'TEXTAREA')) {
+        if (e.key === 'Escape') kt.blur();
+        return;
+      }
       if (jump.classList.contains('open')) return;
       if (/^[0-9]$/.test(e.key)) { openJump(e.key); return; }
       switch (e.key) {
@@ -1041,6 +1074,7 @@ button { font-family: inherit; }
         case 'End': go(total - 1); break;
         case 'p': case 'P': togglePresent(); break;
         case 'g': case 'G': toggleGrid(); break;
+        case 'e': case 'E': toggleEditMode(); break;
         case 'n': case 'N': toggleNotes(); break;
         case '?': toggleHelp(); break;
         case 'Escape':
@@ -1079,13 +1113,175 @@ button { font-family: inherit; }
     fromHash();
     requestAnimationFrame(function () { fitStage(); rescaleThumbs(); go(idx, { immediate: true }); });
 
+    /* ====================== LIVING EDITOR (ADR: living-deck) ======================
+       Inert until the user enters edit mode. Edits slide CONTENT and ORDER only.
+       Save reconstructs the AUTHORED form from PRISTINE_HTML + the current slides,
+       never the runtime-expanded DOM. */
+    var EDIT_SEL = 'h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,figcaption,.eyebrow';
+    var editActive = false;
+    function railEditUI(on) {
+      railThumbs.forEach(function (t, i) {
+        t.btn.setAttribute('draggable', on ? 'true' : 'false');
+        var tools = t.btn.querySelector('.thumb-tools');
+        if (on && !tools) {
+          tools = el('span', 'thumb-tools');
+          var dup = el('button', 'thumb-dup', '+'); dup.title = 'Duplicate slide'; dup.setAttribute('aria-label', 'Duplicate slide ' + (i + 1));
+          var del = el('button', 'thumb-del', '×'); del.title = 'Delete slide'; del.setAttribute('aria-label', 'Delete slide ' + (i + 1));
+          dup.addEventListener('click', function (e) { e.stopPropagation(); duplicateSlide(i); });
+          del.addEventListener('click', function (e) { e.stopPropagation(); deleteSlide(i); });
+          tools.appendChild(dup); tools.appendChild(del);
+          t.btn.appendChild(tools);
+        } else if (!on && tools) {
+          tools.remove();
+        }
+      });
+    }
+
+    function rebuildNav() {
+      slides = [].slice.call(stage.querySelectorAll('.slide'));
+      total = slides.length;
+      buildRail();
+      railEditUI(editActive);
+      setEditable(editActive);
+      gridThumbs = []; gridOv.innerHTML = ''; gridOv.classList.remove('open'); gridOv.setAttribute('aria-hidden', 'true');
+      idx = Math.max(0, Math.min(total - 1, idx));
+      go(idx, { immediate: true });
+      requestAnimationFrame(rescaleThumbs);
+    }
+
+    function moveSlide(from, to) {
+      if (from === to || from < 0 || to < 0 || from >= total || to >= total) return;
+      var node = slides[from], ref = slides[to];
+      if (from < to) stage.insertBefore(node, ref.nextSibling);
+      else stage.insertBefore(node, ref);
+      idx = to;
+      rebuildNav();
+    }
+    function duplicateSlide(i) {
+      if (i < 0 || i >= total) return;
+      var clone = slides[i].cloneNode(true);
+      clone.classList.remove('is-active', 'is-prev', 'visible');
+      clone.removeAttribute('id');
+      stage.insertBefore(clone, slides[i].nextSibling);
+      idx = i + 1;
+      rebuildNav();
+    }
+    function deleteSlide(i) {
+      if (total <= 1 || i < 0 || i >= total) return;
+      stage.removeChild(slides[i]);
+      idx = Math.max(0, i - 1);
+      rebuildNav();
+    }
+
+    var fileHandle = null;
+    function cleanInto(doc, slide) {
+      var c = doc.importNode(slide, true);
+      c.classList.remove('is-active', 'is-prev', 'visible');
+      c.removeAttribute('contenteditable');
+      [].forEach.call(c.querySelectorAll('[contenteditable]'), function (n) { n.removeAttribute('contenteditable'); });
+      [].forEach.call(c.querySelectorAll('.reveal'), function (n) {
+        n.classList.remove('visible'); n.style.transitionDelay = '';
+        if (!n.getAttribute('style')) n.removeAttribute('style');
+      });
+      if (!c.getAttribute('style')) c.removeAttribute('style');
+      if (!c.getAttribute('class')) c.removeAttribute('class');
+      return c;
+    }
+    function serializeAuthored() {
+      var doc = new DOMParser().parseFromString(PRISTINE_HTML, 'text/html');
+      var pdeck = doc.querySelector('.deck');
+      pdeck.innerHTML = '';
+      slides.forEach(function (s) { pdeck.appendChild(cleanInto(doc, s)); });
+      return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    }
+    function fileBase() { return (document.title || 'deck').replace(/\s+/g, '-').toLowerCase(); }
+    function downloadHtml(html) {
+      var blob = new Blob([html], { type: 'text/html' });
+      var a = el('a'); a.href = URL.createObjectURL(blob); a.download = fileBase() + '.html';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }
+    function flashSave(msg) { saveBtn.textContent = msg; setTimeout(function () { saveBtn.textContent = 'Save'; }, 1400); }
+    function saveToFile() {
+      var html = serializeAuthored();
+      if (window.showSaveFilePicker) {
+        (function () {
+          (async function () {
+            try {
+              if (!fileHandle) {
+                fileHandle = await window.showSaveFilePicker({
+                  suggestedName: fileBase() + '.html',
+                  types: [{ description: 'HTML', accept: { 'text/html': ['.html'] } }]
+                });
+              }
+              var w = await fileHandle.createWritable();
+              await w.write(html); await w.close();
+              flashSave('Saved');
+            } catch (err) {
+              if (err && err.name === 'AbortError') return;
+              downloadHtml(html); flashSave('Downloaded');
+            }
+          })();
+        })();
+      } else {
+        downloadHtml(html); flashSave('Downloaded');
+      }
+    }
+    saveBtn.addEventListener('click', saveToFile);
+
+    var dragFrom = -1;
+    rail.addEventListener('dragstart', function (e) {
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn || !editActive) return;
+      dragFrom = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
+    });
+    rail.addEventListener('dragover', function (e) { if (editActive && dragFrom > -1) e.preventDefault(); });
+    rail.addEventListener('drop', function (e) {
+      if (!editActive || dragFrom < 0) return;
+      e.preventDefault();
+      var btn = e.target.closest && e.target.closest('.rail-thumb');
+      if (!btn) { dragFrom = -1; return; }
+      var to = railThumbs.map(function (t) { return t.btn; }).indexOf(btn);
+      if (to > -1 && to !== dragFrom) moveSlide(dragFrom, to);
+      dragFrom = -1;
+    });
+
+    function setEditable(on) {
+      slides.forEach(function (s) {
+        [].forEach.call(s.querySelectorAll(EDIT_SEL), function (n) {
+          if (on) n.setAttribute('contenteditable', 'true');
+          else n.removeAttribute('contenteditable');
+        });
+      });
+    }
+    function toggleEditMode(force) {
+      editActive = (force !== undefined) ? force : !editActive;
+      document.body.classList.toggle('edit-active', editActive);
+      editBtn.classList.toggle('active', editActive);
+      saveBtn.style.display = editActive ? '' : 'none';
+      setEditable(editActive);
+      railEditUI(editActive);
+      if (editActive) deck.classList.add('rail-open');
+    }
+    editBtn.addEventListener('click', function () { toggleEditMode(); });
+
     window.presentation = {
       goTo: function (n, opts) { go(n, opts); },
       next: function () { go(idx + 1); },
       prev: function () { go(idx - 1); },
       present: enterPresent,
       get current() { return idx; },
-      get total() { return total; }
+      get total() { return total; },
+      editor: {
+        toggle: function (f) { toggleEditMode(f); },
+        get isActive() { return editActive; },
+        move: moveSlide,
+        duplicate: duplicateSlide,
+        remove: deleteSlide,
+        serialize: serializeAuthored,
+        save: saveToFile
+      }
     };
   });
 })();

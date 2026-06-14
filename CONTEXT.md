@@ -152,6 +152,25 @@ _Avoid_: silent inline, marker-free deck, unverifiable shell copy
 The default, non-presenting view of a deck — a slide-app shell with a persistent **Slide Rail** on the left, a single main slide stage, a top bar (deck title, slide counter, help, Present), and a collapsible **Speaker Notes** panel under the stage. Navigation is one-slide-at-a-time (arrow keys or clicking a rail thumbnail); there is **no vertical scroll-snap**. There is **no timer** anywhere in the shell. Shell-owned and theme-independent (see html-slides ADR 0006).
 _Avoid_: scroll-snap webpage, nav-dot rail, talk timer, per-theme player chrome
 
+**Living Deck**:
+A built HTML deck treated as a durable, directly-editable source — not a frozen
+output. The shell's living editor edits text and slide order in the browser and
+saves back to the same file; chat handles bigger changes. Each deck stays
+editable for its whole life.
+_Avoid_: one-shot export, frozen deck, edit-only-by-rebuild
+
+**Styled Deck Variant**:
+One rendering of a wireframe in a specific theme, named `<topic>.<theme>.html`.
+Generating another style writes a new variant file (non-destructive); variants
+of the same content coexist. Each variant carries a source stamp back to its
+wireframe.
+_Avoid_: overwriting on restyle, single canonical deck per topic
+
+**Source Stamp**:
+The `<!-- SOURCE: …-brainstorm.html · THEME: … -->` comment a generated deck
+carries, linking it to the wireframe it came from so you can go back and refine.
+_Avoid_: untraceable deck, lost wireframe link
+
 **Slide Rail**:
 The persistent left-hand list of live-scaled, numbered slide thumbnails in the **Slide Player**, with the current slide highlighted; scrollable and collapsible. It replaces the old right-edge nav dots as the deck's navigator. It can also expand into a full-screen **Grid Overview** (all thumbnails at once), which is the kept-and-relocated successor to the old ESC overview grid.
 _Avoid_: right-edge nav dots, static thumbnail images
@@ -212,6 +231,11 @@ _Avoid_: required notes gate, shell-owned notes, second-window notes, visible au
 - The **Slide Player**, **Slide Rail**, and **Present Mode** are **Deck Shell** capabilities; **Speaker Notes** are content the agent authors, shown by the shell in the player and hidden in **Present Mode**.
 - The **Slide Rail** replaces the old right-edge nav dots and ESC overview grid; navigation is one-slide-at-a-time, not vertical scroll-snap (html-slides ADR 0006).
 - Decks **inline** the shell rather than linking a shared runtime, preserving single-file portability (see html-slides ADR 0005).
+- A **Living Deck** is the editable form of a built deck; the shell's editor saves
+  the authored file, never the runtime DOM, so the deck stays re-inlinable.
+- A **Styled Deck Variant** is generated from a wireframe + theme; the wireframe
+  stays the content source you return to, and restyle is non-destructive.
+- The **Source Stamp** links a **Styled Deck Variant** back to its wireframe.
 
 ## Example dialogue
 

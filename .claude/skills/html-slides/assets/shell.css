@@ -340,3 +340,19 @@ button { font-family: inherit; }
 :where(.slide .g2) { grid-template-columns: repeat(2, 1fr); }
 :where(.slide .g3) { grid-template-columns: repeat(3, 1fr); }
 :where(.slide .card) { background: var(--panel); border: 1px solid var(--line); border-radius: var(--shell-radius); padding: clamp(14px, 1.8vw, 24px); }
+
+/* ===================== LIVING EDITOR ===================== */
+.app-bar .shell-btn.active { border-color: var(--ink); color: var(--ink); }
+body.edit-active [contenteditable="true"] { outline: 1px dashed var(--accent); outline-offset: 3px; border-radius: 3px; cursor: text; }
+body.edit-active [contenteditable="true"]:focus { outline: 2px solid var(--accent); }
+body.edit-active .reveal { transition: none !important; }
+body.edit-active .rail-thumb { cursor: grab; }
+.rail-thumb .thumb-tools { display: none; }
+body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 auto; margin-left: 2px; }
+.rail-thumb .thumb-tools button {
+  width: 18px; height: 18px; line-height: 1; padding: 0;
+  border: 1px solid var(--line); border-radius: 4px; background: var(--bg);
+  color: var(--muted); font-size: 12px; cursor: pointer;
+}
+.rail-thumb .thumb-tools button:hover { border-color: var(--line-strong); color: var(--ink); }
+@media print { body.edit-active [contenteditable] { outline: none !important; } }

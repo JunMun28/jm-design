@@ -83,3 +83,9 @@ uv run scripts/verify.py <deck>.html --theme <id> --require-shell --check-overvi
 
 Never edit between the `<!-- SHELL:* -->` markers — `verify.py --require-shell`
 fails on shell drift. Fix the canonical `assets/shell.*` and reshell instead.
+
+The universal shell also ships a **living editor** (edit text, reorder/duplicate/delete,
+save back to the same file), inert until the user clicks `Edit`. It is shell-owned —
+authors never write editor markup. A delivered deck must contain no `contenteditable`
+attribute and no `edit-active` body class; `Save` strips them, and `verify.py` fails a
+deck that has the residue.

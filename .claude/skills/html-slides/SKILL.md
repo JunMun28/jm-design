@@ -18,8 +18,15 @@ description: Use when creating or editing single-file HTML slide decks across mu
 - When the user asks for a better/impressive/non-boring layout, attaches a slide image as style reference, or the deck is a diagram-heavy technical explainer, consult the sibling `../slide-brainstorm/references/layout-blueprint.md` before writing HTML. Treat its output as the slide layout blueprint.
 - Content slides should be custom to the topic. Do not reuse fixed demo layouts by default.
 - If the user asks for `.pptx`, PowerPoint, or editable Office output for a **new** deck, build the gated HTML deck here first, then convert with the sibling `html-to-pptx` skill (`--mode layered` keeps titles/body editable; `--mode image` for pure fidelity). This keeps every gate — verify.py content lints and the final-deck review — on the PPTX path. Use the `pptx` skill directly only to edit an existing `.pptx`, work inside a given template, or when the user explicitly asks for native PPTX authoring.
+- For this living-deck workflow, export PPTX with `--mode layered` so the handout
+  `.pptx` keeps editable text boxes; name it `<topic>.<theme>.pptx`. The HTML deck
+  and the PPTX are edited independently — there is no sync between them.
 - Ask only when theme/template choice changes the outcome materially.
 - Confirm HTML only vs HTML plus PDF when delivery is unclear.
+- Every built deck is **directly editable in the browser** (the shell's living
+  editor: `Edit` in the app bar / `E`). Edit text, reorder/duplicate/delete slides,
+  and `Save` back to the same file. Content/structure changes that should apply to
+  ALL styles belong in the wireframe; per-style polish is done on the deck.
 
 ## Style Selection
 
@@ -209,6 +216,16 @@ Rules:
      section unless the user explicitly rejects it.
 12. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
 13. Name the generated HTML file from the deck content: lowercase kebab-case from the title or core topic, such as `ai-roadmap-board-review.html`. Do this for every theme, including Micron themes. Avoid generic names like `micron-slides.html`, `slides.html`, or `deck.html` unless the user explicitly names that file.
+- For a deck generated from a wireframe, name the file `<topic>.<theme>.html`
+  (e.g. `ai-agents.micron-dark.html`) so multiple styles of the same content
+  coexist. Generating another style is non-destructive: it writes a NEW
+  variant file and never overwrites an existing one — if the target exists,
+  confirm with the user first. Use `scripts/deck-meta.py name "<topic>" <theme>`
+  to derive the filename, and stamp the deck with its origin via
+  `scripts/build-deck.py new … --source <wireframe.html> --theme <id>` (or
+  `scripts/deck-meta.py stamp <deck.html> <wireframe.html> <theme> <YYYY-MM-DD>`).
+  The stamp `<!-- SOURCE: …-brainstorm.html · THEME: … -->` lets you (and the
+  tooling) jump back to the wireframe to refine and regenerate styles.
 14. Run verification at desktop, mobile, and a non-16:9 browser viewport when fixed-stage output is used, such as `1127x1084`, to confirm the slide canvas letterboxes instead of stretching.
    After verification, inspect screenshots using the per-slide rubric in
    `references/process/verification.md` (glance test, focal point, vertical

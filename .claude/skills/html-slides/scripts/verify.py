@@ -44,6 +44,10 @@ def check_shell_and_notes(deck_src, require_shell):
     else:
         print(f"Shell: {detail} (canonical {shell_mod.canonical_hash()[:12]}).")
 
+    if "<!-- SOURCE:" not in deck_src:
+        notes.append("No source-link stamp (<!-- SOURCE: …-brainstorm.html · THEME: … -->); "
+                     "decks generated from a wireframe should carry one (recommended, not required).")
+
     missing = []
     n = 0
     for chunk in deck_src.split("<section")[1:]:
@@ -476,6 +480,12 @@ def verify_html(html_path, viewports, slides, output_dir, show, wait, check_over
                 brand_issues = page.evaluate(
                     """(cfg) => {
                         const out = [];
+                        if (document.querySelectorAll('[contenteditable]').length) {
+                            out.push('edit-state residue: contenteditable present in delivered deck (Save must strip it)');
+                        }
+                        if (document.body.classList.contains('edit-active')) {
+                            out.push('edit-state residue: body.edit-active present in delivered deck');
+                        }
                         const root = getComputedStyle(document.documentElement);
                         for (const tok of (cfg.required_tokens || [])) {
                             if (!root.getPropertyValue(tok).trim()) {
