@@ -1,0 +1,23 @@
+{
+  "name": "slide-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Slide Studio — local Angular + Atlas app that drives a coding-agent CLI (codex/Copilot) to build Micron slide decks. Lives inside the jm-design repo.",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "pnpm --filter @slide-studio/daemon test",
+    "build": "pnpm --filter @slide-studio/daemon build && pnpm --filter @slide-studio/web build",
+    "start": "pnpm --filter @slide-studio/daemon start"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@parcel/watcher",
+      "lmdb",
+      "msgpackr-extract"
+    ]
+  }
+}

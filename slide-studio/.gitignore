@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.angular/
+*.tsbuildinfo
+# Local on-disk project store (per-user decks live here at runtime)
+.slide-studio-projects/
+# Bundled portable Node runtime (Slice 10, §13) — a large per-OS binary the
+# packaging step drops in; resolved at launch, never committed.
+runtime/

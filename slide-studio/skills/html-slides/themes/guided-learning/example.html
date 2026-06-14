@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 04 · Recursion · CS101</title>
+<link rel="stylesheet" href="../../assets/fonts.css">
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/animations/animations.css">
+<link rel="stylesheet" href="style.css">
+<style>
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+#overview { position: fixed; inset: 0; z-index: 1000; display: none; overflow: auto; padding: clamp(24px, 4vw, 60px); background: #ECEAF4; }
+#overview[aria-hidden="false"] { display: block; }
+.ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.ov-card { cursor: pointer; padding: 0; text-align: left; border: 1px solid rgba(43, 33, 24, 0.2); border-radius: 12px; background: #fff; overflow: hidden; font: inherit; }
+.ov-card:focus-visible { outline: 2px solid #BD03F7; outline-offset: 2px; }
+.ov-thumb { aspect-ratio: 16 / 9; overflow: hidden; position: relative; background: #fff; }
+.ov-thumb .clone { position: absolute; left: 0; top: 0; transform-origin: top left; pointer-events: none; }
+.ov-label { display: flex; justify-content: space-between; gap: 12px; padding: 10px 12px; font-size: 13px; color: #2B2118; }
+#overview .reveal { opacity: 1; transform: none; }
+</style>
+</head>
+<body class="tpl-course-module">
+<div class="deck">
+
+  <!-- 1. Cover -->
+  <section class="slide full" data-slide-kind="cover" data-title="Cover">
+    <div class="lecture-meta"><span>CS 101</span><span>Module 04</span><span>Python</span></div>
+    <h1 class="h1 mt-s">Recursion: solving<br>problems by <em>calling yourself</em>.</h1>
+    <p class="lede mt-l" style="max-width:62ch">In this module you'll learn why a function that calls itself is not a trick, but the most natural way to describe problems that contain smaller copies of themselves.</p>
+    <div class="row mt-l" style="gap:16px">
+      <span class="pill-academic">~ 45 min read</span>
+      <span class="pill-academic">prereq · functions, if/else</span>
+      <span class="pill-academic">lang · Python</span>
+    </div>
+    <div class="deck-footer"><span>Dr. A. Rivera · Spring 2026</span><span class="slide-number" data-current="1" data-total="7"></span></div>
+  </section>
+
+  <!-- 2. Objectives -->
+  <section class="slide" data-title="Objectives">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Objectives</div>
+      <div class="rail-label">Learning objectives</div>
+      <ul class="obj-list">
+        <li class="current">Define recursion</li>
+        <li>Identify a base case</li>
+        <li>Trace a recursive call</li>
+        <li>Convert loop ↔ recursion</li>
+        <li>Recognize when recursion helps</li>
+      </ul>
+      <div class="rail-label">Module progress</div>
+      <p class="dim" style="font-size:13px">Page 2 of 7 · ~5 min in</p>
+    </aside>
+    <div class="main">
+      <h2 class="h2 mt-s">By the end, you will be able to…</h2>
+      <div class="stack mt-l">
+        <div class="concept-box"><h3>① Explain recursion in one sentence.</h3><p class="dim">"A function that solves a problem by calling itself on a smaller version of that problem."</p></div>
+        <div class="concept-box"><h3>② Write a base case that always terminates.</h3><p class="dim">Every recursive function must have an exit door, or it runs forever.</p></div>
+        <div class="concept-box"><h3>③ Trace a call stack on paper.</h3><p class="dim">Given <code>fact(4)</code>, draw the stack frames top-to-bottom.</p></div>
+        <div class="concept-box"><h3>④ Convert a while-loop to a recursive equivalent.</h3><p class="dim">And explain when one is clearer than the other.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Concept -->
+  <section class="slide" data-title="Concept">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Core concept</div>
+      <div class="rail-label">Learning objectives</div>
+      <ul class="obj-list">
+        <li class="done">Define recursion</li>
+        <li class="current">Identify a base case</li>
+        <li>Trace a recursive call</li>
+        <li>Convert loop ↔ recursion</li>
+        <li>Recognize when recursion helps</li>
+      </ul>
+      <div class="rail-label">Key terms</div>
+      <p class="dim" style="font-size:13px">base case · recursive case · call stack · tail call</p>
+    </aside>
+    <div class="main">
+      <h2 class="h2 mt-s">Two parts, always.</h2>
+      <p class="lede mt-m">A recursive function has exactly two things inside it: a <b>base case</b> (when to stop) and a <b>recursive case</b> (how to shrink the problem before calling yourself).</p>
+      <div class="callout">
+        <b>Rule of thumb.</b> If you can't name the base case out loud, don't write the recursion yet. Draw it on paper first.
+      </div>
+      <div class="grid g2 mt-l">
+        <div class="concept-box"><h3>Base case</h3><p class="dim">The smallest possible input — one the function answers directly, without calling itself.</p><p class="pill-academic">e.g. <b>n == 0</b></p></div>
+        <div class="concept-box"><h3>Recursive case</h3><p class="dim">Every other input — delegate to a smaller version of the same problem.</p><p class="pill-academic">e.g. <b>n × fact(n-1)</b></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Example -->
+  <section class="slide" data-title="Example">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Worked example</div>
+      <div class="rail-label">Learning objectives</div>
+      <ul class="obj-list">
+        <li class="done">Define recursion</li>
+        <li class="done">Identify a base case</li>
+        <li class="current">Trace a recursive call</li>
+        <li>Convert loop ↔ recursion</li>
+        <li>Recognize when recursion helps</li>
+      </ul>
+      <div class="rail-label">Try it yourself</div>
+      <p class="dim" style="font-size:13px">Open repl.it and run the code on the right. Then try <code>fact(10)</code>.</p>
+    </aside>
+    <div class="main">
+      <h2 class="h2 mt-s">Factorial, 7 lines.</h2>
+      <div class="code mt-m"><pre style="margin:0"><span class="cmt"># fact(n) = n × (n-1) × … × 1,  and fact(0) = 1</span>
+<span class="kw">def</span> fact(n):
+    <span class="kw">if</span> n == <span class="str">0</span>:          <span class="cmt"># base case</span>
+        <span class="kw">return</span> <span class="str">1</span>
+    <span class="kw">return</span> n * fact(n - <span class="str">1</span>)   <span class="cmt"># recursive case</span>
+
+<span class="kw">print</span>(fact(<span class="str">4</span>))   <span class="cmt"># → 24</span></pre></div>
+      <div class="callout">
+        <b>Trace fact(4).</b> 4 × fact(3) → 4 × (3 × fact(2)) → 4 × 3 × (2 × fact(1)) → 4 × 3 × 2 × 1 × fact(0) → 4 × 3 × 2 × 1 × 1 = <b>24</b>.
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Exercise -->
+  <section class="slide" data-title="Exercise">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Exercise 4.1</div>
+      <div class="rail-label">Learning objectives</div>
+      <ul class="obj-list">
+        <li class="done">Define recursion</li>
+        <li class="done">Identify a base case</li>
+        <li class="done">Trace a recursive call</li>
+        <li class="current">Convert loop ↔ recursion</li>
+        <li>Recognize when recursion helps</li>
+      </ul>
+      <div class="rail-label">Time</div>
+      <p class="dim" style="font-size:13px">~10 minutes · solo</p>
+    </aside>
+    <div class="main">
+      <h2 class="h2 mt-s">Write <em>sum_to(n)</em>.</h2>
+      <p class="lede mt-m">Return <code>1 + 2 + … + n</code> using recursion. No loops.</p>
+      <div class="workbench mt-l">
+        <div class="bench-row">
+          <span class="bench-step">01</span>
+          <div><b>Base case</b><p>When <code>n == 0</code>, return the value you already know.</p></div>
+          <code>return 0</code>
+        </div>
+        <div class="bench-row">
+          <span class="bench-step">02</span>
+          <div><b>Recursive case</b><p>Shrink toward the base case by asking for <code>sum_to(n - 1)</code>.</p></div>
+          <code>return n + sum_to(n - 1)</code>
+        </div>
+        <div class="bench-row">
+          <span class="bench-step">03</span>
+          <div><b>Tests</b><p>Prove the smallest case and one normal case.</p></div>
+          <code>sum_to(5) == 15</code>
+        </div>
+        <div class="bench-row">
+          <span class="bench-step">04</span>
+          <div><b>Guard rail</b><p>Decide what negative inputs should do before shipping.</p></div>
+          <code>if n &lt; 0: raise</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Check understanding -->
+  <section class="slide" data-title="Check">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Check</div>
+      <div class="rail-label">Learning objectives</div>
+      <ul class="obj-list">
+        <li class="done">Define recursion</li>
+        <li class="done">Identify a base case</li>
+        <li class="done">Trace a recursive call</li>
+        <li class="done">Convert loop ↔ recursion</li>
+        <li class="current">Recognize when recursion helps</li>
+      </ul>
+      <div class="rail-label">Self-assess</div>
+      <p class="dim" style="font-size:13px">You should get 3/3.</p>
+      <p class="rail-hint">Press <kbd>R</kbd> to reveal.</p>
+    </aside>
+    <div class="main">
+      <div class="question-bar">
+        <h2 class="h2">Which function will recurse forever?</h2>
+        <button class="reveal-toggle" type="button" aria-pressed="false">Reveal answer</button>
+      </div>
+      <div class="mt-m reveal-set" data-reveal-group>
+        <div class="mcq" data-choice="A"><div class="letter">A</div><div><b>def f(n): return 1 if n == 0 else n * f(n - 1)</b><p class="dim explanation">Base case <code>n == 0</code>, shrinks toward it. Terminates.</p></div></div>
+        <div class="mcq correct" data-choice="B"><div class="letter">B</div><div><b>def f(n): return n + f(n + 1)</b><p class="dim explanation"><b style="color:var(--accent)">Correct.</b> No base case, and <code>n</code> grows: infinite recursion.</p></div></div>
+        <div class="mcq" data-choice="C"><div class="letter">C</div><div><b>def f(n): return n if n &lt; 2 else f(n - 1) + f(n - 2)</b><p class="dim explanation">Classic Fibonacci. Base case on <code>n &lt; 2</code>. Terminates.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Summary -->
+  <section class="slide" data-title="Summary">
+    <aside class="sidebar">
+      <div class="brand">CS 101 · M04</div>
+      <div class="rail-section">Summary</div>
+      <div class="rail-label">Module complete</div>
+      <p class="dim">Page 7 of 7</p>
+    </aside>
+    <div class="main">
+      <h2 class="h1 mt-s">Recursion, in one unwind.</h2>
+      <div class="stack-recap mt-l">
+        <div class="frame"><span>call</span><code>fact(4)</code><b>4 × fact(3)</b></div>
+        <div class="frame"><span>call</span><code>fact(3)</code><b>3 × fact(2)</b></div>
+        <div class="frame"><span>call</span><code>fact(2)</code><b>2 × fact(1)</b></div>
+        <div class="frame"><span>base</span><code>fact(0)</code><b>return 1</b></div>
+      </div>
+      <div class="recap-rule mt-l">
+        <p><b>Base case stops the stack.</b> Recursive case makes the next problem smaller.</p>
+        <p><b>Up next:</b> divide and conquer, where the same idea works on lists.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+<div class="presentation-hotspot">
+  <button class="present-toggle" type="button" aria-label="Open presenter view">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v7A2.5 2.5 0 0 1 17.5 15h-4.04l2.02 3.5a1 1 0 0 1-1.73 1L12 16.46 10.25 19.5a1 1 0 0 1-1.73-1L10.54 15H6.5A2.5 2.5 0 0 1 4 12.5v-7Zm2 0v7c0 .28.22.5.5.5h11a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5h-11a.5.5 0 0 0-.5.5Z"/>
+    </svg>
+    <span>Present</span>
+  </button>
+</div>
+<script>
+function updateStageScale() {
+  const w = 1280;
+  const h = 720;
+  const s = Math.min(window.innerWidth / w, window.innerHeight / h);
+  const target = document.body;
+  target.style.setProperty("--stage-scale", s.toFixed(4));
+  target.style.setProperty("--stage-scaled-width", `${w * s}px`);
+  target.style.setProperty("--stage-scaled-height", `${h * s}px`);
+}
+function setupFixedStage() {
+  document.querySelectorAll(".slide").forEach((slide) => {
+    if (slide.querySelector(":scope > .slide-stage")) return;
+    const stage = document.createElement("div");
+    stage.className = "slide-stage";
+    while (slide.firstChild) stage.appendChild(slide.firstChild);
+    slide.appendChild(stage);
+  });
+  updateStageScale();
+  window.addEventListener("resize", updateStageScale);
+}
+setupFixedStage();
+</script>
+<script src="../../assets/runtime.js"></script>
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll(".deck .slide"));
+  const dots = document.querySelector(".nav-dots");
+  if (!slides.length || !dots) return;
+
+  dots.innerHTML = "";
+  slides.forEach((slide, i) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("aria-label", `Go to slide ${i + 1}`);
+    button.addEventListener("click", () => {
+      location.hash = `#/${i + 1}`;
+    });
+    dots.appendChild(button);
+  });
+
+  function activeIndex() {
+    const idx = slides.findIndex((slide) => slide.classList.contains("is-active"));
+    if (idx >= 0) return idx;
+    const match = /^#\/(\d+)/.exec(location.hash || "");
+    return match ? Math.max(0, Math.min(slides.length - 1, Number(match[1]) - 1)) : 0;
+  }
+
+  function syncDots() {
+    const idx = activeIndex();
+    dots.querySelectorAll("button").forEach((button, i) => {
+      const active = i === idx;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-current", active ? "true" : "false");
+    });
+  }
+
+  new MutationObserver(syncDots).observe(document.querySelector(".deck"), {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class"]
+  });
+  window.addEventListener("hashchange", syncDots);
+  syncDots();
+
+  document.querySelector(".present-toggle")?.addEventListener("click", () => {
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "S", bubbles: true }));
+  });
+
+  document.querySelectorAll("[data-reveal-group]").forEach((group) => {
+    const slide = group.closest(".slide");
+    const button = slide?.querySelector(".reveal-toggle");
+    const setReveal = (value) => {
+      group.classList.toggle("is-revealed", value);
+      button?.setAttribute("aria-pressed", value ? "true" : "false");
+      if (button) button.textContent = value ? "Hide answer" : "Reveal answer";
+    };
+    button?.addEventListener("click", () => setReveal(!group.classList.contains("is-revealed")));
+    document.addEventListener("keydown", (event) => {
+      if (!slide?.classList.contains("is-active")) return;
+      if (event.key.toLowerCase() === "r") setReveal(!group.classList.contains("is-revealed"));
+    });
+  });
+})();
+</script>
+<section id="overview" aria-hidden="true" aria-label="Slide overview"></section>
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll(".deck .slide"));
+  const overview = document.getElementById("overview");
+  if (!slides.length || !overview) return;
+
+  const scale = () => overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+    const clone = thumb.querySelector(".clone");
+    clone.style.width = "1280px";
+    clone.style.height = "720px";
+    clone.style.transform = `scale(${thumb.clientWidth / 1280})`;
+  });
+  const toggle = (open) => {
+    const willOpen = typeof open === "boolean" ? open : overview.getAttribute("aria-hidden") === "true";
+    overview.setAttribute("aria-hidden", willOpen ? "false" : "true");
+    if (willOpen) requestAnimationFrame(scale);
+  };
+
+  const grid = document.createElement("div");
+  grid.className = "ov-grid";
+  slides.forEach((slide, i) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "ov-card";
+    card.setAttribute("aria-label", `Go to slide ${i + 1}: ${slide.dataset.title || ""}`);
+    const thumb = document.createElement("div");
+    thumb.className = "ov-thumb";
+    const source = slide.querySelector(":scope > .slide-stage") || slide;
+    const clone = source.cloneNode(true);
+    clone.classList.add("clone");
+    clone.setAttribute("aria-hidden", "true");
+    clone.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+    clone.querySelectorAll("button, a, [tabindex]").forEach((el) => el.setAttribute("tabindex", "-1"));
+    thumb.appendChild(clone);
+    const label = document.createElement("div");
+    label.className = "ov-label";
+    label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.title || ""}</span>`;
+    card.append(thumb, label);
+    card.addEventListener("click", () => { toggle(false); location.hash = `#/${i + 1}`; });
+    grid.appendChild(card);
+  });
+  overview.appendChild(grid);
+
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") toggle(); });
+  window.addEventListener("resize", () => { if (overview.getAttribute("aria-hidden") === "false") scale(); });
+})();
+</script>
+</body></html>

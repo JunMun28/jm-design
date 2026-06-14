@@ -1,0 +1,169 @@
+/*
+ * Atlas (Micron design system) token surface for the app SHELL only.
+ * Mirrors atlas-design-system/atlas-ng/dist/atlas-ui/styles/micron-tokens.css
+ * (the canonical --mp-* palette + --mic-* semantic roles). Slide OUTPUT is
+ * styled by the separate html-slides themes — never cross the two surfaces
+ * (plan §11). Light mode is canonical; dark supported via [data-theme="dark"].
+ */
+:root {
+  /* Micron primitive palette */
+  --mp-white: #ffffff;
+  --mp-neutral-50: #faf9fb;
+  --mp-neutral-100: #f4f3f7;
+  --mp-neutral-200: #e6e6ea;
+  --mp-neutral-300: #d2d2d9;
+  --mp-neutral-400: #9a9aa6;
+  --mp-neutral-500: #6c6c78;
+  --mp-neutral-700: #3a3a42;
+  --mp-neutral-900: #1a1a1f;
+  --mp-neutral-950: #0a0a0a;
+  --mp-accent-100: #f6d0fe;
+  --mp-accent-500: #bd03f7;
+  --mp-accent-600: #a402dc;
+  --mp-accent-700: #8a01bc;
+
+  /* Semantic roles (light) */
+  --mic-bg: var(--mp-white);
+  --mic-surface: var(--mp-white);
+  --mic-surface-2: var(--mp-neutral-100);
+  --mic-ink: var(--mp-neutral-900);
+  --mic-ink-2: var(--mp-neutral-700);
+  --mic-muted: var(--mp-neutral-500);
+  --mic-faint: var(--mp-neutral-400);
+  --mic-border: var(--mp-neutral-200);
+  --mic-border-strong: var(--mp-neutral-300);
+  --mic-accent: var(--mp-accent-600);
+  --mic-accent-strong: var(--mp-accent-700);
+  --mic-accent-soft: var(--mp-accent-100);
+  --mic-on-accent: #ffffff;
+
+  /* Warning/error surface (Slice 13: the friendly-error card). */
+  --mic-warn-bg: #fff8e6;
+  --mic-warn-border: #e6c200;
+  --mic-warn-ink: #5a4500;
+
+  --mic-radius: 12px;
+  --mic-radius-sm: 8px;
+  --mic-space: 16px;
+  --mic-font: "Micron Basis", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+[data-theme="dark"] {
+  --mic-bg: #0a0a0f;
+  --mic-surface: #15151c;
+  --mic-surface-2: #1e1e27;
+  --mic-ink: #e8e8ec;
+  --mic-ink-2: #c7c7d0;
+  --mic-muted: #9a9aa6;
+  --mic-faint: #6c6c78;
+  --mic-border: #2a2a33;
+  --mic-border-strong: #3a3a45;
+  --mic-accent: var(--mp-accent-500);
+  --mic-accent-strong: var(--mp-accent-400, #d23bf9);
+  --mic-accent-soft: #2a1535;
+
+  /* Warning/error surface in dark (contrast-checked against #15151c). */
+  --mic-warn-bg: #2e2611;
+  --mic-warn-border: #6b5a1a;
+  --mic-warn-ink: #f0d97a;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--mic-bg);
+  color: var(--mic-ink);
+  font-family: var(--mic-font);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Atlas-style button primitives the shell reuses. */
+.mic-btn {
+  font: inherit;
+  font-weight: 500;
+  border-radius: var(--mic-radius-sm);
+  border: 1px solid var(--mic-border-strong);
+  background: var(--mic-surface);
+  color: var(--mic-ink);
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 80ms ease;
+}
+.mic-btn:hover { background: var(--mic-surface-2); }
+.mic-btn:active { transform: translateY(1px); }
+.mic-btn--primary {
+  background: var(--mic-accent);
+  border-color: var(--mic-accent);
+  color: var(--mic-on-accent);
+}
+.mic-btn--primary:hover { background: var(--mic-accent-strong); border-color: var(--mic-accent-strong); }
+.mic-btn:focus-visible { outline: 3px solid var(--mic-accent-soft); outline-offset: 1px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* =========================================================================
+ * Route view transitions (Change #2: smooth Home → Workspace).
+ * provideRouter(routes, withViewTransitions()) snapshots the old/new route and
+ * exposes ::view-transition-old/new(root). We cross-fade the two with a subtle
+ * lift so the navigation glides instead of snapping. Browsers without the View
+ * Transitions API simply swap instantly (the pseudo-elements never appear).
+ * ========================================================================= */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-old(root) {
+  animation-name: ss-route-out;
+}
+::view-transition-new(root) {
+  animation-name: ss-route-in;
+}
+@keyframes ss-route-out {
+  to { opacity: 0; transform: scale(0.992); }
+}
+@keyframes ss-route-in {
+  from { opacity: 0; transform: scale(1.006) translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Staggered entrance of the workspace regions on route entry. Targeted by their
+ * existing roles/classes from GLOBAL css (the workspace component is owned by
+ * another task). Only opacity/transform animate (GPU-friendly). The header, the
+ * canvas, and the chat column rise ≤8px with a small per-region delay. */
+.ws .ws__top,
+.ws [aria-label='Canvas'],
+.ws [aria-label='Chat'],
+.ws .canvas,
+.ws .chatcol {
+  animation: ss-panel-rise 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.ws .ws__top { animation-delay: 0ms; }
+.ws .canvas,
+.ws [aria-label='Canvas'] { animation-delay: 60ms; }
+.ws .chatcol,
+.ws [aria-label='Chat'] { animation-delay: 120ms; }
+@keyframes ss-panel-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* prefers-reduced-motion: every route + entrance motion above is instant. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+  .ws .ws__top,
+  .ws [aria-label='Canvas'],
+  .ws [aria-label='Chat'],
+  .ws .canvas,
+  .ws .chatcol {
+    animation: none !important;
+  }
+}

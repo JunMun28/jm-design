@@ -1,0 +1,3146 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>GitHub Copilot for everyone — managers</title>
+  <style>
+    :root {
+      --deck-font-min: 22px;
+      --micron-black: #000000;
+      --micron-white: #ffffff;
+      --micron-accent: #bd03f7;
+      --micron-accent-display: #bd03f7;
+      --ink: #0f172a;
+      --ink-soft: #334155;
+      --muted: #475569;
+      --hairline: #d0d7de;
+      --letterbox: #eef0f4;
+      --light-sheet: rgb(253, 251, 255);
+      --light-sheet-bottom: rgb(249, 247, 253);
+      --surface: #ffffff;
+      --surface-cool: #fbfcfe;
+      --surface-soft: #f8fafc;
+      --surface-panel: rgba(255, 255, 255, 0.9);
+      --surface-dark: #0b1020;
+      --neutral-300: #d8dde6;
+      --neutral-400: #aab3c1;
+      --neutral-600: #667085;
+      --shadow-soft: rgba(15, 23, 42, 0.08);
+      --soft-purple-wash: color-mix(in srgb, var(--micron-accent-display) 8%, white);
+      --stage-width: 1600px;
+      --stage-height: 900px;
+      --stage-scale: 1;
+      --stage-scaled-width: 1600px;
+      --stage-scaled-height: 900px;
+      --font-display: "Micron Basis", Arial, Helvetica, system-ui, sans-serif;
+      --font-mono: "Courier New", ui-monospace, monospace;
+      --scale-ratio: 1.333;
+      --col-count: 12;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-normal: 0.6s;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      margin: 0;
+      background: var(--letterbox);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-display);
+      font-size: var(--deck-font-min);
+      color: var(--ink);
+    }
+
+    .deck {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100dvh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+    }
+
+    .deck::-webkit-scrollbar {
+      display: none;
+    }
+
+    html,
+    body,
+    #overview {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    #overview::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .nav-dots {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transform: translateY(-50%);
+    }
+
+    .nav-dots button {
+      position: relative;
+      width: 32px;
+      height: 18px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .nav-dots button::before {
+      position: absolute;
+      top: 6px;
+      left: 13px;
+      width: 6px;
+      height: 6px;
+      border: 1px solid rgba(15, 23, 42, 0.28);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.12);
+      content: "";
+    }
+
+    .nav-dots button.active::before {
+      background: var(--micron-accent-display);
+      border-color: var(--micron-accent-display);
+    }
+
+    .nav-dots button:focus-visible {
+      outline: 2px solid var(--micron-accent-display);
+      outline-offset: -2px;
+    }
+
+    .slide {
+      flex: 0 0 100dvh;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+      scroll-snap-align: start;
+      background: var(--letterbox);
+    }
+
+    .slide-stage {
+      container-type: inline-size;
+      container-name: deck-stage;
+      position: absolute;
+      left: calc((100vw - var(--stage-scaled-width)) / 2);
+      top: calc((100dvh - var(--stage-scaled-height)) / 2);
+      width: var(--stage-width);
+      height: var(--stage-height);
+      overflow: hidden;
+      background:
+        linear-gradient(145deg, color-mix(in srgb, var(--micron-white) 76%, var(--light-sheet)) 0 44%, color-mix(in srgb, var(--micron-accent-display) 2.5%, var(--light-sheet-bottom)) 74%, var(--light-sheet-bottom) 100%);
+      filter: drop-shadow(0 18px 60px rgba(15, 23, 42, 0.14));
+      transform: scale(var(--stage-scale));
+      transform-origin: top left;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide:not(.title-slide) .slide-stage::before {
+      content: "";
+      position: absolute;
+      right: -330px;
+      bottom: -260px;
+      width: 860px;
+      height: 640px;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.72;
+      border-radius: 50%;
+      background:
+        repeating-radial-gradient(ellipse at center, transparent 0 58px, color-mix(in srgb, var(--micron-accent-display) 11%, transparent) 59px 60px, transparent 61px 118px),
+        radial-gradient(ellipse at 42% 38%, color-mix(in srgb, var(--micron-accent-display) 5%, transparent) 0 18%, transparent 58%);
+      transform: rotate(-12deg);
+      mask-image: radial-gradient(ellipse at center, #000 0 52%, transparent 76%);
+    }
+
+    .slide:not(.title-slide) .slide-stage::after {
+      content: "";
+      position: absolute;
+      right: 40px;
+      bottom: 28px;
+      z-index: 2;
+      height: clamp(22px, 2.5cqw, 28px);
+      width: clamp(104px, 11.75cqw, 124px);
+      background:
+        url("../_shared/micron-logo-black-tm-rgb.png")
+        right bottom / contain no-repeat;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    .slide-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 58px 74px 64px 92px;
+      max-height: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .slide:not(.title-slide) .slide-content {
+      justify-content: flex-start;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--micron-accent-display);
+      margin: 0 0 36px;
+    }
+
+    .deck-h2 {
+      font-size: clamp(46px, 4cqw, 72px);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      margin: 0 0 14px;
+      max-width: 30ch;
+    }
+
+    .accent {
+      color: var(--micron-accent-display);
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .hairline-h {
+      border: 0;
+      border-top: 1px solid var(--hairline);
+      margin: 18px 0 22px;
+      width: 100%;
+    }
+
+    .callout {
+      margin-top: 20px;
+      font-size: clamp(var(--deck-font-min), 1.55cqw, 34px);
+      font-style: italic;
+      color: var(--ink);
+      opacity: 0.92;
+    }
+
+    .footer-text {
+      position: absolute;
+      left: 92px;
+      bottom: 31px;
+      font-family: var(--font-mono);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(15, 23, 42, 0.54);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+    }
+
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .build-fragment {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(22px);
+      transition:
+        opacity var(--duration-normal) var(--ease-out-expo),
+        transform var(--duration-normal) var(--ease-out-expo);
+    }
+
+    .slide.visible .reveal.build-fragment:not(.build-visible) {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(22px);
+    }
+
+    .build-fragment.build-visible,
+    #overview .build-fragment {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+
+    .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .reveal:nth-child(2) { transition-delay: 0.12s; }
+    .reveal:nth-child(3) { transition-delay: 0.19s; }
+    .reveal:nth-child(4) { transition-delay: 0.26s; }
+    .reveal:nth-child(5) { transition-delay: 0.33s; }
+    .reveal:nth-child(6) { transition-delay: 0.4s; }
+
+    /* Title slide */
+    .title-slide .slide-stage {
+      background:
+        radial-gradient(circle at 8% 18%, rgba(255,255,255,.98) 0 20%, transparent 42%),
+        radial-gradient(circle at 78% 18%, color-mix(in srgb, #d98cff 26%, transparent) 0 13%, transparent 36%),
+        radial-gradient(circle at 84% 46%, color-mix(in srgb, var(--micron-accent-display) 18%, transparent) 0 18%, transparent 46%),
+        radial-gradient(circle at 94% 72%, rgba(255,255,255,.62) 0 18%, transparent 44%),
+        radial-gradient(circle at 100% 100%, rgba(255,255,255,.86) 0 18%, transparent 42%),
+        radial-gradient(circle at 18% 94%, color-mix(in srgb, var(--micron-accent-display) 7%, transparent) 0 15%, transparent 38%),
+        linear-gradient(118deg, #fff 0 30%, color-mix(in srgb, #eef7ff 36%, var(--light-sheet)) 55%, color-mix(in srgb, #f1c8ff 18%, var(--light-sheet-bottom)) 78%, color-mix(in srgb, #fff 34%, var(--light-sheet-bottom)) 100%);
+      background-blend-mode: screen, normal, normal, screen, screen, normal, normal;
+    }
+
+    .title-slide .slide-content {
+      justify-content: center;
+      padding-top: 0;
+    }
+
+    .title-slide .slide-stage::before,
+    .title-slide .slide-stage::after {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      content: "";
+    }
+
+    .title-slide .slide-stage::before {
+      top: -36px;
+      right: -18px;
+      width: 420px;
+      height: 220px;
+      opacity: 0.58;
+      background-image: radial-gradient(circle, color-mix(in srgb, var(--micron-accent-display) 24%, transparent) 0 2px, transparent 2.4px);
+      background-size: 17px 17px;
+      mask-image: radial-gradient(ellipse at top right, #000 0 42%, transparent 72%);
+    }
+
+    .title-slide .slide-stage::after {
+      left: -36px;
+      bottom: 0;
+      width: 270px;
+      height: 270px;
+      opacity: 0.54;
+      background-image: radial-gradient(circle, color-mix(in srgb, var(--micron-accent-display) 26%, transparent) 0 2px, transparent 2.5px);
+      background-size: 17px 17px;
+      mask-image: radial-gradient(ellipse at bottom left, #000 0 46%, transparent 74%);
+    }
+
+    .title-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(300px, 440px);
+      gap: clamp(40px, 3.5cqw, 56px);
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .title-slide .kicker {
+      font-family: var(--font-mono);
+      font-size: 30px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(15, 23, 42, 0.48);
+      margin: 0 0 24px;
+    }
+
+    /* Title typography: px at 1600×900 design size — scales only via slide-stage transform (not vw). */
+    .title-slide h1 {
+      font-size: 118px;
+      font-weight: 800;
+      line-height: 0.96;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .title-subtitle {
+      margin-top: 10px;
+      font-size: 102px;
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      color: var(--micron-accent-display);
+      position: relative;
+      padding-bottom: 36px;
+    }
+
+    .title-subtitle::after {
+      position: absolute;
+      left: 0;
+      bottom: 12px;
+      width: min(680px, 100%);
+      height: 2px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--micron-accent-display) 72%, transparent), color-mix(in srgb, var(--micron-accent-display) 26%, transparent));
+      content: "";
+    }
+
+    .title-subtitle::before {
+      position: absolute;
+      left: min(680px, 100%);
+      bottom: 8px;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--micron-accent-display);
+      content: "";
+    }
+
+    .tagline {
+      margin-top: 26px;
+      font-size: 32px;
+      line-height: 1.3;
+      color: var(--ink);
+      margin-bottom: 0;
+    }
+
+    .tagline + .tagline {
+      margin-top: 8px;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 26px;
+    }
+
+    .title-mark {
+      width: min(400px, 100%);
+      aspect-ratio: 1;
+      margin: 0 auto;
+      border-radius: 999px;
+      border: 2px solid color-mix(in srgb, var(--micron-accent-display) 82%, transparent);
+      box-shadow: 0 34px 96px color-mix(in srgb, var(--micron-accent-display) 17%, transparent);
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.74);
+      position: relative;
+    }
+
+    .title-mark::before,
+    .title-mark::after {
+      position: absolute;
+      inset: -34px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--micron-accent-display) 18%, transparent);
+      content: "";
+      pointer-events: none;
+    }
+
+    .title-mark::after {
+      inset: -70px;
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--micron-accent-display) 14%, transparent);
+    }
+
+    .title-mark .copilot-cover-logo {
+      width: min(196px, 48%);
+      height: auto;
+      display: block;
+      position: relative;
+      z-index: 1;
+      color: var(--ink);
+      filter: drop-shadow(0 14px 20px rgba(15, 23, 42, 0.1));
+    }
+
+    .title-footer {
+      position: absolute;
+      left: 92px;
+      bottom: 32px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .title-footer-logo {
+      display: block;
+      height: 26px;
+      width: auto;
+      flex-shrink: 0;
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .title-footer .footer-rule {
+      width: 1px;
+      height: 26px;
+      background: rgba(15, 23, 42, 0.18);
+    }
+
+    /* Slide 02 — evolution timeline */
+    .slide-evolution .slide-stage {
+      background: var(--surface-cool);
+    }
+
+    .slide-evolution .slide-content {
+      justify-content: flex-start;
+      padding: 44px 68px 34px;
+    }
+
+    .evolution-title {
+      max-width: 900px;
+      margin: 0 0 18px;
+      color: var(--ink);
+      font-size: 86px;
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .evolution-title .accent {
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    .evolution-title .nowrap {
+      white-space: nowrap;
+    }
+
+    .evolution-subtitle {
+      margin: 0 0 28px;
+      color: var(--ink-soft);
+      font-size: 27px;
+      line-height: 1.34;
+    }
+
+    .evolution-flow {
+      display: grid;
+      grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1.08fr;
+      align-items: stretch;
+      gap: 14px;
+      width: 100%;
+      margin-bottom: 28px;
+    }
+
+    .evolution-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--neutral-600);
+      font-size: 46px;
+      line-height: 1;
+    }
+
+    .evolution-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 300px;
+      padding: 24px 28px 22px;
+      border: 1px solid var(--neutral-300);
+      border-radius: 8px;
+      background: var(--surface-panel);
+      color: var(--ink);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+    }
+
+    .evolution-card.current {
+      border-color: transparent;
+      background:
+        radial-gradient(circle at 38% 47%, rgba(189, 3, 247, 0.22), transparent 30%),
+        var(--surface-dark);
+      color: white;
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.18);
+    }
+
+    .evolution-card h3 {
+      margin: 0 0 22px;
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .evolution-icon {
+      display: grid;
+      place-items: center;
+      width: 168px;
+      height: 150px;
+      margin-bottom: auto;
+      color: var(--neutral-400);
+      overflow: visible;
+    }
+
+    .evolution-card.current .evolution-icon {
+      color: white;
+    }
+
+    .evolution-card.current .evolution-icon svg {
+      width: 132px;
+      height: 132px;
+    }
+
+    .evolution-icon svg {
+      display: block;
+      width: 132px;
+      height: 132px;
+      max-width: none;
+      overflow: visible;
+      stroke: currentColor;
+    }
+
+    .evolution-icon .icon-tab {
+      transform: scale(1.08);
+      transform-origin: center;
+    }
+
+    .evolution-icon .icon-chat {
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+
+    .evolution-icon .icon-coding {
+      transform: scale(1.22);
+      transform-origin: center;
+    }
+
+    .evolution-icon .icon-agent {
+      transform: scale(0.9);
+      transform-origin: center;
+    }
+
+    .evolution-icon .copilot-mark {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .evolution-icon .copilot-mark-eyes {
+      fill: var(--micron-accent-display);
+      stroke: none;
+    }
+
+    .evolution-card hr {
+      width: 100%;
+      margin: 20px 0 18px;
+      border: 0;
+      border-top: 1px solid #dfe3ea;
+    }
+
+    .evolution-card.current hr {
+      border-top-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .evolution-card p {
+      margin: 0;
+      color: #4b5563;
+      font-size: 23px;
+      font-style: italic;
+      font-weight: 500;
+      line-height: 1.32;
+    }
+
+    .evolution-card.current p {
+      color: white;
+      font-weight: 800;
+    }
+
+    /* Slide — The shift (matches reference composition) */
+    .slide-the-shift .slide-stage {
+      background: #f9fafb;
+    }
+
+    .slide-the-shift .deck-h2 {
+      color: var(--ink);
+      line-height: 1.18;
+    }
+
+    .slide-the-shift .deck-h2 .accent {
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    .slide-the-shift .deck-h2 .deck-h2-muted {
+      color: #cbd5e1;
+    }
+
+    .slide-the-shift .hairline-h {
+      border-top-color: #e5e7eb;
+    }
+
+    .slide-the-shift .split-card-split {
+      background: #e5e7eb;
+    }
+
+    .slide-the-shift .callout {
+      margin-top: 28px;
+      font-weight: 400;
+      font-style: italic;
+      color: #1e293b;
+      opacity: 1;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      letter-spacing: 0.01em;
+    }
+
+    .slide-the-shift .footer-text {
+      color: #9ca3af;
+    }
+
+    /* Slide 02 — THEN / NOW cards (equal height, icon + details) */
+    .split-two {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: clamp(10px, 1.25cqw, 22px);
+      align-items: stretch;
+      margin-top: 12px;
+    }
+
+    .split-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      box-sizing: border-box;
+      border-radius: 12px;
+      padding: 24px 26px;
+    }
+
+    .split-card-head {
+      flex: 0 0 auto;
+    }
+
+    .split-card-head h3 {
+      font-size: clamp(32px, 2.95cqw, 54px);
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 0 0 clamp(8px, 0.9cqw, 14px);
+    }
+
+    .split-card-head .col-label {
+      margin-bottom: 8px;
+    }
+
+    .split-card-body {
+      flex: 1 1 auto;
+      display: grid;
+      grid-template-columns: clamp(88px, 11.25cqw, 152px) 1px minmax(0, 1fr);
+      gap: 0 clamp(14px, 1.75cqw, 22px);
+      align-items: start;
+      margin-top: clamp(10px, 1.05cqw, 18px);
+      min-height: clamp(118px, 12.5cqw, 180px);
+    }
+
+    .split-card-split {
+      align-self: stretch;
+      background: var(--hairline);
+      width: 1px;
+      min-height: 100%;
+    }
+
+    .split-card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: start;
+      padding-top: 2px;
+    }
+
+    .split-card-icon-svg,
+    .split-card-icon-img {
+      display: block;
+      width: clamp(80px, 9cqw, 114px);
+      height: auto;
+    }
+
+    .split-card-icon-svg--now,
+    .split-card-icon-img--now {
+      width: clamp(102px, 11.85cqw, 148px);
+    }
+
+    .split-card-icon-img {
+      object-fit: contain;
+    }
+
+    .split-card-lines {
+      font-size: clamp(24px, 1.6cqw, 28px);
+      line-height: 1.42;
+      font-weight: 400;
+    }
+
+    .split-card-lines p {
+      margin: 0 0 clamp(8px, 0.85cqw, 12px);
+    }
+
+    .split-card-lines p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Past card (THEN) — cool grey panel */
+    .split-card--past {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+    }
+
+    .split-card--past .col-label.then {
+      color: #7e22ce;
+    }
+
+    .split-card--past .split-card-head h3 {
+      color: #374151;
+    }
+
+    .split-card--past .split-card-icon {
+      color: #9ca3af;
+    }
+
+    .split-card--past .split-card-lines {
+      color: #4b5563;
+    }
+
+    /* Current card (NOW) — white + magenta frame + glow */
+    .split-card--current {
+      background: #ffffff;
+      border: 2px solid var(--micron-accent-display);
+      box-shadow:
+        0 0 0 1px rgba(189, 3, 247, 0.14),
+        0 12px 36px rgba(189, 3, 247, 0.2),
+        0 28px 72px rgba(189, 3, 247, 0.1);
+    }
+
+    .split-card--current .col-label.now {
+      color: var(--micron-accent-display);
+    }
+
+    .split-card--current .split-card-head h3 {
+      color: var(--ink);
+    }
+
+    .split-card--current .split-card-lines {
+      color: var(--ink);
+      opacity: 1;
+    }
+
+    .split-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      padding: 0 2px;
+    }
+
+    .split-arrow svg {
+      display: block;
+    }
+
+    .col-label {
+      font-family: var(--font-mono);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .col-label.then { color: var(--muted); }
+    .col-label.now { color: var(--micron-accent-display); }
+
+    /* Manuscript rows */
+    .manuscript .row {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 28px;
+      row-gap: 6px;
+      align-items: start;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--hairline);
+      font-size: clamp(var(--deck-font-min), 1.55cqw, 28px);
+      color: var(--muted);
+    }
+
+    .manuscript .num {
+      grid-row: 1 / span 2;
+      align-self: start;
+      padding-top: 4px;
+      font-family: var(--font-mono);
+      font-size: clamp(28px, 2.35cqw, 44px);
+      font-weight: 700;
+      color: var(--micron-accent-display);
+    }
+
+    .manuscript .verb {
+      grid-column: 2;
+      grid-row: 1;
+      font-size: clamp(42px, 3.45cqw, 76px);
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0;
+      line-height: 1;
+    }
+
+    .manuscript .detail {
+      grid-column: 2;
+      grid-row: 2;
+      margin: 0;
+      line-height: 1.35;
+    }
+
+    /* Slide 03 loop */
+    .slide-how-loop .deck-h2 {
+      font-size: 90px;
+      line-height: 0.92;
+      max-width: 14ch;
+      margin-bottom: 14px;
+    }
+
+    .how-subtitle {
+      margin: 0 0 24px;
+      color: var(--ink);
+      font-size: 32px;
+      line-height: 1.34;
+    }
+
+    .loop-cards {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 78px;
+      margin-top: 6px;
+    }
+
+    .loop-card {
+      position: relative;
+      min-height: 238px;
+      padding: 32px 30px 28px;
+      border: 1px solid color-mix(in srgb, var(--hairline) 90%, white);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.06);
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .loop-card:not(:last-child)::after {
+      position: absolute;
+      right: -58px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--micron-accent-display);
+      content: "→";
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .loop-num {
+      position: absolute;
+      top: 38px;
+      left: 34px;
+      width: 66px;
+      height: 66px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--micron-accent-display);
+      font-family: var(--font-mono);
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      box-shadow: 0 14px 30px color-mix(in srgb, var(--micron-accent-display) 24%, transparent);
+    }
+
+    .loop-icon {
+      width: 106px;
+      height: 106px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      color: var(--micron-accent-display);
+      background: color-mix(in srgb, var(--micron-accent-display) 10%, white);
+    }
+
+    .loop-icon svg {
+      width: 64px;
+      height: 64px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .loop-card h3 {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-size: 46px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .loop-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 26px;
+      line-height: 1.34;
+    }
+
+    .loop-return {
+      position: relative;
+      height: 70px;
+      width: calc(66.666% + 39px);
+      margin: 0 auto 0;
+      border-right: 5px solid var(--micron-accent-display);
+      border-bottom: 5px solid var(--micron-accent-display);
+      border-left: 5px solid var(--micron-accent-display);
+      border-radius: 0 0 32px 32px;
+    }
+
+    .loop-return::before {
+      position: absolute;
+      left: -12px;
+      top: -16px;
+      width: 0;
+      height: 0;
+      border-right: 10px solid transparent;
+      border-bottom: 16px solid var(--micron-accent-display);
+      border-left: 10px solid transparent;
+      content: "";
+    }
+
+    .loop-infinity {
+      position: absolute;
+      left: 50%;
+      bottom: -30px;
+      width: 58px;
+      height: 58px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      transform: translateX(-50%);
+      background: var(--micron-accent-display);
+      color: white;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .slide-how-loop .callout {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    /* Prompt grid */
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px 28px;
+      margin-top: 4px;
+    }
+
+    .prompt-cell {
+      display: grid;
+      grid-template-columns: 102px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      min-height: 166px;
+      padding: 18px 24px 18px 18px;
+      border: 1px solid color-mix(in srgb, var(--hairline) 88%, white);
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.04);
+      box-sizing: border-box;
+    }
+
+    .prompt-icon {
+      width: 90px;
+      height: 90px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: var(--prompt-color, var(--micron-accent-display));
+      background:
+        radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92), transparent 44%),
+        color-mix(in srgb, var(--prompt-color, var(--micron-accent-display)) 13%, white);
+    }
+
+    .prompt-icon svg {
+      width: 52px;
+      height: 52px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .prompt-cell:nth-child(1) { --prompt-color: #7c3aed; }
+    .prompt-cell:nth-child(2) { --prompt-color: #238636; }
+    .prompt-cell:nth-child(3) { --prompt-color: #1f6feb; }
+    .prompt-cell:nth-child(4) { --prompt-color: #ea580c; }
+    .prompt-cell:nth-child(5) { --prompt-color: #7e22ce; }
+    .prompt-cell:nth-child(6) { --prompt-color: #ca8a04; }
+
+    .prompt-cell .idx {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--micron-accent-display);
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+
+    .prompt-cell h3 {
+      margin: 0 0 10px;
+      color: var(--ink);
+      font-size: clamp(26px, 1.82cqw, 34px);
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .prompt-cell q {
+      display: block;
+      font-size: clamp(22px, 1.42cqw, 27px);
+      font-weight: 400;
+      line-height: 1.34;
+      color: var(--ink);
+      quotes: '"' '"';
+    }
+
+    .prompt-cell q::before { content: open-quote; color: var(--micron-accent-display); margin-right: 2px; }
+    .prompt-cell q::after { content: close-quote; color: var(--micron-accent-display); margin-left: 2px; }
+
+    .prompt-footer {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-top: 24px;
+      padding: 14px 30px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--micron-accent-display) 10%, white), color-mix(in srgb, var(--micron-accent-display) 5%, white));
+      color: var(--ink);
+      font-size: clamp(24px, 1.78cqw, 32px);
+      font-weight: 800;
+      line-height: 1.15;
+      box-sizing: border-box;
+    }
+
+    .prompt-footer-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      background: var(--micron-accent-display);
+      color: white;
+      box-shadow: 0 18px 42px color-mix(in srgb, var(--micron-accent-display) 26%, transparent);
+    }
+
+    .prompt-footer-icon svg {
+      width: 36px;
+      height: 36px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .prompt-footer .divider {
+      width: 1px;
+      height: 36px;
+      background: color-mix(in srgb, var(--muted) 38%, transparent);
+    }
+
+    .prompt-footer .accent-text {
+      color: var(--micron-accent-display);
+    }
+
+    /* Slide 05 wash */
+    .wash-quote {
+      position: relative;
+      margin: 16px 0 22px;
+      padding: 42px 78px 46px;
+      border-radius: 14px;
+      background: var(--soft-purple-wash);
+      box-sizing: border-box;
+    }
+
+    .wash-quote::before {
+      content: "❝";
+      position: absolute;
+      left: 24px;
+      top: 18px;
+      font-size: 72px;
+      line-height: 1;
+      color: var(--micron-accent-display);
+      opacity: 0.85;
+    }
+
+    .wash-quote::after {
+      content: "❞";
+      position: absolute;
+      right: 28px;
+      bottom: 14px;
+      font-size: 72px;
+      line-height: 1;
+      color: var(--micron-accent-display);
+      opacity: 0.85;
+    }
+
+    .wash-quote .say {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(28px, 2.15cqw, 42px);
+      font-weight: 800;
+      line-height: 1.35;
+      margin: 0;
+      padding-left: 0;
+    }
+
+    .wash-quote .say span {
+      display: block;
+    }
+
+    .four-cols {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 8px;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .four-cols > div {
+      padding: 16px 14px;
+      font-size: clamp(var(--deck-font-min), 1.35cqw, 28px);
+      font-weight: 700;
+      border-right: 1px solid var(--hairline);
+    }
+
+    .four-cols > div:last-child {
+      border-right: 0;
+    }
+
+    .four-cols .fc-num {
+      font-family: var(--font-mono);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.12em;
+      color: var(--micron-accent-display);
+      margin-bottom: 10px;
+    }
+
+    /* Slide 06 live try */
+    .slide-live .slide-content {
+      justify-content: flex-start;
+      align-items: center;
+      text-align: center;
+    }
+
+    .slide-live .section-label {
+      position: absolute;
+      top: 58px;
+      left: 92px;
+    }
+
+    .slide-live .deck-h2 {
+      margin-top: 76px;
+      margin-bottom: 22px;
+      font-size: 152px;
+      line-height: 0.9;
+      max-width: none;
+    }
+
+    .live-simple {
+      margin: 0 0 60px;
+      color: var(--ink);
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .live-visual {
+      position: relative;
+      width: 720px;
+      height: 330px;
+      border: 1px solid color-mix(in srgb, var(--micron-accent-display) 12%, var(--hairline));
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow:
+        0 34px 90px color-mix(in srgb, var(--micron-accent-display) 18%, transparent),
+        0 12px 28px rgba(15, 23, 42, 0.08);
+      overflow: visible;
+    }
+
+    .live-visual::before {
+      position: absolute;
+      inset: -58px -74px -42px;
+      z-index: -1;
+      background: radial-gradient(ellipse at center, color-mix(in srgb, var(--micron-accent-display) 18%, transparent), transparent 66%);
+      content: "";
+      filter: blur(6px);
+    }
+
+    .live-window-bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      border-bottom: 1px solid var(--hairline);
+      box-sizing: border-box;
+    }
+
+    .live-vs {
+      color: var(--micron-accent-display);
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #cbd5e1;
+    }
+
+    .live-close {
+      margin-left: auto;
+      color: #cbd5e1;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .live-window-body {
+      display: grid;
+      grid-template-columns: 54px 130px 1fr;
+      height: 232px;
+      color: #9aa4b2;
+    }
+
+    .live-rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      padding-top: 22px;
+      border-right: 1px solid var(--hairline);
+      box-sizing: border-box;
+    }
+
+    .live-rail span {
+      width: 18px;
+      height: 18px;
+      border: 3px solid currentColor;
+      border-radius: 5px;
+      opacity: 0.78;
+    }
+
+    .live-files {
+      padding: 20px 16px;
+      border-right: 1px solid var(--hairline);
+      box-sizing: border-box;
+    }
+
+    .live-file-line,
+    .live-code-line {
+      height: 8px;
+      margin-bottom: 14px;
+      border-radius: 999px;
+      background: #d6dbe5;
+    }
+
+    .live-code {
+      padding: 18px 34px;
+      box-sizing: border-box;
+    }
+
+    .live-code-row {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      color: #b7bfcc;
+      font-family: var(--font-mono);
+      font-size: 14px;
+    }
+
+    .live-code-line {
+      margin: 0;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--micron-accent-display) 54%, #d6dbe5), #d6dbe5 62%);
+    }
+
+    .live-prompt {
+      position: absolute;
+      left: 84px;
+      right: 44px;
+      bottom: -16px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 22px;
+      padding: 22px 22px 22px 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.96);
+      filter: drop-shadow(0 18px 46px rgba(15, 23, 42, 0.13));
+      color: var(--ink);
+      text-align: left;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .live-term {
+      color: var(--micron-accent-display);
+      font-family: var(--font-mono);
+      font-weight: 800;
+    }
+
+    .live-caret {
+      display: inline-block;
+      width: 3px;
+      height: 34px;
+      margin-left: 6px;
+      vertical-align: middle;
+      background: var(--micron-accent-display);
+    }
+
+    .live-send {
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--micron-accent-display);
+      color: white;
+      font-size: 38px;
+      font-weight: 800;
+      box-shadow: 0 14px 32px color-mix(in srgb, var(--micron-accent-display) 28%, transparent);
+    }
+
+    /* Slide 07 agent skills */
+    .skill-title {
+      font-size: 88px;
+      line-height: 0.92;
+      margin-bottom: 32px;
+      max-width: none;
+    }
+
+    .skill-subtitle {
+      margin: 0 0 22px;
+      color: var(--ink);
+      font-size: 28px;
+      line-height: 1.34;
+      max-width: 58ch;
+    }
+
+    .skill-board {
+      flex: 0 0 auto;
+      width: min(1000px, 100%);
+      margin: 10px 0 28px;
+      border: 2px solid color-mix(in srgb, var(--micron-accent-display) 58%, var(--hairline));
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+    }
+
+    .skill-board-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+      padding: 16px 30px 14px;
+    }
+
+    .skill-board-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .skill-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: color-mix(in srgb, var(--micron-accent-display) 10%, white);
+      color: var(--micron-accent-display);
+    }
+
+    .skill-icon svg {
+      width: 40px;
+      height: 40px;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .skill-row {
+      display: grid;
+      grid-template-columns: 56px 2px 170px minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
+      min-height: 62px;
+      padding: 10px 30px;
+      border-top: 1px solid var(--hairline);
+      color: var(--ink);
+      box-sizing: border-box;
+    }
+
+    .skill-row .skill-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+    }
+
+    .skill-row .skill-icon svg {
+      width: 27px;
+      height: 27px;
+    }
+
+    .skill-rule {
+      width: 2px;
+      height: 32px;
+      background: var(--micron-accent-display);
+    }
+
+    .skill-item {
+      color: var(--micron-accent-display);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .skill-desc {
+      font-size: 22px;
+      line-height: 1.32;
+    }
+
+    .skill-bottom {
+      display: block;
+      width: min(1000px, 100%);
+      margin-top: 0;
+      color: var(--ink);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.34;
+      text-align: left;
+    }
+
+    .skill-bottom .accent {
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    /* Slide progressive discovery */
+    .slide-progressive .slide-content {
+      justify-content: flex-start;
+      padding: 44px 52px 34px;
+    }
+
+    .slide-progressive .section-label {
+      margin-bottom: 18px;
+      font-size: 22px;
+    }
+
+    .progressive-title {
+      max-width: none;
+      margin: 0 0 14px;
+      font-size: 58px;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .progressive-subtitle {
+      margin: 0 0 22px;
+      color: var(--ink-soft);
+      font-size: 27px;
+      line-height: 1.34;
+    }
+
+    .discovery-flow {
+      display: grid;
+      grid-template-columns: 1fr 34px 1.06fr 34px 1.18fr 34px 1.06fr;
+      align-items: stretch;
+      gap: 10px;
+      width: 100%;
+      min-height: 438px;
+    }
+
+    .flow-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      font-size: 42px;
+      font-weight: 400;
+    }
+
+    .discovery-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 438px;
+      padding: 18px 18px 16px;
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      color: var(--ink);
+    }
+
+    .discovery-panel.featured {
+      border-color: var(--micron-accent-display);
+      box-shadow:
+        0 20px 48px rgba(15, 23, 42, 0.11),
+        0 0 0 1px color-mix(in srgb, var(--micron-accent-display) 45%, transparent);
+    }
+
+    .step-head {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--hairline);
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .step-num {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--micron-accent-display) 14%, white);
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .discovery-panel.featured .step-num {
+      background: var(--micron-accent-display);
+      color: white;
+    }
+
+    .discovery-panel.featured .step-head {
+      color: var(--micron-accent-display);
+    }
+
+    .panel-visual {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .goal-icon {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      align-items: center;
+      gap: 26px;
+      margin: 14px 0 30px;
+      min-height: 150px;
+      color: var(--ink);
+    }
+
+    .goal-icon svg,
+    .output-visual svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      stroke: currentColor;
+    }
+
+    .goal-text {
+      margin: 0;
+      text-align: center;
+      color: var(--ink);
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .muted-note {
+      margin: auto 0 18px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 22px;
+      line-height: 1.34;
+    }
+
+    .skill-list {
+      display: grid;
+      gap: 4px;
+      margin-bottom: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .skill-choice {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      align-items: center;
+      gap: 10px;
+      min-height: 66px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 0;
+      border-bottom: 1px solid var(--hairline);
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .skill-choice:last-child {
+      border-bottom: 0;
+    }
+
+    .skill-choice.active {
+      border: 1px solid var(--micron-accent-display);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--micron-accent-display) 9%, white);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--micron-accent-display) 35%, transparent);
+    }
+
+    .skill-choice > div {
+      min-width: 0;
+    }
+
+    .mini-icon {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 11px;
+      color: var(--micron-accent-display);
+      background: color-mix(in srgb, var(--micron-accent-display) 10%, white);
+    }
+
+    .mini-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: currentColor;
+    }
+
+    .skill-choice b {
+      display: block;
+      margin-bottom: 2px;
+      font-size: 20px;
+      line-height: 1.05;
+    }
+
+    .skill-choice > div > span {
+      display: block;
+      color: var(--ink-soft);
+      font-size: 20px;
+      line-height: 1.12;
+    }
+
+    .panel-caption {
+      margin: auto 0 0;
+      text-align: center;
+      color: var(--ink);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.22;
+    }
+
+    .discovery-panel.featured .panel-caption {
+      align-self: stretch;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--hairline);
+      font-size: 24px;
+      line-height: 1.2;
+      white-space: normal;
+    }
+
+    .discovery-panel:nth-of-type(3) .panel-caption {
+      margin: auto 0 18px;
+      color: var(--ink-soft);
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1.34;
+    }
+
+    .skill-open {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 16px;
+      padding: 20px 0 0;
+    }
+
+    .skill-open-head {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .skill-open-head b {
+      display: block;
+      font-size: 22px;
+      line-height: 1.05;
+    }
+
+    .skill-open-head span {
+      color: var(--ink-soft);
+      font-size: 20px;
+    }
+
+    .skill-parts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .skill-part {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .skill-part-label {
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: color-mix(in srgb, var(--micron-accent-display) 12%, white);
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .skeleton-lines span {
+      display: block;
+      height: 7px;
+      margin: 0 0 8px;
+      border-radius: 999px;
+      background: #d4d9e2;
+    }
+
+    .skeleton-lines span:nth-child(2) {
+      width: 72%;
+    }
+
+    .output-visual {
+      display: grid;
+      place-items: center;
+      margin: 10px 0 26px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: white;
+      box-shadow: none;
+    }
+
+    .output-visual svg {
+      width: auto;
+      max-width: 100%;
+      height: 158px;
+    }
+
+    .ready-title {
+      margin: 0 0 20px;
+      text-align: center;
+      font-size: 25px;
+      font-weight: 800;
+      line-height: 1.32;
+    }
+
+    .progressive-bottom {
+      margin: 14px 0 0;
+      padding-top: 10px;
+      border-top: 1px solid var(--hairline);
+      text-align: center;
+      color: var(--ink);
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.34;
+    }
+
+    .refs-note {
+      margin-top: 12px;
+      font-family: var(--font-display);
+      font-size: clamp(var(--deck-font-min), 1.15cqw, 26px);
+      letter-spacing: 0;
+      text-transform: none;
+      color: var(--muted);
+      max-width: 70ch;
+      line-height: 1.45;
+    }
+
+    .refs-note a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Overview light */
+    #overview {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      overflow-y: auto;
+      padding: clamp(1rem, 2.5vw, 2.25rem);
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(12px);
+    }
+
+    #overview[aria-hidden="false"] {
+      display: block;
+    }
+
+    #overview .ov-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-display);
+      font-size: var(--deck-font-min);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    #overview .ov-head b {
+      color: var(--ink);
+      font-weight: 800;
+    }
+
+    #overview .ov-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    #overview .ov-card {
+      appearance: none;
+      cursor: pointer;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      padding: 0;
+      border-radius: 8px;
+      background: rgba(246, 248, 250, 0.92);
+      text-align: left;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    #overview .ov-card:hover,
+    #overview .ov-card:focus-visible {
+      border-color: var(--micron-accent-display);
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    #overview .ov-card.active {
+      border-color: var(--micron-accent-display);
+      border-width: 2px;
+    }
+
+    #overview .ov-thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      position: relative;
+      pointer-events: none;
+      background: var(--micron-white);
+    }
+
+    #overview .ov-thumb .clone {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1600px;
+      height: 900px;
+      pointer-events: none;
+      transform-origin: top left;
+    }
+
+    #overview .ov-thumb .clone.visible .reveal {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
+    #overview .ov-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.42rem 0.6rem;
+      font-family: var(--font-mono);
+      font-size: clamp(11px, 0.82vw, 13px);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    #overview .ov-label b {
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 1.22em;
+      letter-spacing: 0.04em;
+      flex: 0 0 auto;
+    }
+
+    #overview .ov-label span {
+      min-width: 0;
+      overflow: hidden;
+      text-align: right;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px) {
+      #overview {
+        padding: 1rem;
+      }
+
+      #overview .ov-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    .presentation-hotspot {
+      position: fixed;
+      z-index: 80;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      width: 190px;
+      height: 96px;
+      padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 0 0;
+    }
+
+    .present-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 40px;
+      padding: 0 14px 0 12px;
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      cursor: pointer;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(10px);
+      transition: opacity 0.18s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .presentation-hotspot:hover .present-toggle,
+    .presentation-hotspot:focus-within .present-toggle {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+
+    .present-toggle svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+      fill: currentColor;
+    }
+
+    .present-toggle:hover,
+    .present-toggle:focus-visible {
+      outline: none;
+      color: var(--micron-accent-display);
+      border-color: color-mix(in srgb, var(--micron-accent-display) 55%, transparent);
+      box-shadow: 0 14px 34px rgba(189, 3, 247, 0.16);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+<div class="presentation-hotspot" aria-hidden="false">
+  <button class="present-toggle" type="button" aria-label="Enter presentation mode (full screen)" title="Presentation: full screen (shortcut P)">
+    <svg class="present-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.5v13l10-6.5-10-6.5Z" /></svg>
+    <span class="presentation-toggle-text">Present</span>
+  </button>
+</div>
+
+<main class="deck" tabindex="-1">
+  <!-- 01 -->
+  <section class="slide title-slide" data-slide-kind="cover">
+    <div class="slide-content">
+      <div class="title-grid">
+        <div>
+          <p class="kicker reveal">An introduction</p>
+          <h1 class="reveal">GitHub Copilot</h1>
+          <p class="title-subtitle reveal">for everyone</p>
+          <p class="tagline reveal">Plain English in.</p>
+          <p class="tagline reveal">Real work out.</p>
+        </div>
+        <div class="title-mark reveal" aria-hidden="true">
+          <svg class="copilot-cover-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="176" height="176" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z" />
+            <path fill="currentColor" d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="title-footer">
+      <img class="title-footer-logo" src="../_shared/micron-logo-black-tm-rgb.png" alt="Micron" width="116" height="28" decoding="async" />
+      <span class="footer-rule" aria-hidden="true"></span>
+      <span>Presented by Jun Mun</span>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="slide slide-evolution" data-slide-kind="the shift">
+    <div class="slide-content">
+      <p class="section-label reveal">02 — THE SHIFT</p>
+      <h2 class="deck-h2 evolution-title reveal"><span class="nowrap">From tab-complete</span><br />to <span class="accent">agent.</span></h2>
+      <p class="evolution-subtitle reveal">How GitHub Copilot evolved from code assistance to agentic work.</p>
+      <div class="evolution-flow reveal">
+        <article class="evolution-card">
+          <h3>Tab-complete</h3>
+          <div class="evolution-icon" aria-hidden="true">
+            <svg class="icon-tab" viewBox="0 0 96 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="14" y="15" width="68" height="62" rx="7" />
+              <path d="M14 29h68" />
+              <path d="M31 50l13 13-13 13" />
+              <path d="M55 73h16" stroke="#bd03f7" />
+              <circle cx="28" cy="22" r="2" />
+              <circle cx="40" cy="22" r="2" />
+              <circle cx="52" cy="22" r="2" />
+            </svg>
+          </div>
+          <hr />
+          <p>Finish my line</p>
+        </article>
+
+        <div class="evolution-arrow" aria-hidden="true">›</div>
+
+        <article class="evolution-card">
+          <h3>Copilot</h3>
+          <div class="evolution-icon" aria-hidden="true">
+            <svg class="icon-coding" viewBox="0 0 120 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="12" y="22" width="96" height="52" rx="7" />
+              <path d="M60 22v52" />
+              <path d="M26 48l12-12M26 48l12 12M50 36l-9 24M70 38h24M70 50h30M70 62h20" />
+              <path d="M12 26v44" stroke="#bd03f7" />
+            </svg>
+          </div>
+          <hr />
+          <p>Finish my function</p>
+        </article>
+
+        <div class="evolution-arrow" aria-hidden="true">›</div>
+
+        <article class="evolution-card">
+          <h3>Chat coding</h3>
+          <div class="evolution-icon" aria-hidden="true">
+            <svg class="icon-chat" viewBox="0 0 120 96" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="12" y="4" width="96" height="64" rx="6" stroke="#111827" />
+              <g transform="translate(0 6)">
+                <path d="M46 43l-7 9 14-4c5 2 12 2 18-1 11-5 16-16 11-26s-18-14-29-9-16 16-11 26c1 2 2 3 4 5z" stroke="#bd03f7" />
+                <path d="M52 31h1M62 31h1M72 31h1" stroke="#bd03f7" />
+              </g>
+              <path d="M60 68v13M42 81h36" stroke="#111827" />
+            </svg>
+          </div>
+          <hr />
+          <p>Write me this thing</p>
+        </article>
+
+        <div class="evolution-arrow" aria-hidden="true">›</div>
+
+        <article class="evolution-card current">
+          <h3>Agent</h3>
+          <div class="evolution-icon" aria-hidden="true">
+            <svg class="icon-agent" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path class="copilot-mark" d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z" />
+              <path class="copilot-mark-eyes" d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z" />
+            </svg>
+          </div>
+          <hr />
+          <p>Build it. Test it. Fix it.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="slide slide-the-shift" data-slide-kind="the shift">
+    <div class="slide-content">
+      <p class="section-label reveal">03 — THE EXPANSION</p>
+      <h2 class="deck-h2 reveal"><span class="deck-h2-muted">It was for developers.</span><br />Now it is for <span class="accent">everyone.</span></h2>
+      <hr class="hairline-h reveal" />
+      <div class="split-two reveal">
+        <article class="split-card split-card--past" aria-labelledby="shift-then-heading">
+          <header class="split-card-head">
+            <div class="col-label then">THEN</div>
+            <h3 id="shift-then-heading">A coding assistant.</h3>
+          </header>
+          <div class="split-card-body">
+            <div class="split-card-icon" aria-hidden="true">
+              <svg class="split-card-icon-svg" viewBox="0 0 64 64" width="128" height="128" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="7" width="48" height="50" rx="5" fill="none" stroke="currentColor" stroke-width="2.8" />
+                <circle cx="17" cy="16" r="2.1" fill="currentColor" opacity="0.75" />
+                <circle cx="25" cy="16" r="2.1" fill="currentColor" opacity="0.75" />
+                <circle cx="33" cy="16" r="2.1" fill="currentColor" opacity="0.75" />
+                <path d="M24 28 L33 36 L24 44" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M38 44 H48" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="split-card-split" aria-hidden="true"></div>
+            <div class="split-card-lines">
+              <p>Lives in the IDE.</p>
+              <p>Writes code.</p>
+              <p>Built for developers.</p>
+            </div>
+          </div>
+        </article>
+        <div class="split-arrow" aria-hidden="true">
+          <svg width="36" height="64" viewBox="0 0 36 64" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 20 L26 32 L10 44" fill="none" stroke="#cbd5e1" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <article class="split-card split-card--current" aria-labelledby="shift-now-heading">
+          <header class="split-card-head">
+            <div class="col-label now">NOW</div>
+            <h3 id="shift-now-heading">General purpose assistant.</h3>
+          </header>
+          <div class="split-card-body">
+            <div class="split-card-icon" aria-hidden="true">
+              <svg class="split-card-icon-svg split-card-icon-svg--now" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="10" y="14" width="76" height="52" rx="6" />
+                <path d="M38 78h20M48 66v12M30 30h22M30 42h36" />
+                <circle cx="68" cy="31" r="5" stroke="#bd03f7" />
+              </svg>
+            </div>
+            <div class="split-card-split" aria-hidden="true"></div>
+            <div class="split-card-lines">
+              <p>Works across your PC.</p>
+              <p>Helps with almost anything.</p>
+              <p>Built for anyone.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+      <hr class="hairline-h reveal" />
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="slide slide-how-loop" data-slide-kind="how">
+    <div class="slide-content">
+      <p class="section-label reveal">04 — How</p>
+      <h2 class="deck-h2 reveal">Ask. Execute.<br />Review. <span class="accent">Repeat.</span></h2>
+      <p class="how-subtitle reveal">One simple loop for getting work done with Copilot.</p>
+      <div class="loop-cards reveal">
+        <article class="loop-card">
+          <div class="loop-num">01</div>
+          <div class="loop-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 44l-3 10 11-4a22 22 0 1 0-8-6z" />
+              <circle cx="25" cy="31" r="2.4" fill="currentColor" stroke="none" />
+              <circle cx="32" cy="31" r="2.4" fill="currentColor" stroke="none" />
+              <circle cx="39" cy="31" r="2.4" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <h3>Ask</h3>
+          <p>You speak in plain English</p>
+        </article>
+        <article class="loop-card">
+          <div class="loop-num">02</div>
+          <div class="loop-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M24 18l25 22-14 2 8 15-7 4-8-16-10 11z" />
+              <path d="M17 17l-5-6" />
+              <path d="M27 12l-1-8" />
+              <path d="M38 15l5-7" />
+              <path d="M15 29l-8-1" />
+            </svg>
+          </div>
+          <h3>Execute</h3>
+          <p>Copilot plans and executes the tasks</p>
+        </article>
+        <article class="loop-card">
+          <div class="loop-num">03</div>
+          <div class="loop-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 32s10-16 26-16 26 16 26 16-10 16-26 16S6 32 6 32z" />
+              <path d="M23 33l6 6 13-15" />
+            </svg>
+          </div>
+          <h3>Review</h3>
+          <p>You check, guide, and approve</p>
+        </article>
+      </div>
+      <div class="loop-return reveal"><span class="loop-infinity">∞</span></div>
+      <p class="callout reveal">That's the whole loop</p>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="slide" data-slide-kind="prompts">
+    <div class="slide-content">
+      <p class="section-label reveal">05 — Real prompts</p>
+      <h2 class="deck-h2 reveal">Things you can ask<br /><span class="accent">GitHub Copilot</span> to do</h2>
+      <hr class="hairline-h reveal" />
+      <div class="prompt-grid reveal">
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 10h20l10 10v34H19z" />
+              <path d="M39 10v12h10" />
+              <rect x="25" y="30" width="18" height="14" rx="2" />
+              <path d="M27 50h18" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">01</div>
+            <h3>Create slides</h3>
+            <q>Turn this folder of notes into slides.</q>
+          </div>
+        </div>
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="18" y="12" width="34" height="40" rx="3" />
+              <path d="M30 12v40M41 12v40M18 25h34M18 38h34" />
+              <path d="M11 22l15-3v26l-15-3z" fill="currentColor" stroke="none" />
+              <path d="M14 28l8 10M22 28l-8 10" stroke="white" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">02</div>
+            <h3>Update files</h3>
+            <q>Update this Excel file with the latest numbers.</q>
+          </div>
+        </div>
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="13" y="13" width="40" height="38" rx="3" />
+              <path d="M19 44l10-12 9 7 12-16" />
+              <path d="M19 44h30" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">03</div>
+            <h3>Analyze data</h3>
+            <q>Analyze these CSVs and show the trend.</q>
+          </div>
+        </div>
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 45a22 22 0 1 1 36 0" />
+              <path d="M32 20v6M19 31l5 3M45 31l-5 3" />
+              <path d="M32 38l11-12" />
+              <circle cx="32" cy="38" r="3" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">04</div>
+            <h3>Troubleshoot PC</h3>
+            <q>Troubleshoot why my PC is running slow.</q>
+          </div>
+        </div>
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="12" y="14" width="40" height="36" rx="5" />
+              <path d="M12 24h40" />
+              <circle cx="32" cy="38" r="11" />
+              <path d="M21 38h22M32 27c4 5.5 4 16.5 0 22M32 27c-4 5.5-4 16.5 0 22" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">05</div>
+            <h3>Browser task</h3>
+            <q>Use the browser to fill this web form.</q>
+          </div>
+        </div>
+        <div class="prompt-cell">
+          <div class="prompt-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="12" y="13" width="42" height="38" rx="4" />
+              <path d="M12 24h42" />
+              <path d="M22 33l8 7-8 7M35 47h10" />
+              <circle cx="20" cy="19" r="1.8" fill="currentColor" stroke="none" />
+              <circle cx="27" cy="19" r="1.8" fill="currentColor" stroke="none" />
+              <circle cx="34" cy="19" r="1.8" fill="currentColor" stroke="none" />
+            </svg>
+          </div>
+          <div>
+            <div class="idx">06</div>
+            <h3>Install software</h3>
+            <q>Help me install Python.</q>
+          </div>
+        </div>
+      </div>
+      <div class="prompt-footer reveal">
+        <span class="prompt-footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 31v8M32 31v8M44 31v8" />
+            <rect x="15" y="20" width="34" height="30" rx="10" />
+            <path d="M24 20v-5M40 20v-5" />
+            <path d="M17 33h-5M52 33h-5" />
+          </svg>
+        </span>
+        <span>Local files. Browser tasks. Real workflows.</span>
+        <span class="divider" aria-hidden="true"></span>
+        <span class="accent-text">All from plain English.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="slide slide-live" data-slide-kind="demo">
+    <div class="slide-content">
+      <p class="section-label reveal">06 — Let's try it</p>
+      <h2 class="deck-h2 reveal">Your <span class="accent">turn.</span></h2>
+      <p class="live-simple reveal">Open VS Code and let's try together.</p>
+      <div class="live-visual reveal" aria-hidden="true">
+        <div class="live-window-bar">
+          <span class="live-vs">⌘</span>
+          <span class="live-dot"></span>
+          <span class="live-dot"></span>
+          <span class="live-dot"></span>
+          <span class="live-close">×</span>
+        </div>
+        <div class="live-window-body">
+          <div class="live-rail">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="live-files">
+            <div class="live-file-line" style="width: 72%;"></div>
+            <div class="live-file-line" style="width: 92%;"></div>
+            <div class="live-file-line" style="width: 78%;"></div>
+            <div class="live-file-line" style="width: 86%;"></div>
+            <div class="live-file-line" style="width: 68%;"></div>
+            <div class="live-file-line" style="width: 82%;"></div>
+          </div>
+          <div class="live-code">
+            <div class="live-code-row"><span>1</span><div class="live-code-line" style="width: 60%;"></div></div>
+            <div class="live-code-row"><span>2</span><div class="live-code-line" style="width: 76%;"></div></div>
+            <div class="live-code-row"><span>3</span><div class="live-code-line" style="width: 48%;"></div></div>
+            <div class="live-code-row"><span>4</span><div class="live-code-line" style="width: 86%;"></div></div>
+            <div class="live-code-row"><span>5</span><div class="live-code-line" style="width: 54%;"></div></div>
+            <div class="live-code-row"><span>6</span><div class="live-code-line" style="width: 70%;"></div></div>
+            <div class="live-code-row"><span>7</span><div class="live-code-line" style="width: 44%;"></div></div>
+            <div class="live-code-row"><span>8</span><div class="live-code-line" style="width: 68%;"></div></div>
+          </div>
+        </div>
+        <div class="live-prompt">
+          <span class="live-term">&gt;_</span>
+          <span>Let's code together.<span class="live-caret"></span></span>
+          <span class="live-send">→</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="slide slide-agent-skills" data-slide-kind="agent skills">
+    <div class="slide-content">
+      <p class="section-label reveal">07 — What are agent skills?</p>
+      <h2 class="deck-h2 skill-title reveal">Agent <span class="accent">Skills</span></h2>
+      <p class="skill-subtitle reveal">Reusable workflows that teach AI agents how to complete tasks properly.</p>
+      <div class="skill-board reveal">
+        <div class="skill-board-head">
+          <h3>Inside a Skill</h3>
+        </div>
+        <div class="skill-row">
+          <div class="skill-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="32" cy="32" r="22" />
+              <circle cx="32" cy="32" r="9" />
+              <path d="M32 32l16-15" />
+              <path d="M44 13h8v8" />
+            </svg>
+          </div>
+          <span class="skill-rule" aria-hidden="true"></span>
+          <div class="skill-item">1. Purpose</div>
+          <div class="skill-desc">What task to complete</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M27 18h26" />
+              <path d="M27 32h26" />
+              <path d="M27 46h26" />
+              <circle cx="13" cy="18" r="5" />
+              <circle cx="13" cy="32" r="5" />
+              <circle cx="13" cy="46" r="5" />
+            </svg>
+          </div>
+          <span class="skill-rule" aria-hidden="true"></span>
+          <div class="skill-item">2. Steps</div>
+          <div class="skill-desc">How the work should happen</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M32 8l22 8v16c0 13-9 21-22 25-13-4-22-12-22-25V16z" />
+              <path d="M22 33l7 7 14-16" />
+            </svg>
+          </div>
+          <span class="skill-rule" aria-hidden="true"></span>
+          <div class="skill-item">3. Rules</div>
+          <div class="skill-desc">What to follow or avoid</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M42 9a13 13 0 0 0-15 16L10 42a7 7 0 0 0 10 10l17-17A13 13 0 0 0 53 20l-9 9-9-9z" />
+            </svg>
+          </div>
+          <span class="skill-rule" aria-hidden="true"></span>
+          <div class="skill-item">4. Tools</div>
+          <div class="skill-desc">What systems it can use</div>
+        </div>
+        <div class="skill-row">
+          <div class="skill-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 50h40" />
+              <path d="M18 50V38h8v12" />
+              <path d="M30 50V30h8v20" />
+              <path d="M42 50V20h8v30" />
+              <path d="M14 28l13-12 10 9 13-15" />
+              <path d="M50 10v10H40" />
+            </svg>
+          </div>
+          <span class="skill-rule" aria-hidden="true"></span>
+          <div class="skill-item">5. Output</div>
+          <div class="skill-desc">What good result looks like</div>
+        </div>
+      </div>
+      <p class="skill-bottom reveal">Skills make agent behavior <span><span class="accent">consistent, repeatable,</span> and <span class="accent">reliable.</span></span></p>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="slide slide-progressive" data-slide-kind="progressive discovery">
+    <div class="slide-content">
+      <p class="section-label reveal">08 — Progressive discovery</p>
+      <h2 class="deck-h2 progressive-title reveal">The agent <span class="accent">discovers</span> the right skill as it works</h2>
+      <p class="progressive-subtitle reveal">Example: Turn this folder of notes into slides.</p>
+
+      <div class="discovery-flow reveal">
+        <section class="discovery-panel build-fragment" data-build-step="1" aria-label="User goal">
+          <div class="step-head"><span class="step-num">1</span><span>User goal</span></div>
+          <div class="panel-visual">
+            <div class="goal-icon" aria-hidden="true">
+              <svg viewBox="0 0 120 120" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M28 72c-11-4-18-13-18-25 0-16 15-29 34-29s34 13 34 29-15 29-34 29c-3 0-6 0-9-1L17 85l5-17" />
+                <path d="M31 48h1M45 48h1M59 48h1" />
+              </svg>
+              <svg viewBox="0 0 160 120" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M26 36h50l11 16h47v49H26z" />
+                <path d="M48 76h21v21H48z" fill="#fff1a8" />
+                <path d="M88 69l27 4-4 27-27-4z" fill="#ffd1df" />
+                <path d="M82 12l56 6-6 57-56-6z" fill="white" />
+                <path d="M96 29l24 2M94 43l30 3M94 57l20 2" />
+              </svg>
+            </div>
+            <p class="goal-text">Turn this folder<br />of notes into slides.</p>
+            <p class="muted-note">The goal is clear.<br />The method is not.</p>
+          </div>
+        </section>
+
+        <div class="flow-arrow build-fragment" data-build-step="2" aria-hidden="true">→</div>
+
+        <section class="discovery-panel featured build-fragment" data-build-step="2" aria-label="Scan skill descriptions">
+          <div class="step-head"><span class="step-num">2</span><span>Scan skill descriptions</span></div>
+          <div class="panel-visual">
+            <ul class="skill-list">
+              <li class="skill-choice active">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 4h11l5 5v19H9z" />
+                    <path d="M20 4v6h5M13 15h8M13 20h6" />
+                  </svg>
+                </span>
+                <div><b>Slide Drafting</b><span>create slide outlines from notes</span></div>
+              </li>
+              <li class="skill-choice">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8h20v14H12l-6 5z" />
+                    <path d="M11 14h10M11 18h6" />
+                  </svg>
+                </span>
+                <div><b>Meeting Summary</b><span>turn transcripts into action items</span></div>
+              </li>
+              <li class="skill-choice">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 24l7-8 5 4 8-11" />
+                    <path d="M6 26h21" />
+                    <path d="M9 24v-6M16 24v-9M23 24v-14" />
+                  </svg>
+                </span>
+                <div><b>Data Analysis</b><span>analyze CSVs and explain trends</span></div>
+              </li>
+              <li class="skill-choice">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 9h22v16H5z" />
+                    <path d="M5 9l11 9L27 9" />
+                  </svg>
+                </span>
+                <div><b>Email Writing</b><span>draft messages from context</span></div>
+              </li>
+              <li class="skill-choice">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="16" cy="16" r="11" />
+                    <path d="M5 16h22M16 5c4 5 4 17 0 22M16 5c-4 5-4 17 0 22" />
+                  </svg>
+                </span>
+                <div><b>Browser Task</b><span>complete a web workflow</span></div>
+              </li>
+            </ul>
+            <p class="panel-caption">Scan first. Open what matters.</p>
+          </div>
+        </section>
+
+        <div class="flow-arrow build-fragment" data-build-step="3" aria-hidden="true">→</div>
+
+        <section class="discovery-panel build-fragment" data-build-step="3" aria-label="Open the selected skill">
+          <div class="step-head"><span class="step-num">3</span><span>Open the selected skill</span></div>
+          <div class="panel-visual">
+            <section class="skill-open" aria-label="Selected skill details">
+              <div class="skill-open-head">
+                <span class="mini-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 4h11l5 5v19H9z" />
+                    <path d="M20 4v6h5M13 15h8M13 20h6" />
+                  </svg>
+                </span>
+                <div><b>Slide Drafting</b><span>create slide outlines from notes</span></div>
+              </div>
+              <div class="skill-parts">
+                <div class="skill-part"><span class="skill-part-label">Steps</span><span class="skeleton-lines"><span></span><span></span></span></div>
+                <div class="skill-part"><span class="skill-part-label">Rules</span><span class="skeleton-lines"><span></span><span></span></span></div>
+                <div class="skill-part"><span class="skill-part-label">Tools</span><span class="skeleton-lines"><span></span><span></span></span></div>
+                <div class="skill-part"><span class="skill-part-label">Examples</span><span class="skeleton-lines"><span></span><span></span></span></div>
+                <div class="skill-part"><span class="skill-part-label">Output format</span><span class="skeleton-lines"><span></span><span></span></span></div>
+              </div>
+            </section>
+            <p class="panel-caption">Now read the full details<br />of the chosen skill.</p>
+          </div>
+        </section>
+
+        <div class="flow-arrow build-fragment" data-build-step="4" aria-hidden="true">→</div>
+
+        <section class="discovery-panel build-fragment" data-build-step="4" aria-label="Apply and output">
+          <div class="step-head"><span class="step-num">4</span><span>Apply + output</span></div>
+          <div class="panel-visual">
+            <figure class="output-visual" aria-hidden="true">
+              <svg viewBox="0 0 268 158" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <filter id="output-shadow" x="2" y="0" width="264" height="156" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.14" />
+                  </filter>
+                </defs>
+                <rect x="12" y="10" width="244" height="136" rx="4" fill="white" stroke="#111827" stroke-width="3" filter="url(#output-shadow)" />
+                <path d="M13 12v132" stroke="#bd03f7" stroke-width="9" />
+                <text x="44" y="48" fill="#0f172a" font-family="Micron Basis, Arial, sans-serif" font-size="18" font-weight="800">Q3 Strategy Update</text>
+                <path d="M44 72h112" stroke="#d1d5db" stroke-width="7" />
+                <path d="M44 91h110" stroke="#d1d5db" stroke-width="7" />
+                <path d="M44 91h14" stroke="#aab3c1" stroke-width="7" />
+                <circle cx="48" cy="111" r="4" fill="#7b8495" />
+                <path d="M62 111h82" stroke="#d1d5db" stroke-width="7" />
+                <circle cx="48" cy="130" r="4" fill="#7b8495" />
+                <path d="M62 130h64" stroke="#d1d5db" stroke-width="7" />
+                <path d="M174 129h18V111h-18zM202 129h18V94h-18zM230 129h18V72h-18z" fill="#bd03f7" opacity=".72" />
+              </svg>
+            </figure>
+            <p class="ready-title">Slide draft ready</p>
+            <p class="muted-note">The agent follows the<br />selected skill to produce<br />the result.</p>
+          </div>
+        </section>
+      </div>
+
+      <p class="progressive-bottom reveal build-fragment" data-build-step="5">Progressive discovery keeps the agent efficient: scan first, open what matters, then act.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="nav-dots" aria-label="Slide navigation"></nav>
+<div id="overview" role="dialog" aria-modal="true" aria-label="Slide overview" aria-hidden="true" tabindex="-1"></div>
+
+<script>
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll(".slide"));
+    this.currentSlide = 0;
+    this.locked = false;
+    this.programmaticScroll = false;
+    this.overviewOpen = false;
+    this.lastFocus = null;
+    this.deck = document.querySelector(".deck");
+    this.navDotsContainer = document.querySelector(".nav-dots");
+    this.overview = document.getElementById("overview");
+    this.presentationToggle = document.querySelector(".present-toggle");
+    this.buildSlide = document.querySelector(".slide-progressive");
+    this.buildStep = 1;
+    this.maxBuildStep = 5;
+
+    this.setupFixedStage();
+    this.setupNavDots();
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupClickNav();
+    this.setupWheelNav();
+    this.setupTouchNav();
+    this.setupPresentationMode();
+    this.syncPresentationUI();
+    this.goTo(0, { immediate: true });
+  }
+
+  clamp(i) {
+    return Math.max(0, Math.min(this.slides.length - 1, i));
+  }
+
+  setupFixedStage() {
+    this.slides.forEach((slide) => {
+      if (slide.querySelector(":scope > .slide-stage")) return;
+      const stage = document.createElement("div");
+      stage.className = "slide-stage";
+      while (slide.firstChild) stage.appendChild(slide.firstChild);
+      slide.appendChild(stage);
+    });
+
+    const updateScale = () => {
+      const scale = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+      document.documentElement.style.setProperty("--stage-scale", String(scale));
+      document.documentElement.style.setProperty("--stage-scaled-width", `${1600 * scale}px`);
+      document.documentElement.style.setProperty("--stage-scaled-height", `${900 * scale}px`);
+    };
+    this.updateStageScale = updateScale;
+    updateScale();
+    window.addEventListener("resize", updateScale, { passive: true });
+  }
+
+  applySlide(i) {
+    this.currentSlide = i;
+    this.slides.forEach((s, idx) => {
+      s.classList.toggle("active", idx === i);
+      s.classList.toggle("visible", idx === i);
+    });
+    this.navDotsContainer.querySelectorAll("button").forEach((d, idx) => {
+      d.classList.toggle("active", idx === i);
+      d.setAttribute("aria-current", idx === i ? "true" : "false");
+    });
+    if (this.slides[i] === this.buildSlide) {
+      this.buildStep = 1;
+    }
+    this.updateBuildFragments();
+  }
+
+  updateBuildFragments() {
+    if (!this.buildSlide) return;
+    this.buildSlide.querySelectorAll("[data-build-step]").forEach((el) => {
+      const step = Number(el.dataset.buildStep);
+      el.classList.toggle("build-visible", this.currentSlide !== this.slides.indexOf(this.buildSlide) || step <= this.buildStep);
+    });
+  }
+
+  setupNavDots() {
+    this.navDotsContainer.innerHTML = "";
+    this.slides.forEach((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => this.goTo(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+  }
+
+  goTo(i, options = {}) {
+    const next = this.clamp(i);
+    if (this.locked && !options.immediate) return;
+    this.applySlide(next);
+    this.programmaticScroll = true;
+    this.deck.scrollTo({
+      left: 0,
+      top: this.slides[next].offsetTop,
+      behavior: options.immediate ? "auto" : "smooth",
+    });
+    if (!options.immediate) {
+      this.locked = true;
+      window.setTimeout(() => {
+        this.locked = false;
+        this.programmaticScroll = false;
+      }, 650);
+    } else {
+      requestAnimationFrame(() => {
+        this.programmaticScroll = false;
+      });
+    }
+  }
+
+  next() {
+    if (this.currentSlide === this.slides.indexOf(this.buildSlide) && this.buildStep < this.maxBuildStep) {
+      this.buildStep += 1;
+      this.updateBuildFragments();
+      return;
+    }
+    this.goTo(this.currentSlide + 1);
+  }
+
+  prev() {
+    if (this.currentSlide === this.slides.indexOf(this.buildSlide) && this.buildStep > 1) {
+      this.buildStep -= 1;
+      this.updateBuildFragments();
+      return;
+    }
+    this.goTo(this.currentSlide - 1);
+  }
+
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (this.programmaticScroll) return;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.applySlide(this.slides.indexOf(entry.target));
+          }
+        });
+      },
+      { root: this.deck, threshold: 0.6 },
+    );
+    this.slides.forEach((s) => observer.observe(s));
+  }
+
+  requestPresent() {
+    document.documentElement.requestFullscreen?.().catch(() => {});
+  }
+
+  syncPresentationUI() {
+    const btn = this.presentationToggle;
+    if (!btn) return;
+    const on =
+      !!document.fullscreenElement ||
+      document.documentElement.classList.contains("presentation-mode");
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    btn.setAttribute(
+      "aria-label",
+      on ? "Exit presentation mode" : "Enter presentation mode (full screen)",
+    );
+    btn.title = on ? "Exit presentation (shortcut P)" : "Presentation: full screen (shortcut P)";
+    const text = btn.querySelector(".presentation-toggle-text");
+    if (text) text.textContent = on ? "Exit" : "Present";
+  }
+
+  isPresentationMode() {
+    return (
+      !!document.fullscreenElement ||
+      document.documentElement.classList.contains("presentation-mode")
+    );
+  }
+
+  async enterPresentation() {
+    const html = document.documentElement;
+    html.classList.add("presentation-mode");
+    this.syncPresentationUI();
+    this.updateStageScale?.();
+
+    const request =
+      html.requestFullscreen?.bind(html) ||
+      html.webkitRequestFullscreen?.bind(html);
+    if (!request || document.fullscreenElement) return;
+
+    try {
+      await request();
+    } catch {
+      /* Fullscreen can be blocked in embedded browsers; CSS presentation mode remains active. */
+    }
+    this.syncPresentationUI();
+    this.updateStageScale?.();
+  }
+
+  async exitPresentation() {
+    const html = document.documentElement;
+    const exit =
+      document.exitFullscreen?.bind(document) ||
+      document.webkitExitFullscreen?.bind(document);
+
+    if (document.fullscreenElement && exit) {
+      try {
+        await exit();
+      } catch {
+        /* ignore */
+      }
+    }
+
+    html.classList.remove("presentation-mode");
+    this.syncPresentationUI();
+    this.updateStageScale?.();
+  }
+
+  async togglePresentation() {
+    if (this.isPresentationMode()) {
+      await this.exitPresentation();
+    } else {
+      await this.enterPresentation();
+    }
+  }
+
+  setupPresentationMode() {
+    const onFullscreenChange = () => {
+      const on = !!document.fullscreenElement;
+      document.documentElement.classList.toggle("presentation-mode", on);
+      this.syncPresentationUI();
+      this.updateStageScale?.();
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+
+    this.presentationToggle?.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.requestPresent();
+    });
+  }
+
+  setupKeyboardNav() {
+    document.addEventListener("keydown", (e) => {
+      const t = e.target;
+      const tag = t?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
+
+      if (
+        (e.key === "p" || e.key === "P") &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        this.requestPresent();
+        return;
+      }
+
+      if (e.key === "Escape") {
+        if (this.overviewOpen) {
+          e.preventDefault();
+          this.toggleOverview(false);
+          return;
+        }
+        if (document.fullscreenElement) {
+          return;
+        }
+        if (document.documentElement.classList.contains("presentation-mode")) {
+          e.preventDefault();
+          document.documentElement.classList.remove("presentation-mode");
+          this.syncPresentationUI();
+          this.updateStageScale?.();
+          return;
+        }
+        e.preventDefault();
+        this.toggleOverview();
+        return;
+      }
+      if (this.overviewOpen) {
+        if (e.key === "Tab") this.trapFocus(e);
+        return;
+      }
+      if (["ArrowRight", "ArrowDown", "PageDown", " "].includes(e.key)) {
+        e.preventDefault();
+        this.next();
+      } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.key)) {
+        e.preventDefault();
+        this.prev();
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        this.goTo(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        this.goTo(this.slides.length - 1);
+      }
+    });
+  }
+
+  setupClickNav() {
+    this.deck.addEventListener("click", (e) => {
+      if (this.overviewOpen) return;
+      if (this.currentSlide !== this.slides.indexOf(this.buildSlide)) return;
+      if (e.target.closest("button, a, input, select, textarea, [contenteditable='true']")) return;
+      this.next();
+    });
+  }
+
+  setupWheelNav() {
+    let wheelAcc = 0;
+    let wheelTimer = null;
+    this.deck.addEventListener(
+      "wheel",
+      (e) => {
+        if (this.overviewOpen) return;
+        e.preventDefault();
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        wheelAcc += delta;
+        if (Math.abs(wheelAcc) > 80) {
+          wheelAcc > 0 ? this.next() : this.prev();
+          wheelAcc = 0;
+        }
+        window.clearTimeout(wheelTimer);
+        wheelTimer = window.setTimeout(() => {
+          wheelAcc = 0;
+        }, 180);
+      },
+      { passive: false },
+    );
+  }
+
+  setupTouchNav() {
+    let startX = 0;
+    let startY = 0;
+    window.addEventListener(
+      "touchstart",
+      (e) => {
+        const t = e.changedTouches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+      },
+      { passive: true },
+    );
+    window.addEventListener(
+      "touchend",
+      (e) => {
+        if (this.overviewOpen) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 40) {
+          dy < 0 ? this.next() : this.prev();
+        }
+      },
+      { passive: true },
+    );
+  }
+
+  buildOverview() {
+    this.overview.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "ov-head";
+    head.innerHTML = `<span><b>Slide overview</b> · esc to close</span><span>${String(this.currentSlide + 1).padStart(2, "0")} / ${String(this.slides.length).padStart(2, "0")}</span>`;
+    this.overview.appendChild(head);
+
+    const grid = document.createElement("div");
+    grid.className = "ov-grid";
+    this.slides.forEach((slide, i) => {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = `ov-card${i === this.currentSlide ? " active" : ""}`;
+      card.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      const thumb = document.createElement("div");
+      thumb.className = "ov-thumb";
+      thumb.setAttribute("aria-hidden", "true");
+      const cloneSource = slide.querySelector(":scope > .slide-stage") || slide;
+      const clone = cloneSource.cloneNode(true);
+      clone.classList.add("clone", "visible");
+      clone.setAttribute("aria-hidden", "true");
+      clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+      clone.querySelectorAll("button, a, input, select, textarea, [tabindex]").forEach((element) => {
+        element.setAttribute("tabindex", "-1");
+      });
+      thumb.appendChild(clone);
+      const label = document.createElement("div");
+      label.className = "ov-label";
+      label.innerHTML = `<b>${String(i + 1).padStart(2, "0")}</b><span>${slide.dataset.slideKind || "slide"}</span>`;
+      card.appendChild(thumb);
+      card.appendChild(label);
+      card.addEventListener("click", () => {
+        this.toggleOverview(false);
+        this.goTo(i);
+      });
+      grid.appendChild(card);
+    });
+    this.overview.appendChild(grid);
+
+    requestAnimationFrame(() => {
+      this.overview.querySelectorAll(".ov-thumb").forEach((thumb) => {
+        const clone = thumb.querySelector(".clone");
+        const srcW = 1600;
+        const srcH = 900;
+        clone.style.width = `${srcW}px`;
+        clone.style.height = `${srcH}px`;
+        const scale = Math.min(thumb.clientWidth / srcW, thumb.clientHeight / srcH);
+        clone.style.transform = `scale(${scale})`;
+      });
+    });
+  }
+
+  toggleOverview(force) {
+    this.overviewOpen = typeof force === "boolean" ? force : !this.overviewOpen;
+    if (this.overviewOpen) {
+      this.lastFocus = document.activeElement;
+      this.buildOverview();
+      this.overview.setAttribute("aria-hidden", "false");
+      this.overview.focus({ preventScroll: true });
+    } else {
+      this.overview.setAttribute("aria-hidden", "true");
+      this.lastFocus?.focus?.({ preventScroll: true });
+    }
+  }
+
+  trapFocus(e) {
+    const focusable = this.overview.querySelectorAll("button, [tabindex]:not([tabindex='-1'])");
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+}
+
+window.presentation = new SlidePresentation();
+</script>
+</body>
+</html>
