@@ -14,7 +14,7 @@
 import { readFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
-import { projectDir, type OutputFormat, type ProjectRecord } from './projects.ts';
+import { activeDeck, projectDir, type OutputFormat, type ProjectRecord } from './projects.ts';
 
 /** The on-disk working names the generate turn writes (server.ts DECK_ENTRY +
  *  pptx.pptxOutputPath) in Slice 6. The Export Collector (Slice 7) renames these
@@ -101,7 +101,9 @@ export async function collectExports(
   const items: ExportItem[] = [];
   const wanted: OutputFormat[] = project.formats?.length ? project.formats : ['html'];
   for (const format of wanted) {
-    const entry = format === 'pptx' ? DECK_PPTX_ENTRY : DECK_HTML_ENTRY;
+    const active = activeDeck(project);
+    const htmlEntry = active?.file ?? DECK_HTML_ENTRY; // legacy fallback
+    const entry = format === 'pptx' ? htmlEntry.replace(/\.html$/i, '.pptx') : htmlEntry;
     const abs = join(dir, entry);
     if (!existsSync(abs)) continue;
     let info;

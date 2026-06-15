@@ -14,6 +14,7 @@ import {
   listProjects,
   listRecent,
   load,
+  projectDir,
   readConversation,
   readProject,
   setGate1,
@@ -270,5 +271,38 @@ test('readProject backfills Slice 2 fields for pre-slice records', async () => {
     assert.equal(rec?.stage, 'brief');
     assert.equal(rec?.gate1, 'pending');
     assert.deepEqual(rec?.recordedBrief, {});
+  });
+});
+
+test('S2: a record with no decks[] migrates to empty variant fields (AC)', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    const r = await readProject(p.id, env);
+    assert.deepEqual(r?.decks, []);
+    assert.equal(r?.wireframeRev, 0);
+    assert.equal(r?.activeDeckId, null);
+  });
+});
+
+test('S2: a legacy themed deck-stage record migrates its deck.html into one variant', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await setGate1(p.id, 'approve', env);
+    await setGate2(p.id, 'approve', env);
+    await setTheme(p.id, 'micron-dark', undefined, env);
+    const { readFile, writeFile } = await import('node:fs/promises');
+    const { join } = await import('node:path');
+    const file = join(projectDir(p.id, env), 'project.json');
+    const raw = JSON.parse(await readFile(file, 'utf8'));
+    delete raw.decks; delete raw.wireframeRev; delete raw.activeDeckId;
+    await writeFile(file, JSON.stringify(raw));
+
+    const r = await readProject(p.id, env);
+    assert.equal(r?.decks.length, 1);
+    assert.equal(r?.decks[0].theme, 'micron-dark');
+    assert.equal(r?.decks[0].file, 'deck.html');
+    assert.equal(r?.decks[0].fromWireframeRev, 0);
+    assert.equal(r?.activeDeckId, r?.decks[0].id);
+    assert.equal(r?.theme, 'micron-dark');
   });
 });

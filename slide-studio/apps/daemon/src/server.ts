@@ -19,12 +19,14 @@ import { ProcessRegistry } from './process-registry.ts';
 import {
   appendConversation,
   createProject,
+  deckFileForTheme,
   listRecent,
   load,
   markQuestionnaireAnswered,
   projectDir,
   readConversation,
   readProject,
+  registerGeneratedDeck,
   setGate1,
   setGate2,
   setQuestionnaire,
@@ -586,6 +588,10 @@ export async function createDaemon(
         const formats: OutputFormat[] = project.formats?.length ? project.formats : ['html'];
         const wantsPptx = formats.includes('pptx');
 
+        const projDir = projectDir(project.id);
+        const deckEntry = deckFileForTheme(project, theme); // deck.<theme>.html, or legacy deck.html
+        const deckAbs = join(projDir, deckEntry);
+
         // Slice 12 (issue #15): deck-level annotate & iterate. If the user pinned
         // annotations on the EXISTING Deck, this run is a **regenerate** — the agent
         // rewrites only the affected slides. The pending feedback serializes into the
@@ -600,22 +606,21 @@ export async function createDaemon(
           ? [
               `Regenerate the Deck in the "${theme}" theme, applying the pinned annotations`,
               `below. Change only the affected slides — keep every other slide, the theme,`,
-              `and the structure as-is. Rewrite ${DECK_ENTRY} and re-run the html-slides`,
+              `and the structure as-is. Rewrite ${deckEntry} and re-run the html-slides`,
               `verify gate before presenting it as done.`,
             ].join(' ')
           : [
               `Generate the final Deck now in the "${theme}" theme, following the approved`,
-              `narrative arc and the theme-less wireframe we agreed on. Write it to ${DECK_ENTRY}`,
+              `narrative arc and the theme-less wireframe we agreed on. Write it to ${deckEntry}`,
               `and verify it with the html-slides gate before presenting it as done.`,
             ].join(' ');
         const generatePrompt = composePrompt({
           userRequest: [baseRequest, feedbackBlock].filter((s) => s && s.trim()).join('\n\n'),
           transcript,
           skillBodies: STAGED_GENERATE_SKILLS,
-          persona: generatePersona(theme, DECK_ENTRY, formats),
+          persona: generatePersona(theme, deckEntry, formats),
         });
 
-        const projDir = projectDir(project.id);
         let runFailed = false;
         await appendConversation(project.id, {
           role: 'user',
@@ -663,8 +668,8 @@ export async function createDaemon(
         // Run the html-slides verify gate on the produced Deck (§12, AC2). The Deck
         // is presented as done only when it passes. A missing deck / failed run
         // skips the gate with a friendly "couldn't verify" rather than claiming a pass.
+        let verifyPassed = false;
         if (!runFailed && !outcome.cancelled) {
-          const deckAbs = join(projDir, DECK_ENTRY);
           if (fileExists(deckAbs)) {
             const verifyOnce = () =>
               runVerify({ htmlPath: deckAbs, theme, outputDir: join(projDir, 'verify-screenshots') });
@@ -689,7 +694,7 @@ export async function createDaemon(
                 {
                   def,
                   bin: detected.path,
-                  prompt: composeDeckFixPrompt(DECK_ENTRY, result.output ?? result.summary, fixAttempt, GENERATE_FIX_ATTEMPTS),
+                  prompt: composeDeckFixPrompt(deckEntry, result.output ?? result.summary, fixAttempt, GENERATE_FIX_ATTEMPTS),
                   model: msg.model ?? null,
                   ctx: { cwd: projDir },
                   extraAllowedDirs: [join(__dirname, '..', '..', '..', 'skills', 'html-slides')],
@@ -710,6 +715,8 @@ export async function createDaemon(
               result = await verifyOnce();
               send({ type: 'verify', passed: result.passed, summary: result.summary, output: result.output });
             }
+
+            verifyPassed = result.passed;
 
             // Slice 6 (issue #13, AC2): if the user chose PPTX (or PPTX+HTML), build
             // the EDITABLE PowerPoint from the VERIFIED HTML Deck via the html-to-pptx
@@ -757,6 +764,9 @@ export async function createDaemon(
         // actually exist — and push the Export panel its downloadable list with
         // Brief-derived filenames (§12). A format the user chose but generation
         // didn't produce is omitted; the panel shows what's truly downloadable.
+        if (verifyPassed) {
+          await registerGeneratedDeck(project.id, theme);
+        }
         const exportProject = await readProject(project.id);
         if (exportProject) {
           send({ type: 'exports', items: await collectExports(exportProject) });

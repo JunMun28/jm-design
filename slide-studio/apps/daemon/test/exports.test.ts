@@ -19,7 +19,16 @@ import {
   readExportFile,
   slugifyTitle,
 } from '../src/exports.ts';
-import { createProject, projectDir, setTheme, type ProjectRecord } from '../src/projects.ts';
+import {
+  createProject,
+  projectDir,
+  readProject,
+  registerGeneratedDeck,
+  setGate1,
+  setGate2,
+  setTheme,
+  type ProjectRecord,
+} from '../src/projects.ts';
 
 async function withDataDir<T>(fn: (env: NodeJS.ProcessEnv) => Promise<T>): Promise<T> {
   const dir = await mkdtemp(join(tmpdir(), 'slide-studio-exports-'));
@@ -151,5 +160,23 @@ test('readExportFile rejects traversal and absolute paths (path-safety gate)', a
     assert.equal(await readExportFile(project, '/etc/passwd', env), null);
     // A wrong / unknown type is refused even if it existed.
     assert.equal(await readExportFile(project, 'project.json', env), null);
+  });
+});
+
+// --- S2 variant data model ---------------------------------------------------
+
+test('S2: collectExports lists the ACTIVE variant html (deck.<theme>.html), not deck.html', async () => {
+  await withDataDir(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await setGate1(p.id, 'approve', env);
+    await setGate2(p.id, 'approve', env);
+    await setTheme(p.id, 'playful', undefined, env);
+    const { writeFile } = await import('node:fs/promises');
+    const { join } = await import('node:path');
+    await writeFile(join(projectDir(p.id, env), 'deck.playful.html'), '<html><body>deck</body></html>');
+    await registerGeneratedDeck(p.id, 'playful', env);
+    const r = await readProject(p.id, env);
+    const items = await collectExports(r!, env);
+    assert.ok(items.some((i) => i.entry === 'deck.playful.html' && i.format === 'html'));
   });
 });

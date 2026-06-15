@@ -268,12 +268,23 @@ export interface OnboardingPlan {
   summary: string;
 }
 
+export interface DeckVariant {
+  id: string;
+  theme: string;
+  file: string;
+  fromWireframeRev: number;
+  createdAt: string;
+}
+
 export interface ProjectRecord {
   id: string;
   title: string;
   brief: string;
   runtimeId: string | null;
   theme: string | null;
+  decks: DeckVariant[];
+  wireframeRev: number;
+  activeDeckId: string | null;
   stage: FlowStage;
   recordedBrief: Brief;
   /** The agent-generated intake questionnaire (Brief-panel intake), or null when

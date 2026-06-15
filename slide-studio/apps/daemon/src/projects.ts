@@ -24,6 +24,16 @@ export type GateStatus = 'pending' | 'approved';
  *  shape ready for PPTX. */
 export type OutputFormat = 'html' | 'pptx';
 
+/** One non-destructive styled rendering of the project's content (S2). One per
+ *  theme: re-generating a theme refreshes its variant; a new theme adds another. */
+export type DeckVariant = {
+  id: string;
+  theme: string;
+  file: string;
+  fromWireframeRev: number;
+  createdAt: string;
+};
+
 export type ProjectRecord = {
   id: string;
   title: string;
@@ -31,6 +41,9 @@ export type ProjectRecord = {
   brief: string;
   runtimeId: string | null;
   theme: string | null;
+  decks: DeckVariant[];
+  wireframeRev: number;
+  activeDeckId: string | null;
   /** The current pipeline step (drives the stepper). Defaults to 'brief'. */
   stage: FlowStage;
   /** The live Recorded Discussion parsed from the agent's structured output. */
@@ -111,6 +124,9 @@ export async function createProject(
     brief: input.brief,
     runtimeId: input.runtimeId ?? null,
     theme: input.theme ?? null,
+    decks: [],
+    wireframeRev: 0,
+    activeDeckId: null,
     stage: 'brief',
     recordedBrief: {},
     questionnaire: null,
@@ -134,7 +150,7 @@ export async function readProject(id: string, env: NodeJS.ProcessEnv = process.e
   try {
     const parsed = JSON.parse(await readFile(file, 'utf8')) as Partial<ProjectRecord>;
     // Backfill fields for projects created before later slices existed.
-    return {
+    const merged = {
       stage: 'brief',
       recordedBrief: {},
       questionnaire: null,
@@ -145,8 +161,25 @@ export async function readProject(id: string, env: NodeJS.ProcessEnv = process.e
       formats: ['html'],
       runtimeId: null,
       theme: null,
+      decks: [],
+      wireframeRev: 0,
+      activeDeckId: null,
       ...parsed,
     } as ProjectRecord;
+    // S2 legacy migration: if this record has no decks[] but has a theme, the
+    // old single deck.html was themed — wrap it in one DeckVariant.
+    if (!Array.isArray(parsed.decks) && merged.theme) {
+      const v: DeckVariant = {
+        id: slugify(merged.theme),
+        theme: merged.theme,
+        file: 'deck.html',
+        fromWireframeRev: 0,
+        createdAt: merged.createdAt,
+      };
+      merged.decks = [v];
+      merged.activeDeckId = v.id;
+    }
+    return merged;
   } catch {
     return null;
   }
@@ -241,6 +274,36 @@ export async function setGate2(
   return patchProject(id, { gate2: 'pending', stage: 'wireframe' }, env);
 }
 
+/** Deck file name for a theme, e.g. "deck.micron-dark.html". */
+export function variantFileName(theme: string): string {
+  return `deck.${slugify(theme)}.html`;
+}
+
+/** The deck file to (re)generate for a theme: reuse the existing variant's file
+ *  (so legacy "deck.html" stays put), else a fresh per-theme name. */
+export function deckFileForTheme(record: ProjectRecord, theme: string): string {
+  return record.decks.find((d) => d.theme === theme)?.file ?? variantFileName(theme);
+}
+
+/** Add or refresh the variant for a theme (keyed by slugify(theme)) and make it
+ *  active. Pure — returns a new record. */
+export function upsertVariant(
+  record: ProjectRecord,
+  v: { theme: string; file: string; wireframeRev: number; createdAt: string },
+): ProjectRecord {
+  const id = slugify(v.theme);
+  const variant: DeckVariant = { id, theme: v.theme, file: v.file, fromWireframeRev: v.wireframeRev, createdAt: v.createdAt };
+  const decks = record.decks.some((d) => d.id === id)
+    ? record.decks.map((d) => (d.id === id ? variant : d))
+    : [...record.decks, variant];
+  return { ...record, decks, activeDeckId: id };
+}
+
+/** The currently active deck variant, or null. */
+export function activeDeck(record: ProjectRecord): DeckVariant | null {
+  return record.decks.find((d) => d.id === record.activeDeckId) ?? null;
+}
+
 /**
  * Gate 3 transition (Slice 5 / issue #12, AC1). The user picks a Theme from the
  * `html-slides` catalogue; the selection **persists** on the Project record and
@@ -267,6 +330,26 @@ export async function setTheme(
   };
   if (formats && formats.length) patch.formats = formats;
   return patchProject(id, patch, env);
+}
+
+/** After the agent writes a deck for `theme`, record the variant (refresh in
+ *  place, set active) and write a manifest sidecar so the artifact resolver
+ *  reports the right kind+theme. Returns the updated record. */
+export async function registerGeneratedDeck(
+  id: string,
+  theme: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<ProjectRecord | null> {
+  const record = await readProject(id, env);
+  if (!record) return null;
+  const file = deckFileForTheme(record, theme);
+  const next = upsertVariant(record, { theme, file, wireframeRev: record.wireframeRev, createdAt: record.updatedAt });
+  const { writeFile: wf } = await import('node:fs/promises');
+  const sidecar = { kind: 'deck', format: 'html', entry: file, theme };
+  try {
+    await wf(join(projectDir(id, env), `${file}.manifest.json`), JSON.stringify(sidecar, null, 2));
+  } catch { /* sidecar is best-effort; the resolver infers kind from the name otherwise */ }
+  return patchProject(id, { decks: next.decks, activeDeckId: next.activeDeckId }, env);
 }
 
 /** List Projects newest-first for the Home "recent projects" surface (§14). */

@@ -13,6 +13,7 @@ import {
 import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { ApiService } from '../core/api.service';
 import type { Annotation, ArtifactManifest } from '../core/types';
+import { DECK_BRIDGE } from './deck-bridge.snippet';
 
 /**
  * The **Deck preview** canvas surface (plan §7.5, §12, issue #12 / Slice 5 +
@@ -24,9 +25,10 @@ import type { Annotation, ArtifactManifest } from '../core/types';
  * with no `allow-same-origin`, an opaque origin that can't touch the app) and
  * lets the user **page through slide by slide**.
  *
- * The Deck is loaded via `srcdoc` (fetched from the daemon) so the artifact stays
- * portable; a tiny pager script is injected before `</body>` and driven by the
- * host with `postMessage`.
+ * The Deck is loaded via `srcdoc` (fetched from the daemon). It is marked
+ * `data-embed` so the new shell hides its chrome, and a small host **bridge** is
+ * injected before `</body>` that drives the shell's `window.presentation` API
+ * using the host `postMessage` protocol (`ss-deck-pager` / `ss-deck-host`).
  *
  * Slice 12 (issue #15): the Deck reuses the **same Annotation SDK** the Wireframe
  * does (plan §10, §M8). The daemon's single SDK source is injected before
@@ -178,8 +180,9 @@ export class DeckComponent {
     // Inject the pager (Slice 5) + the Annotation SDK (Slice 12) before </body>.
     // Bypass HTML sanitization (would strip the injected <script>s); safe under the
     // cross-origin sandbox (allow-scripts, no allow-same-origin — §10).
-    const withPager = this.injectPager(html);
-    const withSdk = sdk ? this.injectSdk(withPager, sdk) : withPager;
+    const embedded = this.markEmbed(html);
+    const withBridge = this.injectBridge(embedded);
+    const withSdk = sdk ? this.injectSdk(withBridge, sdk) : withBridge;
     this.srcdoc.set(this.sanitizer.bypassSecurityTrustHtml(withSdk));
   }
 
@@ -217,32 +220,22 @@ export class DeckComponent {
     );
   }
 
-  /**
-   * Inject a tiny vanilla-JS pager before `</body>`. It finds the slide elements,
-   * shows one at a time, reports the count to the host, and responds to `goto`
-   * messages. Self-contained so the deck still renders fine opened standalone (the
-   * pager just shows slide 1). Matches the html-slides slide markers.
-   */
-  private injectPager(html: string): string {
-    const pager = `
-<script>(function(){
-  function slides(){
-    var sel = ['[data-slide]', '.slide', 'section.slide', 'body > section'];
-    for (var i=0;i<sel.length;i++){ var n=document.querySelectorAll(sel[i]); if(n.length) return [].slice.call(n); }
-    return [];
+  /** Mark the deck for the shell's embedded viewer mode (hides app bar, rail,
+   *  notes, overlays — leaving just the stage). The shell still runs and exposes
+   *  window.presentation, which the bridge drives. */
+  private markEmbed(html: string): string {
+    // Touch only the real opening <body> tag (check its own attributes), so we
+    // never trip on a literal "<body …>" that appears in comments/CSS prose.
+    return html.replace(/<body\b([^>]*)>/i, (_m: string, attrs: string) =>
+      /\bdata-embed\b/.test(attrs) ? _m : `<body${attrs} data-embed>`);
   }
-  var els = slides(), idx = 0;
-  function render(){ for (var i=0;i<els.length;i++){ els[i].style.display = (i===idx?'':'none'); } }
-  function clamp(i){ return Math.max(0, Math.min(i, els.length-1)); }
-  window.addEventListener('message', function(ev){
-    var d = ev.data || {};
-    if (d.source !== 'ss-deck-host') return;
-    if (d.type === 'goto'){ idx = clamp(d.index|0); render(); }
-  });
-  if (els.length){ render(); }
-  try { parent.postMessage({ source:'ss-deck-pager', type:'ready', total: els.length }, '*'); } catch(e){}
-})();</script>`;
-    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, `${pager}</body>`);
-    return html + pager;
+
+  /** Inject the host bridge before </body>: it reports the slide count to the host
+   *  (ss-deck-pager/ready) and navigates the shell's window.presentation on
+   *  ss-deck-host/goto — the same protocol the old pager used, so the nav bar,
+   *  slide count, and Annotation SDK surface logic are unchanged. */
+  private injectBridge(html: string): string {
+    if (/<\/body>/i.test(html)) return html.replace(/<\/body>/i, `${DECK_BRIDGE}</body>`);
+    return html + DECK_BRIDGE;
   }
 }
