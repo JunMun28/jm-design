@@ -23,6 +23,9 @@ import type { FilesResponse } from '../core/types';
             <span class="files__meta">{{ d.slides }} slides @if (d.stale) { · <span class="files__stale" title="The wireframe changed after this was generated">wireframe changed</span> }</span>
           </button>
         } @empty { <p class="files__empty">No decks yet</p> }
+        <button class="files__item files__add" type="button" (click)="addStyle.emit()">
+          <span class="files__name">+ Add a style</span>
+        </button>
       </div>
       <div class="files__group">
         <h3 class="files__label">Exports</h3>
@@ -44,6 +47,7 @@ import type { FilesResponse } from '../core/types';
     .files__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .files__meta { flex: 0 0 auto; font-size: 11px; color: var(--mic-faint); }
     .files__stale { color: var(--mic-accent); }
+    .files__add { color: var(--mic-accent); justify-content: flex-start; }
     .files__empty { margin: 0; font-size: 12px; color: var(--mic-faint); }
   `],
 })
@@ -55,4 +59,6 @@ export class FilesPanelComponent {
   readonly downloadHref = input.required<(entry: string) => string>();
   readonly openDeck = output<string>();    // deck variant id
   readonly openWireframe = output<void>();
+  /** S4: user asked to add a new style variant from the deck stage. */
+  readonly addStyle = output<void>();
 }

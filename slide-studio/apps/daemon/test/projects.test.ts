@@ -306,3 +306,21 @@ test('S2: a legacy themed deck-stage record migrates its deck.html into one vari
     assert.equal(r?.theme, 'micron-dark');
   });
 });
+
+// --- S4: returnable wireframe (re-approval bumps wireframeRev) --------------
+
+test('S4: re-approving the wireframe (gate2 already approved) bumps wireframeRev', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await setGate1(p.id, 'approve', env);
+    const first = await setGate2(p.id, 'approve', env);          // first approval
+    assert.equal(first?.gate2, 'approved');
+    assert.equal(first?.wireframeRev, 0);                        // no bump on first approve
+    await setGate2(p.id, 'request-changes', env);                // go back to wireframe
+    const second = await setGate2(p.id, 'approve', env);         // re-approve
+    assert.equal(second?.wireframeRev, 1);                       // bumped
+    assert.equal(second?.stage, 'theme');
+    const third = await setGate2(p.id, 'approve', env);          // re-approve again (still approved)
+    assert.equal(third?.wireframeRev, 2);
+  });
+});

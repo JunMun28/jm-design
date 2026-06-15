@@ -268,10 +268,22 @@ export async function setGate2(
   action: 'approve' | 'request-changes',
   env: NodeJS.ProcessEnv = process.env,
 ): Promise<ProjectRecord | null> {
+  const rec = await readProject(id, env);
+  if (!rec) return null;
+  // A gate2 transition out of an already-`approved` wireframe means the user went
+  // back to refine it (request-changes) or re-confirmed an already-approved
+  // wireframe (approve) — either way the wireframe revision advances, marking any
+  // existing deck variants stale. The very first approval (gate2 was 'pending')
+  // does not bump.
+  const bump = rec.gate2 === 'approved';
   if (action === 'approve') {
-    return patchProject(id, { gate2: 'approved', stage: 'theme' }, env);
+    const patch: Partial<ProjectRecord> = { gate2: 'approved', stage: 'theme' };
+    if (bump) patch.wireframeRev = rec.wireframeRev + 1;
+    return patchProject(id, patch, env);
   }
-  return patchProject(id, { gate2: 'pending', stage: 'wireframe' }, env);
+  const patch: Partial<ProjectRecord> = { gate2: 'pending', stage: 'wireframe' };
+  if (bump) patch.wireframeRev = rec.wireframeRev + 1;
+  return patchProject(id, patch, env);
 }
 
 /** Deck file name for a theme, e.g. "deck.micron-dark.html". */

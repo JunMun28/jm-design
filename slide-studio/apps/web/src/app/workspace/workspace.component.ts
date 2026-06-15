@@ -77,7 +77,8 @@ const STEPS: { id: FlowStage; label: string }[] = [
           [activeKind]="artifact()?.kind ?? null"
           [downloadHref]="exportHref"
           (openDeck)="onOpenDeck($event)"
-          (openWireframe)="onOpenWireframe()" />
+          (openWireframe)="onOpenWireframe()"
+          (addStyle)="onAddStyle()" />
 
         <!-- Slice 5 (issue #12): the Deck canvas surface is selected when the
              Artifact Manifest's kind === 'deck' — the final, themed, high-fi
@@ -96,6 +97,8 @@ const STEPS: { id: FlowStage; label: string }[] = [
                      regenerate the affected slides. -->
                 <span class="wfhead__hint">Click an element or select text to annotate the deck, then regenerate the affected slides — or keep chatting to refine.</span>
               }
+              <!-- S4: go back from the deck to refine the (theme-less) wireframe. -->
+              <button class="mic-btn wfhead__back" type="button" (click)="refineWireframe()">↩ Refine wireframe</button>
             </div>
             <ss-deck [manifest]="dk" [projectId]="project()!.id" (annotate)="onDeckAnnotate($event)" />
 
@@ -149,6 +152,11 @@ const STEPS: { id: FlowStage; label: string }[] = [
              (stage === 'theme') until a theme is picked and a Deck lands. -->
         @else if (showThemePicker()) {
           <section class="canvas canvas--theme" aria-label="Theme picker">
+            <!-- S4: from the theme stage, the user can still go back to refine the
+                 (theme-less) wireframe before committing to a style. -->
+            <div class="wfhead wfhead--theme">
+              <button class="mic-btn wfhead__back" type="button" (click)="refineWireframe()">↩ Refine wireframe</button>
+            </div>
             <ss-themes
               [projectId]="project()!.id"
               [chosen]="project()!.theme"
@@ -312,6 +320,8 @@ const STEPS: { id: FlowStage; label: string }[] = [
       .export__dl { text-decoration: none; padding: 4px 14px; }
       .wfhead { flex: 0 0 auto; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
       .wfhead__hint { font-size: 12px; color: var(--mic-faint); }
+      .wfhead__back { margin-left: auto; align-self: center; font-size: 13px; padding: 4px 12px; }
+      .wfhead--theme { justify-content: flex-end; margin-bottom: 16px; }
       .gate--wf, .gate--deck { flex: 0 0 auto; margin-top: 12px; }
       .canvas__h { font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--mic-muted); margin: 0 0 16px; }
       .canvas__hint { color: var(--mic-faint); margin-top: 20px; max-width: 52ch; line-height: 1.5; }
@@ -383,6 +393,10 @@ export class WorkspaceComponent {
    *  Theme picker (which also shows on the deck stage with no deck) yields to it. */
   readonly viewWireframe = signal(false);
 
+  /** S4: user asked to add a style — re-open the theme picker even though a deck
+   *  exists, so picking a new theme generates a fresh non-destructive variant. */
+  readonly addingStyle = signal(false);
+
   /** S3: the files-panel grouping (wireframe / deck variants / exports). Loaded on
    *  init and refreshed after a generate (socket `artifact`) and after a selection. */
   readonly files = signal<FilesResponse | null>(null);
@@ -431,7 +445,9 @@ export class WorkspaceComponent {
    * It stays available after a theme is picked so the user can regenerate.
    */
   readonly showThemePicker = computed(
-    () => (this.stage() === 'theme' || this.stage() === 'deck') && !this.deck() && !this.viewWireframe(),
+    () =>
+      this.addingStyle() ||
+      ((this.stage() === 'theme' || this.stage() === 'deck') && !this.deck() && !this.viewWireframe()),
   );
 
   /**
@@ -683,6 +699,26 @@ export class WorkspaceComponent {
     }
   }
 
+  /** S4: go back from the deck (or theme) to refine the wireframe. Loops the flow
+   *  to the wireframe stage via Gate 2 request-changes; re-approving there bumps
+   *  wireframeRev (marking current variants stale). */
+  async refineWireframe(): Promise<void> {
+    const id = this.project()?.id;
+    if (!id) return;
+    const updated = await this.api.setGate2(id, 'request-changes');
+    if (updated) {
+      this.project.set(updated);
+      this.stage.set(updated.stage);
+      this.gate2.set(updated.gate2);
+    }
+    await this.refreshFiles();
+    // Show the wireframe canvas: the template checks @if (deck()) before the
+    // wireframe branch, so clear the deck by setting the wireframe manifest.
+    const wf = this.files()?.wireframe;
+    this.viewWireframe.set(true);
+    this.artifact.set(wf ? { kind: 'wireframe', format: 'html', entry: wf.entry, slides: wf.slides, theme: null } : null);
+  }
+
   /**
    * Gate 3 (Slice 5 / issue #12, AC1+AC2): the user picked a Theme. Persist the
    * selection (advances Theme → Deck), then kick off the themed Deck generation in
@@ -694,6 +730,9 @@ export class WorkspaceComponent {
   async onThemePicked(picked: { theme: string; formats: OutputFormat[] }): Promise<void> {
     const id = this.project()?.id;
     if (!id) return;
+    // S4: a theme was chosen — close the add-a-style picker so generation can surface
+    // the deck again once the new variant lands.
+    this.addingStyle.set(false);
     this.verifyState.set(null);
     this.pptxState.set(null);
     this.exports.set([]);
@@ -752,6 +791,18 @@ export class WorkspaceComponent {
     const m = await this.api.getArtifact(id);
     if (m) this.artifact.set(m);
     await this.refreshFiles();
+  }
+
+  /**
+   * S4: user asked to add a style — re-open the theme picker even though a deck
+   * exists, so picking a new theme generates a fresh non-destructive variant.
+   */
+  onAddStyle(): void {
+    this.viewWireframe.set(false);
+    this.addingStyle.set(true);
+    // Clear the deck artifact so deck() becomes null and showThemePicker()'s branch
+    // is reached (the template checks @if (deck()) before @else if (showThemePicker())).
+    this.artifact.set(null);
   }
 
   /**
