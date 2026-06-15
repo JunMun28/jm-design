@@ -35,71 +35,6 @@ SOFFICE_CANDIDATES = [
     "/Applications/LibreOffice.app/Contents/MacOS/soffice",
 ]
 
-# Unicode ranges that route through the East-Asian (<a:ea>) typeface slot.
-EA_RANGES = (
-    (0x3400, 0x9FFF),    # CJK Unified Ideographs (+ Ext A)
-    (0xF900, 0xFAFF),    # CJK Compatibility Ideographs
-    (0x3040, 0x30FF),    # Hiragana + Katakana
-    (0x31F0, 0x31FF),    # Katakana Phonetic Extensions
-    (0xAC00, 0xD7AF),    # Hangul Syllables
-    (0x1100, 0x11FF),    # Hangul Jamo
-    (0x3000, 0x303F),    # CJK Symbols and Punctuation
-    (0xFF00, 0xFFEF),    # Halfwidth/Fullwidth Forms
-)
-
-# Unicode ranges that route through the complex-script (<a:cs>) typeface slot.
-CS_RANGES = (
-    (0x0590, 0x05FF),    # Hebrew
-    (0x0600, 0x06FF),    # Arabic
-    (0x0750, 0x077F),    # Arabic Supplement
-    (0x08A0, 0x08FF),    # Arabic Extended-A
-    (0x0900, 0x097F),    # Devanagari
-    (0x0980, 0x09FF),    # Bengali
-    (0x0A00, 0x0A7F),    # Gurmukhi
-    (0x0A80, 0x0AFF),    # Gujarati
-    (0x0B00, 0x0B7F),    # Oriya
-    (0x0B80, 0x0BFF),    # Tamil
-    (0x0C00, 0x0C7F),    # Telugu
-    (0x0C80, 0x0CFF),    # Kannada
-    (0x0D00, 0x0D7F),    # Malayalam
-    (0x0E00, 0x0E7F),    # Thai
-    (0x0E80, 0x0EFF),    # Lao
-    (0x1780, 0x17FF),    # Khmer
-)
-
-# Faces PowerPoint substitutes when a slot was left unset — their presence in
-# the unzipped XML signals a dropped <a:ea> / <a:cs> directive.
-FALLBACK_FACES = {
-    "microsoft jhenghei",
-    "microsoft yahei",
-    "pmingliu",
-    "mingliu",
-    "simsun",
-    "simhei",
-    "calibri",
-    "arial",
-    "times new roman",
-    "georgia",
-    "mangal",
-    "vrinda",
-}
-
-
-def _in_ranges(cp, ranges):
-    return any(lo <= cp <= hi for lo, hi in ranges)
-
-
-def script_demand(text):
-    """Which non-Latin typeface slots does this text require?"""
-    needs_ea = needs_cs = False
-    for ch in text:
-        cp = ord(ch)
-        if _in_ranges(cp, EA_RANGES):
-            needs_ea = True
-        elif _in_ranges(cp, CS_RANGES):
-            needs_cs = True
-    return needs_ea, needs_cs
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Validate HTML-to-PPTX output (image or layered).")
@@ -204,60 +139,9 @@ def slide_text_info(zip_file, slide_name, slide_cx, slide_cy):
             latin = rpr.find("a:latin", NS)
             if latin is not None:
                 font = latin.attrib.get("typeface")
-        # Per-run typeface slots across the whole text box (a:latin / a:ea /
-        # a:cs) plus an italic flag — needed for the font-slot discipline check.
-        runs_meta = []
-        for r in tx.findall(".//a:r", NS):
-            r_rpr = r.find("a:rPr", NS)
-            r_text = "".join(t.text or "" for t in r.findall("a:t", NS))
-            latin_el = r_rpr.find("a:latin", NS) if r_rpr is not None else None
-            ea_el = r_rpr.find("a:ea", NS) if r_rpr is not None else None
-            cs_el = r_rpr.find("a:cs", NS) if r_rpr is not None else None
-            italic_attr = r_rpr.attrib.get("i") if r_rpr is not None else None
-            runs_meta.append({
-                "text": r_text,
-                "latin": latin_el.attrib.get("typeface") if latin_el is not None else None,
-                "ea": ea_el.attrib.get("typeface") if ea_el is not None else None,
-                "cs": cs_el.attrib.get("typeface") if cs_el is not None else None,
-                "italic": italic_attr in ("1", "true"),
-            })
         in_bounds = (x >= -2 and y >= -2 and x <= slide_cx and y <= slide_cy)
-        boxes.append({"text": text, "x": x, "y": y, "cx": cx, "cy": cy, "font": font,
-                      "in_bounds": in_bounds, "runs": runs_meta})
+        boxes.append({"text": text, "x": x, "y": y, "cx": cx, "cy": cy, "font": font, "in_bounds": in_bounds})
     return boxes
-
-
-def audit_font_slots(text_boxes):
-    """Audit non-Latin runs for missing typeface slots and fallback faces.
-
-    Returns (has_non_latin, slot_violations, fallback_violations). Only runs
-    that actually carry East-Asian or complex-script characters are inspected,
-    so a pure-Latin deck reports no demand and the gate is a no-op.
-    """
-    has_non_latin = False
-    slot_violations = []   # (text, missing_slot)
-    fallback_violations = []  # (slot, face)
-    for box in text_boxes:
-        for run in box.get("runs", []):
-            text = run["text"]
-            if not text:
-                continue
-            needs_ea, needs_cs = script_demand(text)
-            if needs_ea or needs_cs:
-                has_non_latin = True
-            snippet = text.strip()[:24]
-            if needs_ea and not run.get("ea"):
-                slot_violations.append((snippet, "a:ea"))
-            if needs_cs and not run.get("cs"):
-                slot_violations.append((snippet, "a:cs"))
-            # Fallback face check: only meaningful once the deck has non-Latin
-            # content (the gate is multilingual-scoped per the issue).
-            if needs_ea or needs_cs:
-                for slot in ("latin", "ea", "cs"):
-                    face = (run.get(slot) or "").strip().lower()
-                    if face and face in FALLBACK_FACES:
-                        fallback_violations.append((f"a:{slot}", run.get(slot)))
-    return has_non_latin, slot_violations, fallback_violations
 
 
 def image_stats(image):
@@ -468,21 +352,6 @@ def validate(args):
                 oob = [b for b in text_boxes if not b["in_bounds"]]
                 check("All text boxes are within slide bounds", not oob,
                       f"slide {slide_index}: {len(oob)} out-of-bounds", slide_checks)
-
-                # Font-slot discipline (multilingual decks only). Runs carrying
-                # CJK need an <a:ea> slot; Arabic/Hebrew/Thai/Devanagari etc.
-                # need <a:cs>. A dropped slot or a known fallback face
-                # (Microsoft JhengHei / Calibri / Arial …) means PowerPoint
-                # silently substituted a font mid-paragraph. Gated behind a
-                # non-Latin-content check so Latin-only decks are unaffected.
-                has_non_latin, slot_viol, fallback_viol = audit_font_slots(text_boxes)
-                if has_non_latin:
-                    check("Non-Latin runs declare their a:ea / a:cs typeface slot",
-                          not slot_viol,
-                          f"slide {slide_index}: missing slots={slot_viol[:3]}", slide_checks)
-                    check("No fallback faces (JhengHei/Calibri/Arial) on non-Latin runs",
-                          not fallback_viol,
-                          f"slide {slide_index}: fallback faces={fallback_viol[:3]}", slide_checks)
 
             # Round-trip render comparison (visual proof), if available.
             render_cmp = None

@@ -14,6 +14,8 @@ across the full STYLE range, each a distinct, intentional look (never a recolour
 - **Premium / professional** — restraint, hairlines, one accent, generous whitespace,
   crisp data exhibits. (Consulting, exec, investor.)
 - **Playful** — bold blocks, warm palette, big friendly type, energy — still composed.
+  (Native: theme `playful` + `B.solidKicker` / `B.block` / `B.blockRow`; saturated
+  coral/teal/violet blocks with white AA text. See `templates/example-playful.js`.)
 - **Hand-drawn** — sketch/marker texture, handwritten headings, doodle arrows; charming,
   not childish. (Education, explainers, YouTube.)
 
@@ -26,9 +28,16 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
 
 1. **One action title + one visual per slide.** Title is a full-sentence
    assertion (≤15 words, 2 lines), body proves it with ONE chart/diagram/icon
-   row/image. Kill bullet lists. (Minto Pyramid Principle.)
-2. **Real icons, not boxes or emoji.** Use an open icon set; render SVG→PNG and
-   `addImage`. See the pipeline below.
+   row/image/big-number exhibit. Kill bullet lists. (Minto Pyramid Principle.)
+   For metrics, the native engine has `B.stat` (hero value + label + colored
+   delta) and `B.statBand` (2–4 KPIs, hairline dividers, NO card chrome — a row
+   of bordered cards is slop). The number is the protagonist. For a series (trend
+   over time, ranking across categories) use `B.chart` — see "Charts" below.
+2. **Real icons, not boxes or emoji.** The native engine ships this: a vendored
+   Tabler set in `assets/icons/` (MIT) plus `B.loadIcons` (async — tints the SVG
+   to the accent and rasterizes to PNG), `B.icon`, and a chrome-less `B.iconRow`
+   for "3–4 pillars" slides. Use them instead of `B.node` boxes wherever a concept
+   wants a glyph. (For other engines / more icons, the SVG→PNG pipeline is below.)
 3. **Generous whitespace — leave ~20–25% of the slide empty.** Cut 30–40% of
    content before shrinking type. Empty space reads as confidence.
 4. **Enforce the type scale (floors below). Never shrink body to fit** — split
@@ -39,8 +48,12 @@ Stay effortless: the skill does the heavy lifting — minimal user input, excell
    grid, corner accent. Zero latency, no licence. (Already have glow PNGs.)
 7. **Open illustrations for hero/section slides only** (1 per ~8 slides) — unDraw,
    Humaaans, Open Doodles/Peeps (CC0). Too many = clip-art.
-8. **Image-led layouts.** Full-bleed or half-bleed image/illustration (left 50%),
-   text on the right. Asymmetry + focal hierarchy beats side-by-side boxes.
+8. **Image/visual-led split layouts.** A two-column composition beats a centered
+   title with a visual stacked under it. Western reading gravity (Gutenberg /
+   Z-pattern): narrative LEFT, the focal exhibit RIGHT — the eye reads the claim,
+   then settles on the proof. Native engine: `B.split` places the text column and
+   returns the visual-zone rect for a chart/icon/stat (`side:'left'` flips it).
+   Asymmetry + one focal element beats side-by-side boxes.
 9. **AI image generation: hero art only**, max 1/deck, no text in the image
    (misspells), slow + inconsistent. Use SVG/code for anything with labels.
 10. **Copy = concrete numbers + contrast.** Every number gets a unit and a
@@ -77,6 +90,43 @@ slide.addImage({ data, x: 0.3, y: 0.3, w: 0.5, h: 0.5 }); // fresh options each 
 ```
 Licences: Tabler/Phosphor = MIT; unDraw = free (no redistribution); Humaaans /
 Open Doodles / Open Peeps = CC0. Brand logos: Simple Icons.
+
+## Charts (Knaflic declutter) — `B.chart` in the native engine
+
+A real, editable chart beats a box of bullets and a faked-with-shapes "chart" both.
+The engine's `B.chart(s, type, series, opts)` emits a native PptxGenJS chart with the
+clutter already removed, so good is the default:
+
+- **No chart title** — the slide's action title already carries the message.
+- **No gridlines, no chart border** — pure noise; they raise cognitive load.
+- **Value axis hidden; numbers labeled directly on the data** — the reader's eye
+  goes to the mark, not back to an axis.
+- **One highlight colour** — the series/bar that matters is the accent; the rest are
+  muted, so attention lands on the point. (`opts.highlight` = the index to accent.)
+- **Types:** `'col'` vertical (change over a few periods), `'bar'` horizontal (ranking
+  many categories — labels read left-to-right), `'line'` (trend over many periods).
+
+Rule of thumb: ≤ ~5 categories and a "which is biggest / where did it jump" message →
+`col` with the key bar highlighted. Many ranked items → `bar`. A continuous trend →
+`line`. Never use pie/3-D/area for a serious deck. (Knaflic, *Storytelling with Data*,
+ch. 3–4: declutter, then draw the eye with one deliberate colour.)
+
+**Comparisons / decision matrix.** "Which option" → `B.compareTable` (options across,
+4–8 criteria down, hairline rules only, recommended column accented), with cells as
+short strings, `✓`/`—`, or `B.harvey` balls (0–4, the McKinsey/BCG "how good"
+ideogram). Keep it honest — the pick need not win every row. A row of bordered cards
+with bullets is the slop tell, never a comparison. (Zelazny; IBCS; Big-Three convention.)
+
+**Plans / roadmaps.** "Phases over time" → `B.timeline` (one horizontal axis, circular
+markers, date + phase + one line beneath; `current` accents progress to date). One axis
+beats a row of phase cards. Keep it to 3–6 nodes, one short line each. (SlideModel /
+Slideworks: single axis, circular markers, restraint, let visuals carry it.)
+
+**Positioning / prioritization.** "Where do these sit" → `B.quadrant` (2×2: hairline
+cross axes, bubbles by {x,y}, faint corner labels). Encode "how good" with ONE accent
+at graded opacity — sweet-spot quadrant strongest, good ones fainter, worst none — so
+the eye averts to the darkest cell (accessible, not a rainbow). Impact-Y, Effort-X.
+(BiteSize / LaunchNotes; grade one colour, never four.)
 
 ## Ready palettes (60-30-10; all text pairs pass WCAG AA)
 

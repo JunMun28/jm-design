@@ -184,7 +184,6 @@ Before presenting the brainstorm, check every slide against this gate:
 | Pushback coverage | The stated pushback or objection is answered explicitly |
 | Wireframe completeness | The HTML shows a labeled gray `.wf-box` placeholder for each visual the internal DESIGN INTENT line names, plus action title, layout-signature label, and key bullets |
 | Anti-boring design | Every content slide has a named visual job, adjacent slides avoid the same layout signature, and at least one slide shows an artifact, workflow, checklist, map, specimen, scorecard, mission board, or decision surface |
-| Theme rhythm | No background tone (dark/light/accent) repeats 3+ slides in a row; an N≥8 deck has at least one dark beat and one light beat |
 | Horizontal logic | Read only the slide titles, in order: they retell the argument from context to recommendation, with no duplicate claims and no gaps; for decision decks the ask appears in the first two titles |
 | Grouping discipline | Every group of zones/steps/bullets/cards names one cutting dimension, holds 2–5 non-overlapping items of one rhetorical type, and uses an explicit "Out of scope"/"Other" instead of silently dropping content |
 

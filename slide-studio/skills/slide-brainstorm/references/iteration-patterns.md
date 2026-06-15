@@ -57,11 +57,8 @@ Cards-on-cards is the most common visual failure. The fix is layout variety, not
 4. **Swap cards for**: manuscript rows · vertical hairline splits · borderless
    quote grids · stat-row · checklist gate · mission board · decision cockpit ·
    operating loop · journey map · map surface · contrast wall.
-5. **Variety map**: list every slide's layout signature AND background tone
-   (dark / light / accent) in a table. No two adjacent slides should share a
-   layout signature; apply the **Theme Rhythm** lint —
-   no tone repeats 3+ slides in a row, and an N≥8 deck has at least one dark
-   beat and one light beat (see `strong-slide-design-checklist.md`).
+5. **Variety map**: list every slide's layout signature in a table. No two
+   adjacent slides should share one.
 6. **One card slide max**: usually the use-cases slide if it really needs
    product tiles. Everything else: hairlines, whitespace, artifacts, maps, or
    decision surfaces.
@@ -123,10 +120,7 @@ Then use the researched facts in the slide copy. Quote sparingly — paraphrase 
 
 ## "More visual variety"
 
-Open the variety map. Find adjacent slides sharing a signature. Swap one of
-them. Then run the Theme Rhythm lint over the tone column: no background tone
-may repeat 3+ slides in a row, and an N≥8 deck needs at least one dark beat and
-one light beat. Re-tone or insert a contrasting interlude where it fails.
+Open the variety map. Find adjacent slides sharing a signature. Swap one of them.
 
 Concrete moves:
 

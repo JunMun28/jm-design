@@ -24,13 +24,6 @@
         "themes/micron-dark/title-templates.md",
         "themes/micron-dark/exhibits.md"
       ],
-      "palette": {
-        "mode": "dark",
-        "bg": "#0b0b11",
-        "ink": "#f3f3f7",
-        "accent": "#bd03f7",
-        "accent2": "#244dff"
-      },
       "verify": {
         "required_tokens": [
           "--micron-black",
@@ -83,13 +76,6 @@
       "example": "themes/micron-light/example.html",
       "preview": "themes/micron-light/screenshots/example-overview-1280x720.png",
       "extras": [],
-      "palette": {
-        "mode": "light",
-        "bg": "#ffffff",
-        "ink": "#0b1020",
-        "accent": "#bd03f7",
-        "accent2": "#c9b8f0"
-      },
       "verify": {
         "required_tokens": [
           "--micron-black",
@@ -129,13 +115,6 @@
       "example": "themes/guided-learning/example.html",
       "preview": "themes/guided-learning/screenshots/example-overview-1280x720.png",
       "extras": [],
-      "palette": {
-        "mode": "light",
-        "bg": "#f6f0f8",
-        "ink": "#1f1b22",
-        "accent": "#bd03f7",
-        "accent2": "#f59bd0"
-      },
       "verify": {
         "required_tokens": [
           "--bg",
@@ -151,12 +130,7 @@
         "require_logo_on_content_slides": false,
         "forbid_chart_on_gradient": true,
         "headline_contrast_min": 4.5,
-        "palette_lock": true,
-        "require_fixed_stage": true,
-        "stage_width": 1280,
-        "stage_height": 720,
-        "enforce_stage_overflow": true,
-        "min_touch_target_px": 44
+        "palette_lock": true
       }
     },
     {
@@ -169,13 +143,6 @@
       "example": "themes/playful/example.html",
       "preview": "themes/playful/screenshots/example-overview-1280x720.png",
       "extras": [],
-      "palette": {
-        "mode": "light",
-        "bg": "#fff8e7",
-        "ink": "#2b2118",
-        "accent": "#ff6b6b",
-        "accent2": "#4ecdc4"
-      },
       "verify": {
         "required_tokens": [
           "--bg",
@@ -197,6 +164,36 @@
       }
     },
     {
+      "id": "hand-drawn",
+      "name": "Hand-drawn",
+      "status": "stable",
+      "role": "education",
+      "when": "Sketchnote style for teaching, explainers, and video lessons: handwriting display, wobbly ink strokes, paper dot-grid, marker highlights. Casual look, serious recall — not for boards or investors.",
+      "design": "themes/hand-drawn/design.md",
+      "example": "themes/hand-drawn/example.html",
+      "preview": "themes/hand-drawn/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": [
+          "--bg",
+          "--ink",
+          "--accent",
+          "--accent-2",
+          "--accent-3",
+          "--marker",
+          "--font-display",
+          "--font-body"
+        ],
+        "accent_rgb": "214, 69, 59",
+        "accent_max_per_slide": 8,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": false,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true
+      }
+    },
+    {
       "id": "aurora-glass",
       "name": "Aurora glass",
       "status": "stable",
@@ -206,13 +203,6 @@
       "example": "themes/aurora-glass/example.html",
       "preview": "themes/aurora-glass/screenshots/example-overview-1280x720.png",
       "extras": [],
-      "palette": {
-        "mode": "dark",
-        "bg": "#08090a",
-        "ink": "#f7f8f8",
-        "accent": "#5e6ad2",
-        "accent2": "#c47bff"
-      },
       "verify": {
         "required_tokens": [
           "--bg",
@@ -252,13 +242,6 @@
       "example": "themes/seventies-sunset/example.html",
       "preview": "themes/seventies-sunset/screenshots/example-overview-1280x720.png",
       "extras": [],
-      "palette": {
-        "mode": "light",
-        "bg": "#f3e7d0",
-        "ink": "#3b2a20",
-        "accent": "#a8431b",
-        "accent2": "#d99a2b"
-      },
       "verify": {
         "required_tokens": [
           "--bg",

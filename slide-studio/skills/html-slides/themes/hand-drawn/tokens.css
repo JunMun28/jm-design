@@ -1,0 +1,94 @@
+/* hand-drawn (sketchnote) tokens — frozen.
+   Distinct from `playful` (bold serif blocks): handwriting display + clean body,
+   paper dot-grid, and wobbly strokes via the #rough SVG filter — applied to
+   BORDERS/lines only, never to text (displacement would smudge glyphs). */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #FBF9F2;          /* warm paper */
+  --ink: #23282E;         /* graphite — 12.8:1 on paper */
+  --ink-muted: #585F66;   /* 5.4:1 on paper */
+  --accent: #D6453B;      /* red pen */
+  --accent-2: #2D6CDF;    /* blue pen */
+  --accent-3: #169B7A;    /* green pen */
+  --marker: #FFE15A;      /* highlighter — ink reads on it at high contrast */
+  --rule: #23282E;
+  --grid-dot: rgba(35, 40, 46, 0.06);
+
+  --font-display: "Caveat", "Comic Sans MS", cursive;
+  --font-body: "Nunito", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, Menlo, monospace;
+
+  --scale-ratio: 1.333;
+  --col-count: 12;
+  --col-gap: 24px;
+  --margin-outer: clamp(24px, 5vw, 80px);
+
+  --headline-size: clamp(2.75rem, 7vw, 5.5rem);
+  --title-size: clamp(3.25rem, 10vw, 7.5rem);
+  --body-size: clamp(1.0625rem, 1.3vw, 1.25rem);
+  --radius: 14px;
+}
+
+html, body {
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--grid-dot) 1.4px, transparent 1.4px);
+  background-size: 26px 26px;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--body-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+
+/* The wobble. Applied to a box's filtered ::before border, so the text inside
+   stays crisp. .sketch = a hand-drawn frame around any content. */
+.sketch { position: relative; }
+.sketch::before {
+  content: ""; position: absolute; inset: 0;
+  border: 2.5px solid var(--ink); border-radius: var(--radius);
+  filter: url(#rough); pointer-events: none;
+}
+
+.sticker {
+  display: inline-block; padding: 0.3rem 1rem; position: relative;
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.25rem, 1.9vw, 1.7rem); color: var(--ink);
+}
+.sticker::before {
+  content: ""; position: absolute; inset: 0;
+  border: 2.5px solid var(--ink); border-radius: 999px; filter: url(#rough);
+}
+
+/* highlighter swipe behind a word */
+.hl { position: relative; white-space: nowrap; }
+.hl::before {
+  content: ""; position: absolute; left: -0.05em; right: -0.05em; bottom: 0.05em;
+  height: 0.52em; background: var(--marker); z-index: -1;
+  filter: url(#rough); border-radius: 3px;
+}
+
+/* hand-drawn underline stroke */
+.ul { position: relative; }
+.ul::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -0.14em; height: 4px;
+  background: var(--accent); filter: url(#rough); border-radius: 4px;
+}
+
+.pen { color: var(--accent); }
+.pen-2 { color: var(--accent-2); }
+.pen-3 { color: var(--accent-3); }
+.muted { color: var(--ink-muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

@@ -94,6 +94,22 @@ Implementation details that keep it faithful:
 
 Limits to state to the user: chart values, axis labels, and any SVG/`::before`/`::after` text remain part of the background image (not editable); inline runs are placed per text node, so unusual inline mixes can drift slightly. Everything a presenter normally edits — titles, body copy, KPI numbers, card labels — is editable.
 
+## Living-deck workflow
+
+When converting a deck from the living-deck pipeline, default to `--mode layered`
+so the `.pptx` keeps editable text boxes, and name the output to match the deck
+variant — `<topic>.<theme>.pptx` beside `<topic>.<theme>.html`:
+
+```sh
+node .claude/skills/html-to-pptx/scripts/html_to_pptx.mjs \
+  ai-agents.micron-dark.html \
+  --out ai-agents.micron-dark.pptx \
+  --mode layered --validate
+```
+
+The HTML deck and the exported PPTX are edited **independently** — there is no
+sync between them. Re-export from the HTML whenever you want a fresh PPTX.
+
 ## Validation
 
 The validator opens the generated `.pptx` as an Office package and checks the real slide XML and embedded media. It reads `manifest.json["mode"]` and adapts.
@@ -165,16 +181,6 @@ Inspect the contact sheet before calling the conversion done:
 - `layered` mode: the background image has the editable text removed (no glyphs baked in where a text box also sits — otherwise you get doubled text), and rendered text boxes do not overlap each other or the element below. Watch headings that sit just above a body paragraph.
 
 For dark executive decks, be extra suspicious of black-on-black failures: a slide can look "mostly black" and still be correct, but it should have visible text, lines, imagery, or chart marks.
-
-### Report the QA pass as a severity table + root cause
-
-Do not report the visual/packaging review as prose. Use the severity-tagged
-audit table in `references/audit-table-template.md`: a
-`| Slide | Issue | Severity 🔴🟠🟡🟢 |` table, then a **Root causes** paragraph
-naming the 2–3 systemic causes ("fix the rule, not slide 5 alone") and a
-verification footer. When the same defect repeats across slides, the fix belongs
-in the build rule (the converter, the font-slot map, the cursor rail), not in
-per-slide patches — name the rule.
 
 ## Final Response
 

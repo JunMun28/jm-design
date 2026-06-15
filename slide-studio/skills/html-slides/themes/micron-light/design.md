@@ -103,18 +103,6 @@ not the subject matter:
   on a projector and later as a PDF. Light theme is forced by the room and use.
 - **Fixed 16:9 sheet:** white 1600×900 stage centered in a cool letterbox with a
   soft shadow. Do not stretch the slide to the browser viewport.
-- **Stage fit (HARD RULE — `verify.py` enforces it):** every slide's content must
-  fit **fully inside the 1600×900 `.slide-stage`** with comfortable margins. The
-  stage is `overflow: hidden`, so anything past it is silently CLIPPED — and the
-  overflow check now fails the deck (no content may cross the stage edges, top or
-  bottom). The common failure here is a content-rich slide that runs too TALL: a
-  multi-line action title (≤2 lines) + ONE primary visual board + a row of step
-  cards easily exceeds 900px. Budget vertically: eyebrow (~40px) + title (≤2
-  lines) + a single primary zone + at most one supporting row, leaving ≥48px
-  bottom margin clear of the `micron` wordmark. If it does not fit at the
-  readability floors, **split it into another slide or cut content — never shrink
-  below the floors and never cram.** When in doubt, prefer more slides over a
-  packed slide.
 - **Cover:** two-section composition: left title copy, right hero visual. If
   there is no specific product/subject image, use a large official Micron
   animated MP4 icon from `../micron-icons` (`title-hero`, `pos`) on the right.

@@ -56,19 +56,6 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "palette": {
-          "type": "object",
-          "description": "Representative colours used to render the Theme Selector's crafted preview card (no screenshot). Hex strings.",
-          "additionalProperties": false,
-          "required": ["mode", "bg", "ink", "accent"],
-          "properties": {
-            "mode": { "enum": ["light", "dark"] },
-            "bg": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-            "ink": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-            "accent": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-            "accent2": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
-          }
-        },
         "verify": { "$ref": "#/definitions/verify" }
       }
     },

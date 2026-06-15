@@ -38,51 +38,6 @@ function resolveFontFace(family) {
   return "Arial";
 }
 
-// Unicode ranges where italic must be suppressed. italic is a Latin/Cyrillic/
-// Greek feature; forcing it on CJK / Arabic / Hebrew / Devanagari / Thai etc.
-// makes PowerPoint synthesize a deformed slanted bitmap. Convey emphasis via
-// weight or accent colour on those scripts instead.
-// Source: pptx-html-fidelity-audit font-discipline.md layer 5.
-const NO_ITALIC_RANGES = [
-  [0x3400, 0x9fff], // CJK Unified Ideographs
-  [0xf900, 0xfaff], // CJK Compatibility Ideographs
-  [0x3040, 0x30ff], // Hiragana + Katakana
-  [0xac00, 0xd7af], // Hangul Syllables
-  [0x0590, 0x05ff], // Hebrew
-  [0x0600, 0x06ff], // Arabic
-  [0x0750, 0x077f], // Arabic Supplement
-  [0x0900, 0x097f], // Devanagari
-  [0x0980, 0x09ff], // Bengali
-  [0x0a00, 0x0a7f], // Gurmukhi
-  [0x0a80, 0x0aff], // Gujarati
-  [0x0b00, 0x0b7f], // Oriya
-  [0x0b80, 0x0bff], // Tamil
-  [0x0c00, 0x0c7f], // Telugu
-  [0x0c80, 0x0cff], // Kannada
-  [0x0d00, 0x0d7f], // Malayalam
-  [0x0e00, 0x0e7f], // Thai
-  [0x0e80, 0x0eff], // Lao
-  [0x1780, 0x17ff], // Khmer
-];
-
-// True when `text` contains any character from a script with no italic
-// tradition.
-function hasNoItalicScript(text) {
-  for (const ch of String(text || "")) {
-    const cp = ch.codePointAt(0);
-    for (const [lo, hi] of NO_ITALIC_RANGES) {
-      if (cp >= lo && cp <= hi) return true;
-    }
-  }
-  return false;
-}
-
-// Resolve the italic flag for a run: only honor it when the run's text belongs
-// to a script that actually has italics.
-function safeItalic(want, text) {
-  return Boolean(want) && !hasNoItalicScript(text);
-}
-
 function usage() {
   return `
 Usage:
@@ -573,10 +528,7 @@ async function writePptxLayered(args, captures, outPath) {
         h: Math.max(0.05, run.h * inPerPxY),
         fontSize,
         bold: run.weight >= 600,
-        // Suppress synthesized italic on scripts with no italic tradition
-        // (CJK / Arabic / Hebrew / Devanagari / Thai …). See font-discipline
-        // layer 5: a fake slant on those scripts renders as a deformed bitmap.
-        italic: safeItalic(run.italic, run.text),
+        italic: Boolean(run.italic),
         color: run.color || "FFFFFF",
         align: run.align === "justify" ? "left" : run.align,
         valign: "top",
@@ -701,17 +653,8 @@ async function main() {
   }
 }
 
-// Pure helpers exported for unit tests; importing the module no longer runs the
-// CLI (the main() guard below handles that).
-export { resolveFontFace, hasNoItalicScript, safeItalic, NO_ITALIC_RANGES };
-
-// Only drive the CLI when invoked directly (not when imported by a test).
-const invokedDirectly =
-  process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url;
-if (invokedDirectly) {
-  main().catch((error) => {
-    console.error(error.message);
-    console.error(usage());
-    process.exit(1);
-  });
-}
+main().catch((error) => {
+  console.error(error.message);
+  console.error(usage());
+  process.exit(1);
+});

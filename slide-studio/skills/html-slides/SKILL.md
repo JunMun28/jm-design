@@ -18,8 +18,15 @@ description: Use when creating or editing single-file HTML slide decks across mu
 - When the user asks for a better/impressive/non-boring layout, attaches a slide image as style reference, or the deck is a diagram-heavy technical explainer, consult the sibling `../slide-brainstorm/references/layout-blueprint.md` before writing HTML. Treat its output as the slide layout blueprint.
 - Content slides should be custom to the topic. Do not reuse fixed demo layouts by default.
 - If the user asks for `.pptx`, PowerPoint, or editable Office output for a **new** deck, build the gated HTML deck here first, then convert with the sibling `html-to-pptx` skill (`--mode layered` keeps titles/body editable; `--mode image` for pure fidelity). This keeps every gate — verify.py content lints and the final-deck review — on the PPTX path. Use the `pptx` skill directly only to edit an existing `.pptx`, work inside a given template, or when the user explicitly asks for native PPTX authoring.
+- For this living-deck workflow, export PPTX with `--mode layered` so the handout
+  `.pptx` keeps editable text boxes; name it `<topic>.<theme>.pptx`. The HTML deck
+  and the PPTX are edited independently — there is no sync between them.
 - Ask only when theme/template choice changes the outcome materially.
 - Confirm HTML only vs HTML plus PDF when delivery is unclear.
+- Every built deck is **directly editable in the browser** (the shell's living
+  editor: `Edit` in the app bar / `E`). Edit text, reorder/duplicate/delete slides,
+  and `Save` back to the same file. Content/structure changes that should apply to
+  ALL styles belong in the wireframe; per-style polish is done on the deck.
 
 ## Style Selection
 
@@ -109,7 +116,8 @@ Read only what applies:
 | Micron light managerial training precedent | `docs/brainstorms/2026-05-15-github-copilot-for-everyone-deck.html` plus `themes/micron-light/design.md` |
 | Micron iconography | Use sibling skill `../micron-icons/SKILL.md`; call `../micron-icons/bin/find-icon.py` for paths/snippets |
 | Tokens (always paste, in order) | `references/tokens/micron-tokens.css`, `references/tokens/viewport-base.css`, `references/tokens/layout-kit.css` |
-| HTML skeleton + controller | `references/runtime/html-template.md` |
+| Deck DOM contract + shell markers | `references/runtime/html-template.md` |
+| Universal shell (inlined, do not hand-write) | `assets/shell.css`, `assets/shell.js` via `scripts/build-deck.py` |
 | Fixed 16:9 stage (opt-in; micron-light mandates it) | `references/runtime/fixed-stage.md` |
 | Chart runtime choice | `references/runtime/svg-charts.md` |
 | Animation patterns | `references/runtime/animation-patterns.md` |
@@ -123,27 +131,24 @@ Read only what applies:
 | PPTX output (new deck) | Build the gated HTML deck, then sibling skill `../html-to-pptx/SKILL.md` (`--mode layered` = editable) |
 | PPTX editing (existing file/template) | Project skill `pptx` |
 
-For a blank deck, start with `scripts/scaffold-deck.py --theme <id>` or adapt `references/runtime/html-template.md`. The scaffold supports every stable theme listed in `themes/themes.json`.
+For a blank deck, copy `themes/<id>/example.html` (a migrated Slide Player deck) and replace its slides + notes, then re-inline with `scripts/build-deck.py reshell <deck>.html`. See `references/runtime/html-template.md` for the deck DOM contract and the `<!-- SHELL:CSS/JS -->` markers.
 
 ## Non-Negotiables
 
 Universal across every theme. Theme-specific rules (palette, accent, gradient, chart surface, typography, logo placement, sentence case, etc.) live in `themes/<id>/design.md`.
 
-- One no-build `.html`; inline CSS/JS by default.
-- Paste the chosen theme's tokens first, in the order the theme's `design.md` specifies. Never redefine `:root` color or scale tokens in the deck. (Micron themes paste `references/tokens/micron-tokens.css` → `viewport-base.css` → `layout-kit.css`; non-Micron themes paste `themes/<id>/tokens.css` → `references/tokens/non-micron-contract.css` → `viewport-base.css` → `layout-kit.css`.)
+- One no-build `.html`; everything inline. CSS/JS chrome comes from the shell (inlined at the markers); the theme adds only its own `<style id="theme-tokens">` **after** the `<!-- /SHELL:CSS -->` marker so theme tokens override the shell's zero-specificity defaults.
+- In that `<style id="theme-tokens">`, map the shell chrome tokens to the theme palette (`--bg --ink --muted --faint --accent --panel --line --line-strong`) so the rail/app bar/notes read native, then add the theme's content CSS. Fixed-canvas themes also set `data-stage="fixed"` on `.deck` and `--stage-w/--stage-h` (e.g. Micron `1600px/900px`); the shell scales the canvas. Use **bare element selectors** for content typography (`h1`, `p`, `.eyebrow`), never `.slide p` — a `.slide`-scoped rule wrongly beats your own theme class rules.
 - Use approved CDN runtimes only when the selected reference explicitly calls for them, such as React Flow for complex diagrams, ECharts for non-trivial charts, or Three.js for shader/canvas title systems. Pin versions and include SRI hashes where the CDN supports them.
 - For charts, use a charting library such as ECharts when the visual has axes, thresholds, annotations, multi-series data, tooltips, resizing concerns, or dashboard-like complexity. Inline SVG is only for tiny static primitives: one sparkline, one bar strip, one gauge, or decorative mini-chart.
-- One `<section class="slide">` per slide.
+- One `<section class="slide">` per slide, wrapped in `<main class="deck" data-deck-title="…">`.
 - Every generated HTML deck starts with a dedicated title slide. This applies even when the user asks for "a slide"; make the requested content slide 2 unless they explicitly ask for a standalone content slide only.
-- Vertical scroll-snap is main flow.
-- Hide browser scrollbars for presentation mode; keep scroll-snap navigation functional.
-- `window.presentation = new SlidePresentation()`.
-- Keyboard, wheel, touch/swipe, nav dots, progress bar.
-- If a theme shows right-edge nav dots, they should read as a tight progress rail: compact vertical stack, no large 44px visual slots. Use about `32px` wide by `18px` high button lanes with a 6-8px centered dot, or a similarly close visual rhythm. Theme rules may hide the dots and surface progress elsewhere, such as `micron-dark` using a top-right hover/focus progress chip beside `Present`.
-- Top-right hover hotspot for presentation mode: `.presentation-hotspot` contains a hidden-until-hover/focus `.present-toggle` pill with play icon + `Present`, requesting fullscreen on click and with `P`.
-- ESC opens clickable overview thumbnails.
+- **The deck is a Slide Player, not a scroll page** (see [ADR 0006](docs/adr/0006-slide-player-replaces-scroll-snap.md)). One slide shows at a time; navigation is arrow keys / click a rail thumbnail. **No vertical scroll-snap, no right-edge nav dots, no ESC overview grid** — those are removed. The universal shell provides the left thumbnail rail, app bar, present mode, grid overview, help (`?`), jump-to-slide, progress bar, and `window.presentation`. Do not author any of that chrome.
+- **The shell is inlined, never hand-written** (see [ADR 0005](docs/adr/0005-inlined-deck-shell-with-markers.md)). A deck carries `<!-- SHELL:CSS -->` / `<!-- SHELL:JS -->` marker pairs; `scripts/build-deck.py reshell <deck>` inlines the canonical `assets/shell.{css,js}` between them. The agent authors only theme tokens, slide content, and per-slide `<aside class="speaker-notes">`. `verify.py` fails any deck whose inlined shell drifted.
+- Present mode (`P` or the Present button) is a single-window fullscreen state; the rail/app bar/notes hide. There is no second presenter window.
+- Speaker notes: add one `<aside class="speaker-notes">…</aside>` per content slide. They render in the player's notes panel and hide when presenting. `verify.py` warns (not fails) when a content slide lacks notes.
 - No slide-internal scrolling; split overflow into another slide.
-- Fixed-stage decks must expose a real 16:9 slide canvas. Paint the centered stage, not the whole browser viewport; non-16:9 browser windows should show neutral letterbox space outside the slide.
+- The shell renders every slide on a centered 16:9 stage with neutral letterbox space around it; fixed-canvas themes (`data-stage="fixed"`) are scaled to fit. Author slide content for that stage; do not paint the whole viewport.
 - Build for presentation-room readability. On a 1600x900 / 1920x1080-equivalent stage, body text must be at least 24px, table/caption/label text at least 20px, and titles at least 60px. If content only fits by shrinking below those floors, split it into another slide.
 - One message and one visual protagonist per slide.
 - **Action titles.** Every content-slide headline is a full-sentence assertion stating the takeaway — a claim someone could dispute, with a verb, never a topic label ("Q3 results") and never a sentence about the slide or template itself. If the slide shows data, the headline carries the key number. Target ≤12 words / 2 lines. Covers and section dividers (`data-slide-kind="section"`) are exempt. `verify.py` lints this and prints the full title storyline every run; read the titles in order — they must retell the argument (the skim test).
@@ -153,8 +158,8 @@ Universal across every theme. Theme-specific rules (palette, accent, gradient, c
   spreadsheet/file mock, slide thumbnail, chart/data summary, or document
   excerpt. If the brainstorm names examples such as spreadsheets, slides, or
   data analysis, those examples must become visible artifacts.
-- Preserve the canonical runtime from `references/runtime/html-template.md` even when adapting theme-specific visuals.
-- Verify before final with `scripts/verify.py <deck>.html --theme <id> --check-overview --fail-on-warnings`. `--theme` is required (the verifier errors without it) so per-theme rules from `themes/themes.json` (required tokens, accent overuse, chart-surface, headline contrast, logo) and universal lints, including readable font-size floors, actually run. Use `--skip-brand` only to deliberately run universal-only.
+- The runtime is the inlined shell; never re-implement it. After authoring/editing a deck, run `python3 scripts/build-deck.py reshell <deck>.html` to (re)inline the canonical shell, then verify.
+- Verify before final with `scripts/verify.py <deck>.html --theme <id> --require-shell --check-overview --fail-on-warnings`. `--require-shell` enforces the shell markers + freshness (shell drift fails). `--theme` is required (the verifier errors without it) so per-theme rules from `themes/themes.json` (required tokens, accent overuse, chart-surface, headline contrast, logo) and universal lints, including readable font-size floors, actually run. Use `--skip-brand` only to deliberately run universal-only.
 
 ## Theme Rules
 
@@ -211,6 +216,16 @@ Rules:
      section unless the user explicitly rejects it.
 12. For decks >=5 slides, make 2 visually different showcase slides when interaction allows.
 13. Name the generated HTML file from the deck content: lowercase kebab-case from the title or core topic, such as `ai-roadmap-board-review.html`. Do this for every theme, including Micron themes. Avoid generic names like `micron-slides.html`, `slides.html`, or `deck.html` unless the user explicitly names that file.
+- For a deck generated from a wireframe, name the file `<topic>.<theme>.html`
+  (e.g. `ai-agents.micron-dark.html`) so multiple styles of the same content
+  coexist. Generating another style is non-destructive: it writes a NEW
+  variant file and never overwrites an existing one — if the target exists,
+  confirm with the user first. Use `scripts/deck-meta.py name "<topic>" <theme>`
+  to derive the filename, and stamp the deck with its origin via
+  `scripts/build-deck.py new … --source <wireframe.html> --theme <id>` (or
+  `scripts/deck-meta.py stamp <deck.html> <wireframe.html> <theme> <YYYY-MM-DD>`).
+  The stamp `<!-- SOURCE: …-brainstorm.html · THEME: … -->` lets you (and the
+  tooling) jump back to the wireframe to refine and regenerate styles.
 14. Run verification at desktop, mobile, and a non-16:9 browser viewport when fixed-stage output is used, such as `1127x1084`, to confirm the slide canvas letterboxes instead of stretching.
    After verification, inspect screenshots using the per-slide rubric in
    `references/process/verification.md` (glance test, focal point, vertical
@@ -259,7 +274,7 @@ These are hard floors for generated decks:
 | Slide titles / section heads | 60px |
 | Decorative chrome only | 12-14px |
 
-Decorative chrome means nav dots, progress, slide number, footer, tiny brand
+Decorative chrome means the rail thumbnails, progress, slide counter, footer, tiny brand
 mark, and overview UI. Anything the audience must read to understand the slide
 is not chrome. When the verifier reports small readable text, enlarge it or
 split the slide.
@@ -274,6 +289,6 @@ Report only:
 - External runtimes used, when applicable
 - Slide count
 - Confirm title slide included
-- Navigation: arrows, space, vertical scroll/swipe, nav dots, Esc overview
+- Navigation: arrows/space/swipe, left thumbnail rail, `G` grid overview, `P` present, `?` help
 - Final-deck review status (`PASS` / findings fixed / inline fallback)
 - Title changes vs the approved brainstorm, when one exists

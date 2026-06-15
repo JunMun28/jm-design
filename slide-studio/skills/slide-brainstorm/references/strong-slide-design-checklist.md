@@ -44,7 +44,6 @@ Run this checklist before showing the brainstorm:
 | Content-shape fit | The layout matches the content shape: comparison, sequence, mechanism, relationship, hierarchy, evidence, exception, product state, or decision | Re-select the layout using `presentation-design-decisioning.md` instead of decorating the current structure |
 | Visual protagonist | The first eye stop is obvious and is the thing the slide is actually about | Enlarge, isolate, or reposition the main artifact/chart/diagram/number; demote supporting labels |
 | Shape variety | No two adjacent content slides use the same layout signature | Swap one slide to a different signature from `design-vocabulary.md` |
-| Theme rhythm | No background tone (dark / light / accent) repeats 3+ slides in a row; an N≥8 deck has at least one dark beat AND one light beat | Re-tone one slide in the run, or insert a contrasting interlude; see the Theme Rhythm rule below |
 | Artifact reality | At least one slide shows the thing being discussed: prompt, output, mission card, dashboard, email, document, table, screenshot placeholder, or work artifact | Replace abstract labels with a recognizable artifact specimen |
 | Scan path | The eye can read the slide in 3-5 stops, not 12 scattered items | Group content into a path: left-to-right, top-to-bottom, hub-and-spoke, or before/after |
 | Visual encoding | Position, length, connection, grouping, contrast, order, size, annotation, or state carries the meaning | Replace decorative boxes with a visual form that makes the comparison, sequence, relationship, or mechanism visible |
@@ -144,42 +143,5 @@ Rules:
 - A persuasion deck must include a visual answer to the strongest objection.
 - The title and close may be structural, but they still need a clear visual
   signature.
-
-## Theme Rhythm (planning lint)
-
-A concrete, verifiable pacing rule. Track each slide's **background tone** —
-`dark`, `light`, or `accent` (a full-bleed accent/photo beat) — as an extra
-column in the Variety Map. Note: this is the *Micron* per-deck theme system's
-tonal vocabulary, **not** open-design's locked light/dark/hero theme classes;
-it never pins a fixed palette, it only checks the *rhythm* of whatever tones
-the chosen theme uses.
-
-Hard rules:
-
-1. **No 3-in-a-row.** No background tone may repeat for 3 or more consecutive
-   slides. A long dark run reads as a monotone slab; break it with a light or
-   accent beat.
-2. **Both beats on long decks.** A deck with **N ≥ 8 slides** must include at
-   least one `dark` slide AND at least one `light` slide, so the deck has
-   tonal contrast rather than one flat mood end to end.
-
-Fix a violation by re-toning one slide in the offending run, or inserting a
-contrasting interlude (section divider, full-bleed quote, accent stat beat).
-Do **not** solve it by recoloring every slide to alternate mechanically —
-the rhythm should follow the narrative (e.g. dark for tension, light for
-resolution), not a stripe pattern.
-
-**Optional spot-check (once a draft deck HTML exists).** Confirm the planned
-rhythm survived into the build:
-
-```bash
-# Count slides and eyeball the tone of each .slide block.
-grep -c 'class="slide' deck.html
-# List each slide's opening tag + any tone/theme class for a quick scan.
-grep -oE 'class="slide[^"]*"' deck.html
-```
-
-If three consecutive matches carry the same tone class (or an N≥8 deck shows
-only one tone), the rhythm rule was violated in the build — fix before review.
 
 Record the checklist result as a concise HTML comment for handoff when useful.
