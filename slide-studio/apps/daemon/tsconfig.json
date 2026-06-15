@@ -20,5 +20,6 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts", "bin/**/*.mjs", "test/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "comment": "chat-reducer.test.ts validates a pure web module (apps/web/.../chat-reducer.ts) here because the web app has no test runner; it imports across rootDir, so it's excluded from the daemon typecheck (it still runs via node --test; the web side typechecks chat-reducer via ng build).",
+  "exclude": ["node_modules", "dist", "test/chat-reducer.test.ts"]
 }

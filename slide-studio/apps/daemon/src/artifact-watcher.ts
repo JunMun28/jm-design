@@ -72,7 +72,12 @@ export function watchArtifacts(
   if (!entry) {
     const dir = projectDir(projectId, env);
     const watcher = chokidar.watch(dir, {
-      ignoreInitial: false,
+      // Don't replay an 'add' per existing file on watch start. On resume the
+      // client already fetches the active-aware artifact over HTTP, and the
+      // initial flood let a late wireframe frame clobber the resolved deck
+      // (last-frame-wins → a deck project could flash the theme picker). Live
+      // add/change after start still emit normally.
+      ignoreInitial: true,
       persistent: true,
       followSymlinks: false,
       depth: 2,

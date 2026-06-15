@@ -65,6 +65,9 @@ test('exportFilename prefers the Brief goal, then title, then brief (M6)', () =>
     formats: ['html', 'pptx'],
     createdAt: '',
     updatedAt: '',
+    decks: [],
+    wireframeRev: 0,
+    activeDeckId: null,
   };
   assert.equal(exportFilename(base, 'pptx'), 'q3-yield-ops-review.pptx');
   assert.equal(exportFilename(base, 'html'), 'q3-yield-ops-review.html');

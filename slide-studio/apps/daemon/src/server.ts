@@ -115,8 +115,6 @@ type AppEvent =
 const STAGED_BRAINSTORM_SKILLS = stageSkills(BRAINSTORM_SKILLS);
 // The skill bodies Slice 5 (Gate 3 — theme + generate the Deck) stages once.
 const STAGED_GENERATE_SKILLS = stageSkills(GENERATE_SKILLS);
-/** The Deck entry file the generate turn writes + the watcher surfaces (§9.4). */
-const DECK_ENTRY = 'deck.html';
 
 /** Max daemon-driven fix iterations when a generated deck fails the verify gate.
  *  The agent can't launch the visual verifier in its own sandbox, so the daemon
@@ -560,7 +558,14 @@ export async function createDaemon(
         const project = await readProject(msg.projectId);
         if (!project) return;
         ensureWatching(msg.projectId);
-        const entry = await findLatestArtifact(msg.projectId);
+        // Active-aware initial emit (mirrors GET /api/projects/:id/artifact): on the
+        // deck stage, surface the active variant — never the merely-newest file (the
+        // wireframe can be newest and would clobber the deck the client just resolved
+        // over HTTP, flashing the theme picker).
+        const active = activeDeck(project);
+        const entry = (project.stage === 'deck' && active && fileExists(join(projectDir(msg.projectId), active.file)))
+          ? active.file
+          : await findLatestArtifact(msg.projectId);
         if (entry) send({ type: 'artifact', manifest: await resolveManifest(msg.projectId, entry) });
         return;
       }

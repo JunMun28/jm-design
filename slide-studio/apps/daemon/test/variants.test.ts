@@ -4,7 +4,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
-  variantFileName, deckFileForTheme, upsertVariant, activeDeck,
+  variantFileName, deckFileForTheme, upsertVariant, activeDeck, type ProjectRecord,
   createProject, readProject, setTheme, setGate1, setGate2, registerGeneratedDeck, projectDir, setActiveDeck,
 } from '../src/projects.ts';
 
@@ -19,7 +19,7 @@ async function withTempStore<T>(fn: (env: NodeJS.ProcessEnv) => Promise<T>): Pro
   }
 }
 
-const base = () => ({
+const base = (): ProjectRecord => ({
   id: 'x', title: 'X', brief: 'b', runtimeId: null, theme: null,
   stage: 'deck' as const, recordedBrief: {}, questionnaire: null,
   questionnaireAnswered: false, gate1: 'approved' as const, gate2: 'approved' as const,
