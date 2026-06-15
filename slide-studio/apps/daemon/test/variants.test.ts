@@ -1,6 +1,23 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { variantFileName, deckFileForTheme, upsertVariant, activeDeck } from '../src/projects.ts';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import {
+  variantFileName, deckFileForTheme, upsertVariant, activeDeck,
+  createProject, readProject, setTheme, setGate1, setGate2, registerGeneratedDeck, projectDir, setActiveDeck,
+} from '../src/projects.ts';
+
+// helpers.ts does not exist — inline withTempStore here (mirrors register-deck.test.ts).
+async function withTempStore<T>(fn: (env: NodeJS.ProcessEnv) => Promise<T>): Promise<T> {
+  const dir = await mkdtemp(join(tmpdir(), 'slide-studio-test-'));
+  const env = { ...process.env, SLIDE_STUDIO_DATA_DIR: dir } as NodeJS.ProcessEnv;
+  try {
+    return await fn(env);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+}
 
 const base = () => ({
   id: 'x', title: 'X', brief: 'b', runtimeId: null, theme: null,
@@ -41,4 +58,24 @@ test('activeDeck returns the active variant or null', () => {
   assert.equal(activeDeck(base()), null);
   const r = upsertVariant(base(), { theme: 'playful', file: 'deck.playful.html', wireframeRev: 0, createdAt: 't' });
   assert.equal(activeDeck(r)?.theme, 'playful');
+});
+
+test('setActiveDeck switches the active variant; rejects unknown ids', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'b' }, env);
+    await setGate1(p.id, 'approve', env); await setGate2(p.id, 'approve', env);
+    await setTheme(p.id, 'micron-dark', undefined, env);
+    const { writeFile } = await import('node:fs/promises'); const { join } = await import('node:path');
+    await writeFile(join(projectDir(p.id, env), 'deck.micron-dark.html'), '<html><body><section class="slide"></section></body></html>');
+    await registerGeneratedDeck(p.id, 'micron-dark', env);
+    await writeFile(join(projectDir(p.id, env), 'deck.playful.html'), '<html><body><section class="slide"></section></body></html>');
+    await registerGeneratedDeck(p.id, 'playful', env); // active is now 'playful'
+
+    const back = await setActiveDeck(p.id, 'micron-dark', env);
+    assert.equal(back?.activeDeckId, 'micron-dark');
+    const bad = await setActiveDeck(p.id, 'does-not-exist', env);
+    assert.equal(bad, null); // unknown id → no change, null
+    const reread = await readProject(p.id, env);
+    assert.equal(reread?.activeDeckId, 'micron-dark');
+  });
 });

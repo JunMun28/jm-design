@@ -6,6 +6,7 @@ import { ChatComponent } from '../chat/chat.component';
 import { WireframeComponent } from '../wireframe/wireframe.component';
 import { ThemesComponent } from '../themes/themes.component';
 import { DeckComponent } from '../deck/deck.component';
+import { FilesPanelComponent } from '../files/files-panel.component';
 import { QuestionnaireComponent } from './questionnaire.component';
 import type {
   Annotation,
@@ -13,6 +14,7 @@ import type {
   Brief,
   ChatTurn,
   ExportItem,
+  FilesResponse,
   FlowStage,
   GateStatus,
   OutputFormat,
@@ -46,7 +48,7 @@ const STEPS: { id: FlowStage; label: string }[] = [
 @Component({
   selector: 'ss-workspace',
   standalone: true,
-  imports: [RouterLink, ChatComponent, WireframeComponent, ThemesComponent, DeckComponent, QuestionnaireComponent],
+  imports: [RouterLink, ChatComponent, WireframeComponent, ThemesComponent, DeckComponent, FilesPanelComponent, QuestionnaireComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ws">
@@ -66,6 +68,17 @@ const STEPS: { id: FlowStage; label: string }[] = [
       </header>
 
       <div class="ws__body">
+        <!-- S3: Claude-Design-style files rail. Lists the project's wireframe,
+             every deck variant (active/stale flags), and downloadable exports.
+             Clicking a deck variant makes it active and loads it in the canvas
+             (the variant switcher); clicking the wireframe shows the wireframe. -->
+        <ss-files-panel
+          [files]="files()"
+          [activeKind]="artifact()?.kind ?? null"
+          [downloadHref]="exportHref"
+          (openDeck)="onOpenDeck($event)"
+          (openWireframe)="onOpenWireframe()" />
+
         <!-- Slice 5 (issue #12): the Deck canvas surface is selected when the
              Artifact Manifest's kind === 'deck' — the final, themed, high-fi
              output in a sandboxed iframe. It takes priority over the picker. -->
@@ -273,7 +286,8 @@ const STEPS: { id: FlowStage; label: string }[] = [
       .step { font-size: 13px; color: var(--mic-faint); padding: 4px 12px; border-radius: 999px; }
       .step--active { color: var(--mic-on-accent); background: var(--mic-accent); }
       .step--done { color: var(--mic-accent); }
-      .ws__body { flex: 1; display: grid; grid-template-columns: 1fr 420px; min-height: 0; }
+      .ws__body { flex: 1; display: grid; grid-template-columns: 220px 1fr 420px; min-height: 0; }
+      ss-files-panel { border-right: 1px solid var(--mic-border); min-height: 0; background: var(--mic-surface); display: block; }
       .canvas { padding: 28px 32px; overflow-y: auto; }
       .canvas--wf, .canvas--deck { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
       .canvas--wf .canvas__h, .canvas--deck .canvas__h { flex: 0 0 auto; margin-bottom: 4px; }
@@ -314,6 +328,7 @@ const STEPS: { id: FlowStage; label: string }[] = [
       .chatcol { border-left: 1px solid var(--mic-border); min-height: 0; background: var(--mic-surface); }
       @media (max-width: 880px) {
         .ws__body { grid-template-columns: 1fr; }
+        ss-files-panel { border-right: none; border-bottom: 1px solid var(--mic-border); }
         .chatcol { border-left: none; border-top: 1px solid var(--mic-border); }
       }
     `,
@@ -364,6 +379,17 @@ export class WorkspaceComponent {
   /** The latest Artifact Manifest the daemon resolved (Slice 3). The canvas
    *  surface is selected from it: kind === 'wireframe' shows the iframe surface. */
   readonly artifact = signal<ArtifactManifest | null>(null);
+  /** Set when the user explicitly opens the wireframe from the files rail, so the
+   *  Theme picker (which also shows on the deck stage with no deck) yields to it. */
+  readonly viewWireframe = signal(false);
+
+  /** S3: the files-panel grouping (wireframe / deck variants / exports). Loaded on
+   *  init and refreshed after a generate (socket `artifact`) and after a selection. */
+  readonly files = signal<FilesResponse | null>(null);
+
+  /** Bound so the files panel can build export download hrefs via the existing API
+   *  helper (the panel renders `<a [href]="downloadHref()(entry)">`). */
+  readonly exportHref = (entry: string): string => this.api.exportDownloadUrl(this.project()!.id, entry);
 
   private readonly chat = viewChild(ChatComponent);
   private offSocket: (() => void) | null = null;
@@ -405,7 +431,7 @@ export class WorkspaceComponent {
    * It stays available after a theme is picked so the user can regenerate.
    */
   readonly showThemePicker = computed(
-    () => (this.stage() === 'theme' || this.stage() === 'deck') && !this.deck(),
+    () => (this.stage() === 'theme' || this.stage() === 'deck') && !this.deck() && !this.viewWireframe(),
   );
 
   /**
@@ -439,6 +465,10 @@ export class WorkspaceComponent {
   private onSocketEvent(e: SocketFrame): void {
     if (e.type === 'artifact') {
       this.artifact.set(e.manifest);
+      // S3: a generate just produced/updated an artifact — refresh the files rail
+      // so the new deck variant / wireframe shows. Fire-and-forget (the handler is
+      // synchronous; errors leave the rail at its prior state).
+      void this.refreshFiles();
     } else if (e.type === 'questionnaire') {
       // Brief-panel intake: the agent emitted its first-turn questionnaire. Render
       // the interactive form (ignored once already answered — the daemon won't
@@ -495,6 +525,9 @@ export class WorkspaceComponent {
     this.socket.watch(project.id);
     const current = await this.api.getArtifact(project.id);
     if (current) this.artifact.set(current);
+    // S3: load the files-panel grouping (wireframe / deck variants / exports) so a
+    // resumed Project surfaces its files rail immediately.
+    await this.refreshFiles();
     // Slice 7 (M6): a resumed Project whose Deck was already generated re-surfaces
     // its downloadable output(s) in the Export panel.
     if (current?.kind === 'deck') {
@@ -693,5 +726,45 @@ export class WorkspaceComponent {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
     return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  }
+
+  // --- Files panel + variant switcher (S3) ---------------------------------
+
+  /** Reload the files-panel grouping so the rail stays current after a generate
+   *  or a selection. A transport / not-found failure leaves the panel empty. */
+  private async refreshFiles(): Promise<void> {
+    const id = this.project()?.id;
+    if (!id) return;
+    this.files.set(await this.api.listFiles(id));
+  }
+
+  /**
+   * The variant switcher: the user clicked a deck variant in the files rail. Make
+   * it the active deck (persisted; also drives the next generate/export), then pull
+   * the active-aware artifact manifest so the deck canvas reloads that variant (the
+   * deck component's effect tracks the manifest), and refresh the rail (active flag).
+   */
+  async onOpenDeck(deckId: string): Promise<void> {
+    const id = this.project()?.id;
+    if (!id) return;
+    this.viewWireframe.set(false);
+    await this.api.setActiveDeck(id, deckId);
+    const m = await this.api.getArtifact(id);
+    if (m) this.artifact.set(m);
+    await this.refreshFiles();
+  }
+
+  /**
+   * The user clicked the wireframe in the files rail. Build a wireframe manifest
+   * from the files entry and set it as the artifact so the wireframe canvas shows
+   * (theme-less; the wireframe surface is selected when kind === 'wireframe').
+   */
+  async onOpenWireframe(): Promise<void> {
+    const id = this.project()?.id;
+    if (!id) return;
+    const wf = this.files()?.wireframe;
+    if (!wf) return;
+    this.viewWireframe.set(true);
+    this.artifact.set({ kind: 'wireframe', format: 'html', entry: wf.entry, slides: wf.slides, theme: null });
   }
 }

@@ -310,6 +310,47 @@ export async function findLatestArtifact(
   return found.reduce((a, b) => (b.mtimeMs > a.mtimeMs ? b : a)).rel;
 }
 
+/** Newest previewable artifact whose resolved manifest.kind matches, or null. */
+export async function findArtifactByKind(
+  projectId: string,
+  kind: ArtifactKind,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<string | null> {
+  const dir = projectDir(projectId, env);
+  if (!existsSync(dir)) return null;
+  const found: { rel: string; mtimeMs: number }[] = [];
+  async function scan(absDir: string, depth: number): Promise<void> {
+    let entries;
+    try {
+      entries = await readdir(absDir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      const abs = join(absDir, e.name);
+      if (e.isDirectory()) {
+        if (depth > 0 && e.name !== 'node_modules' && !e.name.startsWith('.')) await scan(abs, depth - 1);
+        continue;
+      }
+      const rel = relative(dir, abs).replace(/\\/g, '/');
+      if (!isPreviewableEntry(rel)) continue;
+      try {
+        const s = await stat(abs);
+        found.push({ rel, mtimeMs: s.mtimeMs });
+      } catch {
+        /* skip */
+      }
+    }
+  }
+  await scan(dir, 2);
+  const sorted = found.sort((a, b) => b.mtimeMs - a.mtimeMs);
+  for (const f of sorted) {
+    const m = await resolveManifest(projectId, f.rel, env);
+    if (m.kind === kind) return f.rel;
+  }
+  return null;
+}
+
 /**
  * Safely resolve an artifact-relative entry path to an absolute path *inside*
  * the project dir, then read it. Rejects traversal / absolute paths (the iframe

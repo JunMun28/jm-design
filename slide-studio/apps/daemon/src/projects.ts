@@ -332,6 +332,18 @@ export async function setTheme(
   return patchProject(id, patch, env);
 }
 
+/** Make an existing deck variant active. Returns null if the id is unknown. */
+export async function setActiveDeck(
+  id: string,
+  deckId: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<ProjectRecord | null> {
+  const record = await readProject(id, env);
+  if (!record) return null;
+  if (!record.decks.some((d) => d.id === deckId)) return null;
+  return patchProject(id, { activeDeckId: deckId }, env);
+}
+
 /** After the agent writes a deck for `theme`, record the variant (refresh in
  *  place, set active) and write a manifest sidecar so the artifact resolver
  *  reports the right kind+theme. Returns the updated record. */

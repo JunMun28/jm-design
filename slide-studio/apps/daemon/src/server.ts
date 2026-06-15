@@ -17,6 +17,7 @@ import { buildOnboardingPlan } from './onboarding.ts';
 import { runOnboardingStep, type OnboardingExecKind } from './onboarding-exec.ts';
 import { ProcessRegistry } from './process-registry.ts';
 import {
+  activeDeck,
   appendConversation,
   createProject,
   deckFileForTheme,
@@ -27,6 +28,7 @@ import {
   readConversation,
   readProject,
   registerGeneratedDeck,
+  setActiveDeck,
   setGate1,
   setGate2,
   setQuestionnaire,
@@ -55,6 +57,7 @@ import {
   type ArtifactManifest,
 } from './artifacts.ts';
 import { watchArtifacts } from './artifact-watcher.ts';
+import { buildFilesResponse } from './files.ts';
 import { ANNOTATION_SDK_SOURCE } from './annotation-sdk.ts';
 import {
   appendFeedback,
@@ -402,7 +405,13 @@ export async function createDaemon(
   app.get('/api/projects/:id/artifact', async (req, res) => {
     const project = await readProject(req.params.id);
     if (!project) return res.status(404).json({ error: 'not found' });
-    const entry = await findLatestArtifact(req.params.id);
+    let entry: string | null = null;
+    const active = activeDeck(project);
+    if (project.stage === 'deck' && active && fileExists(join(projectDir(project.id), active.file))) {
+      entry = active.file;
+    } else {
+      entry = await findLatestArtifact(req.params.id);
+    }
     if (!entry) return res.json({ manifest: null });
     const manifest = await resolveManifest(req.params.id, entry);
     return res.json({ manifest });
@@ -421,6 +430,20 @@ export async function createDaemon(
     // No same-origin leakage: the shell wraps this in a sandboxed iframe.
     res.setHeader('X-Content-Type-Options', 'nosniff');
     return res.type(file.contentType).send(file.body);
+  });
+
+  app.get('/api/projects/:id/files', async (req, res) => {
+    const project = await readProject(req.params.id);
+    if (!project) return res.status(404).json({ error: 'not found' });
+    return res.json({ files: await buildFilesResponse(project) });
+  });
+
+  app.post('/api/projects/:id/active-deck', async (req, res) => {
+    const deckId = String(req.body?.deckId ?? '').trim();
+    if (!deckId) return res.status(400).json({ error: 'deckId is required' });
+    const updated = await setActiveDeck(req.params.id, deckId);
+    if (!updated) return res.status(404).json({ error: 'project or deck variant not found' });
+    return res.json({ project: updated });
   });
 
   // --- Export Collector (Slice 7, issue #14, M6) ---------------------------

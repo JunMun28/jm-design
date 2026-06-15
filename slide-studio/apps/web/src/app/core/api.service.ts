@@ -5,6 +5,7 @@ import type {
   ArtifactManifest,
   DetectedAgent,
   ExportItem,
+  FilesResponse,
   LoadedProject,
   OnboardingPlan,
   OutputFormat,
@@ -277,6 +278,30 @@ export class ApiService {
    *  Content-Disposition so the browser saves the Brief-derived filename. */
   exportDownloadUrl(id: string, entry: string): string {
     return `/api/projects/${encodeURIComponent(id)}/export/download?entry=${encodeURIComponent(entry)}`;
+  }
+
+  // --- Files panel + variant switcher (S3) ---------------------------------
+
+  /** The files-panel grouping for a Project: the wireframe, every deck variant
+   *  (active/stale flags), and the downloadable exports. null on a transport /
+   *  not-found failure so the panel renders empty rather than blowing up. */
+  async listFiles(id: string): Promise<FilesResponse | null> {
+    const res = await fetch(`/api/projects/${encodeURIComponent(id)}/files`);
+    if (!res.ok) return null;
+    return (await res.json()).files;
+  }
+
+  /** Make an existing deck variant active (the variant switcher). The active-aware
+   *  artifact route then serves this variant; returns the updated record, or null
+   *  if the project / variant id is unknown. */
+  async setActiveDeck(id: string, deckId: string): Promise<ProjectRecord | null> {
+    const res = await fetch(`/api/projects/${encodeURIComponent(id)}/active-deck`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ deckId }),
+    });
+    if (!res.ok) return null;
+    return (await res.json()).project;
   }
 }
 

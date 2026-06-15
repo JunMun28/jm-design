@@ -16,6 +16,7 @@ import { createProject, projectDir } from '../src/projects.ts';
 import {
   countSlides,
   entryForChange,
+  findArtifactByKind,
   findLatestArtifact,
   inferFormat,
   inferKind,
@@ -278,5 +279,20 @@ test('resolveManifest tolerates a MALFORMED sidecar by inferring from path/namin
     assert.equal(m.format, 'html');
     assert.equal(m.slides, 3);
     assert.equal(m.inferred, true); // fell back to inference
+  });
+});
+
+// --- findArtifactByKind (newest previewable of a kind) --------------------
+
+test('findArtifactByKind returns the newest previewable of a kind', async () => {
+  await withTempStore(async (env) => {
+    const id = 'proj-fk';
+    const { mkdir, writeFile } = await import('node:fs/promises');
+    const dir = projectDir(id, env); await mkdir(dir, { recursive: true });
+    await writeFile(join(dir, 'wireframe.html'), '<html><body><section class="slide-panel"></section></body></html>');
+    await writeFile(join(dir, 'deck.micron-dark.html'), '<html><body><section class="slide"></section></body></html>');
+    await writeFile(join(dir, 'deck.micron-dark.html.manifest.json'), JSON.stringify({ kind: 'deck', format: 'html', entry: 'deck.micron-dark.html', theme: 'micron-dark' }));
+    const wf = await findArtifactByKind(id, 'wireframe', env);
+    assert.equal(wf, 'wireframe.html');
   });
 });

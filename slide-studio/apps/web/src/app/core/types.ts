@@ -276,6 +276,18 @@ export interface DeckVariant {
   createdAt: string;
 }
 
+/**
+ * The files-panel grouping the daemon resolves (S3): the project's wireframe,
+ * every deck variant (with `active` + `stale` flags), and the downloadable
+ * exports. Mirror of daemon src/files.ts::FilesResponse — `exports` reuses the
+ * shared {@link ExportItem} so the shape stays hand-synced with the daemon.
+ */
+export interface FilesResponse {
+  wireframe: { entry: string; slides: number } | null;
+  decks: { id: string; theme: string; file: string; active: boolean; stale: boolean; slides: number }[];
+  exports: ExportItem[];
+}
+
 export interface ProjectRecord {
   id: string;
   title: string;
