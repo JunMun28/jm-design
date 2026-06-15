@@ -215,7 +215,9 @@
       notesBody.innerHTML = note ? note.innerHTML : '';
       revealIn(slides[n]);
       var hash = '#/' + (n + 1);
-      if (location.hash !== hash) history.replaceState(null, '', hash);
+      // replaceState throws SecurityError under an opaque/null origin (sandboxed
+      // iframe, about:srcdoc, data: URL). Guard it so embedded decks still navigate.
+      if (location.hash !== hash) { try { history.replaceState(null, '', hash); } catch (e) {} }
     }
     function revealIn(slide) {
       [].forEach.call(slide.querySelectorAll('.reveal'), function (n, i) {

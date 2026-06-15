@@ -376,6 +376,21 @@ body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 a
 }
 .rail-thumb .thumb-tools button:hover { border-color: var(--line-strong); color: var(--ink); }
 @media print { body.edit-active [contenteditable] { outline: none !important; } }
+
+/* ===================== EMBEDDED VIEWER MODE =====================
+   Host apps (e.g. Slide Studio) add the data-embed attribute to the page body to
+   show only the slide stage — all chrome is hidden and navigation runs via the
+   window.presentation API. The shell JS still runs, so window.presentation
+   (goTo/total/…) stays available. */
+body[data-embed] .app-bar,
+body[data-embed] .rail,
+body[data-embed] .notes-panel,
+body[data-embed] .progress-bar,
+body[data-embed] .present-bar,
+body[data-embed] .grid-overview,
+body[data-embed] .help-overlay,
+body[data-embed] .jump-input { display: none !important; }
+body[data-embed] .stage-area { padding: 0; }
 </style>
 <!-- /SHELL:CSS -->
 <style id="theme-tokens">
@@ -826,7 +841,9 @@ body.edit-active .rail-thumb .thumb-tools { display: flex; gap: 4px; flex: 0 0 a
       notesBody.innerHTML = note ? note.innerHTML : '';
       revealIn(slides[n]);
       var hash = '#/' + (n + 1);
-      if (location.hash !== hash) history.replaceState(null, '', hash);
+      // replaceState throws SecurityError under an opaque/null origin (sandboxed
+      // iframe, about:srcdoc, data: URL). Guard it so embedded decks still navigate.
+      if (location.hash !== hash) { try { history.replaceState(null, '', hash); } catch (e) {} }
     }
     function revealIn(slide) {
       [].forEach.call(slide.querySelectorAll('.reveal'), function (n, i) {
