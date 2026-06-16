@@ -634,13 +634,13 @@ export async function createDaemon(
           ? [
               `Regenerate the Deck in the "${theme}" theme, applying the pinned annotations`,
               `below. Change only the affected slides — keep every other slide, the theme,`,
-              `and the structure as-is. Rewrite ${deckEntry} and re-run the html-slides`,
-              `verify gate before presenting it as done.`,
+              `and the structure as-is. Rewrite ${deckEntry}; the app then re-runs the`,
+              `html-slides verify gate and returns any fixes for you to apply.`,
             ].join(' ')
           : [
               `Generate the final Deck now in the "${theme}" theme, following the approved`,
-              `narrative arc and the theme-less wireframe we agreed on. Write it to ${deckEntry}`,
-              `and verify it with the html-slides gate before presenting it as done.`,
+              `narrative arc and the theme-less wireframe we agreed on. Write it to ${deckEntry};`,
+              `the app then runs the html-slides verify gate and returns any fixes to apply.`,
             ].join(' ');
         const generatePrompt = composePrompt({
           userRequest: [baseRequest, feedbackBlock].filter((s) => s && s.trim()).join('\n\n'),

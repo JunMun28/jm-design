@@ -80,11 +80,12 @@ test('a DECK annotation serializes a REGENERATE-scoped block (not an in-place ed
     }),
   ]);
   assert.ok(block.startsWith('<attached-preview-comments>'));
-  // The deck header tells the agent to REGENERATE only the affected slides and
-  // re-run the verify gate (collapse the hard wraps before matching the phrases).
+  // The deck header tells the agent to REGENERATE only the affected slides; the
+  // app (not the blind agent) re-runs the verify gate (collapse the hard wraps
+  // before matching the phrases).
   const flat = block.replace(/\s+/g, ' ');
   assert.match(flat, /Regenerate ONLY the slides/);
-  assert.match(flat, /re-run the html-slides verify gate/);
+  assert.match(flat, /the app then re-runs the html-slides/);
   // …and NOT the wireframe's in-place "save the same wireframe file" wording.
   assert.doesNotMatch(flat, /save the same wireframe file/);
 });

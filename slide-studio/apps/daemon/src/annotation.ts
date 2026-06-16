@@ -339,8 +339,8 @@ function headerFor(surface: AnnotationSurface): string[] {
       'The user pinned these annotations on the generated Deck. Regenerate ONLY the',
       'slides named below — change exactly the elements called out and leave every',
       'other slide, the chosen theme, and the overall structure exactly as-is. Rewrite',
-      'the same Deck file so the preview reloads, then re-run the html-slides verify',
-      'gate before presenting it as done.',
+      'the same Deck file so the preview reloads; the app then re-runs the html-slides',
+      'verify gate and returns any fixes for you to apply.',
     ];
   }
   return [
