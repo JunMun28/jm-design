@@ -19,6 +19,7 @@ import {
   extensionOf,
   listStagedAttachments,
   maxAttachmentBytes,
+  readAttachmentFile,
   serializeAttachmentsBlock,
   stageAttachments,
   type StagedAttachment,
@@ -207,6 +208,61 @@ test('listStagedAttachments returns [] for a project with no attachments', async
   await withTempStore(async (env) => {
     const p = await createProject({ brief: 'deck' }, env);
     assert.deepEqual(await listStagedAttachments(p.id, env), []);
+  });
+});
+
+// --- readAttachmentFile (file browser preview + download) ------------------
+
+test('readAttachmentFile serves a staged file with bytes, content-type, and filename', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    const csv = Buffer.from('line,yield\nA,94.2\n', 'utf8');
+    await stageAttachments(p.id, [{ filename: 'yield.csv', data: csv }], env);
+
+    const file = await readAttachmentFile(p.id, 'attachments/yield.csv', env);
+    assert.ok(file);
+    assert.deepEqual(file!.body, csv);
+    assert.match(file!.contentType, /^text\/csv/);
+    assert.equal(file!.filename, 'yield.csv');
+  });
+});
+
+test('readAttachmentFile maps image/pdf extensions to sensible content types', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await stageAttachments(
+      p.id,
+      [
+        { filename: 'chart.svg', data: Buffer.from('<svg/>') },
+        { filename: 'report.pdf', data: Buffer.from('%PDF-1.4\n%%EOF') },
+      ],
+      env,
+    );
+    assert.equal((await readAttachmentFile(p.id, 'attachments/chart.svg', env))!.contentType, 'image/svg+xml');
+    assert.equal((await readAttachmentFile(p.id, 'attachments/report.pdf', env))!.contentType, 'application/pdf');
+  });
+});
+
+test('readAttachmentFile rejects a traversal that escapes the attachments dir (project.json leak)', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    // Stage something so the attachments dir exists.
+    await stageAttachments(p.id, [{ filename: 'ok.csv', data: Buffer.from('a,b\n1,2\n') }], env);
+    // project.json is a real file in the project dir with an accepted (.json)
+    // extension — the entry must NOT be able to climb out of attachments/ to it.
+    assert.equal(await readAttachmentFile(p.id, 'attachments/../project.json', env), null);
+    // A bare project-file entry (no attachments/ prefix) is rejected too.
+    assert.equal(await readAttachmentFile(p.id, 'project.json', env), null);
+  });
+});
+
+test('readAttachmentFile rejects absolute paths, deep traversal, and missing files', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await stageAttachments(p.id, [{ filename: 'ok.csv', data: Buffer.from('x,y\n1,2\n') }], env);
+    assert.equal(await readAttachmentFile(p.id, '/etc/passwd', env), null);
+    assert.equal(await readAttachmentFile(p.id, 'attachments/../../../../etc/passwd', env), null);
+    assert.equal(await readAttachmentFile(p.id, 'attachments/nope.png', env), null);
   });
 });
 

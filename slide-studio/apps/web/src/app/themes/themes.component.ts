@@ -55,8 +55,15 @@ import type { OutputFormat, ThemeCard } from '../core/types';
                 [attr.aria-selected]="selected() === t.id"
                 (click)="select(t.id)"
               >
-                <span class="card__prev" [style.background]="t.palette?.bg || null">
-                  @if (t.palette; as p) {
+                <span class="card__prev" [class.card__prev--img]="!!t.preview" [style.background]="(!t.preview && t.palette?.bg) || null">
+                  @if (t.preview) {
+                    <img
+                      class="prev__img"
+                      [src]="'/api/themes/' + t.id + '/thumbnail'"
+                      [alt]="t.name + ' theme preview'"
+                      loading="lazy"
+                    />
+                  } @else if (t.palette; as p) {
                     <span class="prev__kicker" [style.background]="p.accent"></span>
                     <span class="prev__title">
                       <span class="prev__bar prev__bar--lg" [style.background]="p.ink"></span>
@@ -172,6 +179,11 @@ import type { OutputFormat, ThemeCard } from '../core/types';
         background: var(--mic-surface-2);
         box-shadow: inset 0 0 0 1px rgba(127, 127, 127, 0.14);
       }
+      /* Real per-theme slide screenshot (served by the daemon) — the preferred
+         preview. Fills the 16:9 card; the crafted palette/monogram below are
+         fallbacks only when a theme ships no screenshot. */
+      .card__prev--img { padding: 0; }
+      .prev__img { width: 100%; height: 100%; object-fit: cover; display: block; }
       .prev__kicker { width: 26px; height: 5px; border-radius: 3px; flex: 0 0 auto; }
       .prev__title { display: flex; flex-direction: column; gap: 5px; }
       .prev__bar { height: 7px; border-radius: 2px; }

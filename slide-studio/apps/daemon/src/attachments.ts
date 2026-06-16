@@ -18,9 +18,9 @@
  * The staged dir is added to the agent's `--add-dir` scope (see runs wiring) so
  * the CLI can reach the files; the prompt lists them so the agent reads them.
  */
-import { copyFile, mkdir, readdir, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { basename, extname, join } from 'node:path';
+import { basename, extname, isAbsolute, join, relative } from 'node:path';
 import { projectDir } from './projects.ts';
 
 /** The category an attachment classifies into, which steers how the agent uses
@@ -294,6 +294,68 @@ export async function listStagedAttachments(
     });
   }
   return out.sort((a, b) => a.filename.localeCompare(b.filename));
+}
+
+/** Extension → MIME so a staged attachment serves with a sensible Content-Type
+ *  for the file browser's preview (image/PDF) and download. Falls back to a
+ *  generic binary type for anything not listed. */
+const ATTACHMENT_CONTENT_TYPES: Record<string, string> = {
+  csv: 'text/csv; charset=utf-8',
+  tsv: 'text/tab-separated-values; charset=utf-8',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  xls: 'application/vnd.ms-excel',
+  pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  pdf: 'application/pdf',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  doc: 'application/msword',
+  txt: 'text/plain; charset=utf-8',
+  md: 'text/markdown; charset=utf-8',
+  json: 'application/json; charset=utf-8',
+  png: 'image/png',
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  svg: 'image/svg+xml',
+};
+
+/**
+ * Read one staged attachment's bytes for the file browser (preview + download).
+ * Path-safe like {@link readExportFile}: the `entry` must be a project-relative
+ * path that stays inside the project's `attachments/` dir (no traversal, no
+ * absolute paths) and resolve to a real, non-empty file. Returns null otherwise
+ * so the route answers 404 rather than leaking arbitrary files.
+ */
+export async function readAttachmentFile(
+  projectId: string,
+  entry: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<{ body: Buffer; contentType: string; filename: string } | null> {
+  const normalized = entry.replace(/\\/g, '/');
+  if (normalized.startsWith('/') || /^[A-Za-z]:/.test(normalized)) return null;
+  // Must target the attachments subdir specifically — not any project file.
+  if (!normalized.startsWith(`${ATTACHMENTS_SUBDIR}/`)) return null;
+  const abs = join(projectDir(projectId, env), normalized);
+  // Containment against the ATTACHMENTS dir (not just the project dir) so a
+  // `attachments/../project.json`-style entry — which stays in the project dir and
+  // has an accepted extension — can't escape the attachments subtree.
+  const attDir = attachmentsDir(projectId, env);
+  const rel = relative(attDir, abs);
+  if (rel === '' || rel.startsWith('..') || rel.includes(`..${'/'}`) || isAbsolute(rel)) return null;
+  if (classifyAttachment(abs) === 'unsupported') return null;
+  if (!existsSync(abs)) return null;
+  try {
+    const body = await readFile(abs);
+    if (body.length === 0) return null;
+    const ext = extensionOf(abs);
+    return {
+      body,
+      contentType: ATTACHMENT_CONTENT_TYPES[ext] ?? 'application/octet-stream',
+      filename: basename(abs),
+    };
+  } catch {
+    return null;
+  }
 }
 
 /**

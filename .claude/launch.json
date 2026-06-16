@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "slide-studio",
+      "runtimeExecutable": "./launcher/slide-studio.sh",
+      "runtimeArgs": [],
+      "cwd": "slide-studio",
+      "port": 4317,
+      "autoPort": false
+    }
+  ]
+}

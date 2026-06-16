@@ -70,6 +70,7 @@ import {
 import {
   attachmentsDir,
   listStagedAttachments,
+  readAttachmentFile,
   serializeAttachmentsBlock,
   stageAttachments,
   type AttachmentInput,
@@ -331,6 +332,22 @@ export async function createDaemon(
     return res.json({ staged: await listStagedAttachments(project.id) });
   });
 
+  // Serve one staged source file for the file browser's preview (image / PDF) and
+  // download. Path-safe: `entry` is contained to the project's attachments dir
+  // (no traversal / absolute paths) and must be a real, supported, non-empty
+  // file. Served inline (nosniff); the UI's download button uses an `<a download>`
+  // so the original filename is restored without a separate route.
+  app.get('/api/projects/:id/attachment/content', async (req, res) => {
+    const project = await readProject(req.params.id);
+    if (!project) return res.status(404).json({ error: 'not found' });
+    const entry = String(req.query.entry ?? '');
+    if (!entry) return res.status(400).json({ error: 'entry is required' });
+    const file = await readAttachmentFile(req.params.id, entry);
+    if (!file) return res.status(404).json({ error: 'attachment not found' });
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    return res.type(file.contentType).send(file.body);
+  });
+
   // Brief-panel intake: mark the agent-generated questionnaire answered. The web
   // workspace calls this AFTER it compiles the user's selections into a readable
   // message and sends it through the existing chat path. The Brief panel then
@@ -482,15 +499,28 @@ export async function createDaemon(
   // --- Static web shell ----------------------------------------------------
   const root = webRoot();
   if (root) {
-    app.use(express.static(root));
+    // Hashed bundles (main-*.js, styles-*.css) are immutable and may cache; but
+    // index.html must NEVER cache — it names the current bundle hashes, so a stale
+    // copy points at a deleted bundle and renders a blank page (C6). Serve it with
+    // no-store on both the static `/` route and the SPA fallback below.
+    app.use(
+      express.static(root, {
+        setHeaders: (res, filePath) => {
+          if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-store');
+        },
+      }),
+    );
     // SPA fallback (Express 5: no bare '*' route — use a terminal middleware
-    // that only handles GET navigations, leaving /api + /ws untouched).
-    const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
+    // that only handles GET navigations, leaving /api + /ws untouched). Read the
+    // index fresh per navigation (it is tiny) so a rebuild's new bundle hashes are
+    // always served and an open tab / deep link is never stranded on a stale index.
+    const indexPath = join(root, 'index.html');
     app.use((req, res, next) => {
       if (req.method !== 'GET' || req.path.startsWith('/api') || req.path.startsWith('/ws')) {
         return next();
       }
-      return res.type('html').send(indexHtml);
+      res.setHeader('Cache-Control', 'no-store');
+      return res.type('html').send(readFileSync(indexPath, 'utf8'));
     });
   } else {
     app.get('/', (_req, res) => res.type('html').send(FALLBACK_PAGE));

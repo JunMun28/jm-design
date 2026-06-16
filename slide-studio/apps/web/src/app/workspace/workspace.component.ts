@@ -148,6 +148,18 @@ const STEPS: { id: FlowStage; label: string }[] = [
             </div>
           </section>
         }
+        <!-- C3: honest "Building your deck…" state — replaces the theme grid while
+             the multi-minute themed build runs (stage Deck, theme picked, no Deck
+             artifact yet) instead of leaving the picker / a half-built scaffold up. -->
+        @else if (buildingDeck()) {
+          <section class="canvas canvas--building" aria-label="Building the deck" aria-busy="true">
+            <div class="building">
+              <span class="building__spinner" aria-hidden="true"></span>
+              <h2 class="building__h">Building your deck…</h2>
+              <p class="building__sub">Designing your themed slides and the editable PowerPoint. This can take a few minutes — you can follow along with the agent in the chat on the right.</p>
+            </div>
+          </section>
+        }
         <!-- Slice 5: the Theme picker (Gate 3) shows once the Wireframe is approved
              (stage === 'theme') until a theme is picked and a Deck lands. -->
         @else if (showThemePicker()) {
@@ -159,7 +171,7 @@ const STEPS: { id: FlowStage; label: string }[] = [
             </div>
             <ss-themes
               [projectId]="project()!.id"
-              [chosen]="project()!.theme"
+              [chosen]="addingStyle() ? null : project()!.theme"
               [chosenFormats]="project()!.formats"
               (themePicked)="onThemePicked($event)"
             />
@@ -189,78 +201,107 @@ const STEPS: { id: FlowStage; label: string }[] = [
               }
             </div>
           </section>
-        } @else if (intakeForm(); as q) {
-          <!-- Brief-panel intake: before the recorded discussion fills in, the
-               agent's first-turn questionnaire renders here as an interactive form.
-               The user answers all questions and submits in one click; the answers
-               go through the existing chat path and the panel reverts below. -->
+        }
+        <!-- C1/C3: honest "Building your wireframe…" state — shown from the moment
+             the arc is approved (and the build is kicked) until the wireframe lands,
+             so approving the arc never dead-ends on a static "arc approved" panel. -->
+        @else if (buildingWireframe()) {
+          <section class="canvas canvas--building" aria-label="Building the wireframe" aria-busy="true">
+            <div class="building">
+              <span class="building__spinner" aria-hidden="true"></span>
+              <h2 class="building__h">Building your wireframe…</h2>
+              <p class="building__sub">Drafting your slides from the approved arc. This usually takes about a minute — you can follow along with the agent in the chat on the right.</p>
+            </div>
+          </section>
+        } @else if (intakeActive()) {
+          <!-- Brief-panel intake (the FIRST loading → the framing questionnaire).
+               While the agent is still generating the questions, a "Capturing…"
+               indicator shows under THIS "frame your deck" header — never the
+               Recorded-Discussion header, which belongs to the post-answer brief.
+               Once ready, the questionnaire renders as the interactive form. -->
           <section class="canvas" aria-label="Intake questionnaire">
             <h2 class="canvas__h">Brief — frame your deck</h2>
-            <ss-questionnaire [questionnaire]="q" [busy]="intakeBusy()" (send)="submitQuestionnaire($event)" />
+            @if (intakeForm(); as q) {
+              <ss-questionnaire [questionnaire]="q" [busy]="intakeBusy()" (send)="submitQuestionnaire($event)" />
+            } @else if (agentWorking()) {
+              <p class="brief__capturing" role="status">
+                Capturing<span class="brief__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </p>
+            }
           </section>
         } @else {
         <section class="canvas" aria-label="Canvas">
           <h2 class="canvas__h">Brief — Recorded Discussion</h2>
 
           @if (project()) {
-            <dl class="brief">
-              <div class="brief__field">
-                <dt>Audience</dt>
-                <dd [class.brief__empty]="!brief().audience">{{ brief().audience || 'Not captured yet' }}</dd>
-              </div>
-              <div class="brief__field">
-                <dt>Goal</dt>
-                <dd [class.brief__empty]="!brief().goal">{{ brief().goal || 'Not captured yet' }}</dd>
-              </div>
-              <div class="brief__field">
-                <dt>Narrative arc</dt>
-                <dd>
-                  @if (brief().narrativeArc?.length) {
-                    <ol class="brief__arc">
-                      @for (beat of brief().narrativeArc; track $index) {
-                        <li>{{ beat }}</li>
-                      }
-                    </ol>
-                  } @else {
-                    <span class="brief__empty">Not captured yet</span>
-                  }
-                </dd>
-              </div>
-              <div class="brief__field">
-                <dt>Key messages</dt>
-                <dd>
-                  @if (brief().keyMessages?.length) {
-                    <ul class="brief__msgs">
-                      @for (msg of brief().keyMessages; track $index) {
-                        <li>{{ msg }}</li>
-                      }
-                    </ul>
-                  } @else {
-                    <span class="brief__empty">Not captured yet</span>
-                  }
-                </dd>
-              </div>
-            </dl>
+            <!-- One panel-level "Capturing…" indicator while the agent is producing
+                 its turn; the fields themselves fill in as the brief is parsed and
+                 otherwise rest at the calm "Not captured yet". -->
+            @if (agentWorking()) {
+              <p class="brief__capturing" role="status">
+                Capturing<span class="brief__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </p>
+            }
+            @if (briefHasContent()) {
+              <dl class="brief">
+                <div class="brief__field">
+                  <dt>Audience</dt>
+                  <dd [class.brief__empty]="!brief().audience">{{ brief().audience || 'Not captured yet' }}</dd>
+                </div>
+                <div class="brief__field">
+                  <dt>Goal</dt>
+                  <dd [class.brief__empty]="!brief().goal">{{ brief().goal || 'Not captured yet' }}</dd>
+                </div>
+                <div class="brief__field">
+                  <dt>Narrative arc</dt>
+                  <dd>
+                    @if (brief().narrativeArc?.length) {
+                      <ol class="brief__arc">
+                        @for (beat of brief().narrativeArc; track $index) {
+                          <li>{{ beat }}</li>
+                        }
+                      </ol>
+                    } @else {
+                      <span class="brief__empty">Not captured yet</span>
+                    }
+                  </dd>
+                </div>
+                <div class="brief__field">
+                  <dt>Key messages</dt>
+                  <dd>
+                    @if (brief().keyMessages?.length) {
+                      <ul class="brief__msgs">
+                        @for (msg of brief().keyMessages; track $index) {
+                          <li>{{ msg }}</li>
+                        }
+                      </ul>
+                    } @else {
+                      <span class="brief__empty">Not captured yet</span>
+                    }
+                  </dd>
+                </div>
+              </dl>
 
-            <!-- Gate 1: appears once the agent has proposed a narrative arc. -->
-            @if (gateVisible()) {
-              <div class="gate" role="group" aria-label="Gate 1: approve the narrative arc">
-                @if (gate1() === 'approved') {
-                  <p class="gate__done">✓ Arc approved — moving to the wireframe.</p>
-                } @else {
-                  <p class="gate__prompt">Does this narrative arc work? Approve to build the wireframe, or request changes to keep refining.</p>
-                  <div class="gate__actions">
-                    <button class="mic-btn mic-btn--primary" type="button" [disabled]="gateBusy()" (click)="approveArc()">
-                      Approve arc
-                    </button>
-                    <button class="mic-btn" type="button" [disabled]="gateBusy()" (click)="requestChanges()">
-                      Request changes
-                    </button>
-                  </div>
-                }
-              </div>
-            } @else {
-              <p class="canvas__hint">The recorded discussion fills in here as you brainstorm. Once the agent proposes a narrative arc, you can approve it (Gate 1).</p>
+              <!-- Gate 1: appears once the agent has proposed a narrative arc. -->
+              @if (gateVisible()) {
+                <div class="gate" role="group" aria-label="Gate 1: approve the narrative arc">
+                  @if (gate1() === 'approved') {
+                    <p class="gate__done">✓ Arc approved — moving to the wireframe.</p>
+                  } @else {
+                    <p class="gate__prompt">Does this narrative arc work? Approve to build the wireframe, or request changes to keep refining.</p>
+                    <div class="gate__actions">
+                      <button class="mic-btn mic-btn--primary" type="button" [disabled]="gateBusy()" (click)="approveArc()">
+                        Approve arc
+                      </button>
+                      <button class="mic-btn" type="button" [disabled]="gateBusy()" (click)="requestChanges()">
+                        Request changes
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="canvas__hint">The recorded discussion fills in here as you brainstorm. Once the agent proposes a narrative arc, you can approve it (Gate 1).</p>
+              }
             }
           } @else {
             <p class="canvas__hint">Loading project…</p>
@@ -300,6 +341,21 @@ const STEPS: { id: FlowStage; label: string }[] = [
       .canvas--wf, .canvas--deck { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
       .canvas--wf .canvas__h, .canvas--deck .canvas__h { flex: 0 0 auto; margin-bottom: 4px; }
       .canvas--wf ss-wireframe, .canvas--deck ss-deck { flex: 1; min-height: 0; display: block; }
+
+      /* C1/C3: calm "Building your wireframe / deck…" progress state. */
+      .canvas--building { display: flex; align-items: center; justify-content: center; min-height: 0; }
+      .building { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 44ch; gap: 14px; }
+      .building__spinner {
+        width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--mic-border-strong); border-top-color: var(--mic-accent);
+        animation: ss-build-spin 0.9s linear infinite;
+      }
+      .building__h { font-size: 18px; font-weight: 700; color: var(--mic-ink); margin: 0; }
+      .building__sub { font-size: 14px; line-height: 1.55; color: var(--mic-ink-2); margin: 0; }
+      @keyframes ss-build-spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) {
+        .building__spinner { animation: none; border-top-color: var(--mic-accent); }
+      }
       .canvas--theme { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
       .canvas--theme ss-themes { flex: 1; min-height: 0; display: flex; flex-direction: column; }
       .deckhead__verify { font-size: 12px; font-weight: 600; }
@@ -329,6 +385,15 @@ const STEPS: { id: FlowStage; label: string }[] = [
       .brief__field dt { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--mic-muted); margin-bottom: 4px; }
       .brief__field dd { margin: 0; font-size: 16px; line-height: 1.5; color: var(--mic-ink); }
       .brief__empty { color: var(--mic-faint); font-style: italic; }
+      .brief__capturing { color: var(--mic-accent); font-style: italic; font-size: 16px; margin: 0 0 2px; display: inline-flex; align-items: center; }
+      .brief__dots { display: inline-flex; align-items: center; gap: 3px; margin-left: 5px; }
+      .brief__dots i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.25; animation: brief-pulse 1.2s ease-in-out infinite; }
+      .brief__dots i:nth-child(2) { animation-delay: 0.15s; }
+      .brief__dots i:nth-child(3) { animation-delay: 0.3s; }
+      @keyframes brief-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) {
+        .brief__dots i { animation: none; opacity: 0.55; }
+      }
       .brief__arc { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
       .brief__msgs { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
       .gate { margin-top: 28px; padding: 18px 20px; border: 1px solid var(--mic-border); border-radius: var(--mic-radius); background: var(--mic-surface-2); max-width: 60ch; }
@@ -440,6 +505,35 @@ export class WorkspaceComponent {
   });
 
   /**
+   * C1/C3 fix: the "Building your wireframe…" canvas state. True from the moment
+   * the arc is approved (and the build is kicked) until the wireframe artifact
+   * lands — so approving the arc shows honest progress instead of a dead
+   * "arc approved" panel. False once a wireframe exists or the user opens it.
+   */
+  readonly buildingWireframe = computed(
+    () =>
+      this.stage() === 'wireframe' &&
+      !this.wireframe() &&
+      !this.viewWireframe() &&
+      this.agentWorking(),
+  );
+
+  /**
+   * C3 fix: the "Building your deck…" canvas state. True while the themed Deck
+   * build is actually running (stage Deck, a run streaming, no Deck artifact yet)
+   * so the multi-minute build shows honest progress instead of the theme grid /
+   * a half-built scaffold. Gated on `agentWorking()` (not just "no deck") so
+   * re-opening the picker via "+ Add a style" still shows the picker.
+   */
+  readonly buildingDeck = computed(
+    () =>
+      this.stage() === 'deck' &&
+      !this.deck() &&
+      !this.addingStyle() &&
+      this.agentWorking(),
+  );
+
+  /**
    * Slice 5 (issue #12): the Theme picker (Gate 3) is shown once the Wireframe is
    * approved (the flow reached the Theme stage) and no themed Deck has landed yet.
    * It stays available after a theme is picked so the user can regenerate.
@@ -455,10 +549,45 @@ export class WorkspaceComponent {
    * AND it has not been answered. Once answered (or never emitted), the Brief panel
    * falls through to the normal recorded-discussion display. Returns the form to
    * render, or null.
+   *
+   * While the agent is still producing its turn (and nothing is captured yet), the
+   * form is deferred so the "Brief — Recorded Discussion / Capturing" panel shows
+   * FIRST — the form only appears once the turn settles, never mid-stream.
    */
   readonly intakeForm = computed<Questionnaire | null>(() => {
     if (this.questionnaireAnswered()) return null;
+    if (this.agentWorking() && !this.briefHasContent()) return null;
     return this.questionnaire();
+  });
+
+  /**
+   * The intake (questionnaire) phase owns the "Brief — frame your deck" surface
+   * until the user has answered AND nothing is captured into the brief yet. It
+   * also owns the FIRST loading state (while the questions are still generating),
+   * so that first loading shows "Capturing…" under the frame-your-deck header —
+   * never the "Brief — Recorded Discussion" header, which belongs to the
+   * post-answer brief (the SECOND loading).
+   */
+  readonly intakeActive = computed(
+    () => !this.questionnaireAnswered() && !this.briefHasContent(),
+  );
+
+  /**
+   * True while the agent is actively producing a turn (mirrors the chat's
+   * `streaming` signal). Drives the Brief panel's "Capturing…" loading state:
+   * until the turn settles, recorded-discussion fields that haven't been filled
+   * in yet show the loading indicator instead of the resting "Not captured yet".
+   */
+  readonly agentWorking = computed(() => this.chat()?.streaming() ?? false);
+
+  /**
+   * True once the agent has captured anything into the brief. Until then the
+   * recorded-discussion panel stays empty (only the "Capturing…" indicator shows
+   * while the agent works) instead of an all-"Not captured yet" scaffold + hint.
+   */
+  readonly briefHasContent = computed(() => {
+    const b = this.brief();
+    return !!(b.audience || b.goal || b.narrativeArc?.length || b.keyMessages?.length);
   });
 
   /** Gate 1 is offered once a narrative arc has been proposed (or already approved). */
@@ -598,6 +727,15 @@ export class WorkspaceComponent {
         this.stage.set(updated.stage);
         this.gate1.set(updated.gate1);
       }
+      // C1 fix: approving the arc must actually BUILD the wireframe. `setGate1`
+      // only flips the stage; the daemon's generate path is deck-only, and the
+      // wireframe HTML is only ever produced by an agent chat turn. Without this
+      // the flow dead-ends at "arc approved" forever (root of the I2 stall).
+      // Kick the build as a scoped chat turn, mirroring requestChanges().
+      this.turnSettled.set(false);
+      this.chat()?.sendMessage(
+        'The narrative arc is approved. Please build the wireframe (the brainstorm HTML) now so I can review it slide by slide.',
+      );
     } finally {
       this.gateBusy.set(false);
     }

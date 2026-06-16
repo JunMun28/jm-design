@@ -191,16 +191,40 @@ function lastAssistantIndex(turns: ChatTurn[]): number {
       }
 
       <form class="composer" (submit)="$event.preventDefault(); send()">
-        <ss-attach-control class="composer__attach" (filesChanged)="onAttachFiles()" />
-        <input
+        <textarea
+          #composerInput
           class="composer__input"
           [(ngModel)]="draft"
           name="draft"
+          rows="1"
           [disabled]="streaming()"
           placeholder="Message the agent…"
+          title="Enter to send · Shift+Enter for a new line"
           autocomplete="off"
-        />
-        <button class="mic-btn mic-btn--primary" type="submit" [disabled]="streaming() || !draft().trim()">Send</button>
+          (input)="autoGrow()"
+          (keydown)="onComposerKey($event)"
+        ></textarea>
+        <div class="composer__bar">
+          <ss-attach-control class="composer__attach" [compact]="true" (filesChanged)="onAttachFiles()" />
+          <button
+            class="composer__send"
+            type="submit"
+            [disabled]="streaming() || !draft().trim()"
+            aria-label="Send message"
+            title="Send (Enter)"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                d="M12 20V5M5 12l7-7 7 7"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </form>
     </div>
   `,
@@ -362,13 +386,35 @@ function lastAssistantIndex(turns: ChatTurn[]): number {
       }
       .staged-chip__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
 
-      .composer { display: flex; align-items: flex-start; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--mic-border); }
-      .composer__attach { flex: 0 0 auto; }
-      .composer__input {
-        flex: 1; font: inherit; padding: 10px 14px; border-radius: var(--mic-radius-sm);
-        border: 1px solid var(--mic-border-strong); background: var(--mic-surface); color: var(--mic-ink);
+      /* Unified composer: one rounded container — textarea on top, an action bar
+         (attach left, send right) inside the bottom. Modern AI-chat pattern;
+         the box itself shows the focus ring (focus-within), the textarea is bare. */
+      .composer {
+        display: flex; flex-direction: column; gap: 6px;
+        margin: 10px 16px 16px; padding: 8px 10px 8px 12px;
+        border: 1px solid var(--mic-border-strong); border-radius: 18px;
+        background: var(--mic-surface);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
-      .composer__input:focus-visible { outline: 3px solid var(--mic-accent-soft); border-color: var(--mic-accent); }
+      .composer:focus-within { border-color: var(--mic-accent); box-shadow: 0 0 0 3px var(--mic-accent-soft); }
+      .composer__input {
+        width: 100%; font: inherit; padding: 4px 4px 0; border: 0; background: transparent; color: var(--mic-ink);
+        resize: none; min-height: 24px; max-height: 200px; line-height: 1.5; overflow-y: auto; outline: none;
+      }
+      .composer__input::placeholder { color: var(--mic-faint); }
+      .composer__input:disabled { opacity: 0.6; cursor: not-allowed; }
+      .composer__bar { display: flex; align-items: center; gap: 8px; }
+      .composer__attach { flex: 0 0 auto; }
+      .composer__send {
+        flex: 0 0 auto; margin-left: auto;
+        display: inline-grid; place-items: center; width: 34px; height: 34px;
+        border: 0; border-radius: 999px; background: var(--mic-accent); color: var(--mic-on-accent);
+        cursor: pointer; transition: background 0.15s ease, opacity 0.15s ease, transform 0.1s ease;
+      }
+      .composer__send:hover:not(:disabled) { background: var(--mic-accent-strong); }
+      .composer__send:active:not(:disabled) { transform: scale(0.94); }
+      .composer__send:disabled { opacity: 0.4; cursor: not-allowed; }
+      .composer__send:focus-visible { outline: 3px solid var(--mic-accent-soft); outline-offset: 2px; }
 
       /* prefers-reduced-motion: text appears, status is static, no blur/shimmer/spin. */
       @media (prefers-reduced-motion: reduce) {
@@ -401,6 +447,7 @@ export class ChatComponent {
 
   private readonly attach = viewChild(AttachControlComponent);
   private readonly logEl = viewChild<{ nativeElement: HTMLElement }>('log');
+  private readonly composerInput = viewChild<{ nativeElement: HTMLTextAreaElement }>('composerInput');
 
   readonly turns = signal<ChatTurn[]>([]);
   readonly draft = signal('');
@@ -544,9 +591,36 @@ export class ChatComponent {
     const text = this.draft().trim();
     if (!text || this.streaming()) return;
     this.draft.set('');
+    this.resetComposerHeight();
     this.dismissError();
     this.turns.update((t) => [...t, { role: 'user', text }]);
     this.startRun(text);
+  }
+
+  /** Enter sends; Shift+Enter inserts a newline. IME composition is respected. */
+  onComposerKey(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+      event.preventDefault();
+      this.send();
+    }
+  }
+
+  /**
+   * Grow the composer to fit its content (capped at the CSS max-height, after
+   * which it scrolls internally — there is no drag handle). Sending collapses it
+   * back to one row via {@link resetComposerHeight}.
+   */
+  autoGrow(): void {
+    const el = this.composerInput()?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 200)}px`;
+  }
+
+  /** Collapse the composer back to a single row (after a message is sent). */
+  private resetComposerHeight(): void {
+    const el = this.composerInput()?.nativeElement;
+    if (el) el.style.height = '';
   }
 
   /** Send a message into the run programmatically (e.g. Gate 1 "Request changes"). */

@@ -182,6 +182,13 @@ export class ApiService {
     return (await res.json()).staged ?? [];
   }
 
+  /** The served URL for one staged source file's bytes (file browser preview +
+   *  download). `relPath` is the attachment's project-relative path (e.g.
+   *  `attachments/yield-q3.csv`); the daemon serves it inline, path-safe. */
+  attachmentContentUrl(id: string, relPath: string): string {
+    return `/api/projects/${encodeURIComponent(id)}/attachment/content?entry=${encodeURIComponent(relPath)}`;
+  }
+
   // --- Artifacts (Slice 3, issue #8) — wireframe canvas surface ------------
 
   /** The current Artifact Manifest, used on load to pick the canvas surface

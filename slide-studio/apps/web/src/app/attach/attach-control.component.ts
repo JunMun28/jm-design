@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import type { SkippedAttachment } from '../core/types';
 
 /**
@@ -31,6 +31,7 @@ import type { SkippedAttachment } from '../core/types';
       <button
         type="button"
         class="attach__btn"
+        [class.attach__btn--compact]="compact()"
         [disabled]="disabled()"
         (click)="picker.click()"
         aria-label="Attach source files"
@@ -47,7 +48,9 @@ import type { SkippedAttachment } from '../core/types';
             stroke-linejoin="round"
           />
         </svg>
-        <span class="attach__btn-label">Attach</span>
+        @if (!compact()) {
+          <span class="attach__btn-label">Attach</span>
+        }
       </button>
 
       <input
@@ -110,6 +113,12 @@ import type { SkippedAttachment } from '../core/types';
       .attach__btn:hover:not(:disabled) { border-color: var(--mic-accent); color: var(--mic-accent); }
       .attach__btn:disabled { opacity: 0.55; cursor: not-allowed; }
       .attach__btn:focus-visible { outline: 3px solid var(--mic-accent-soft); border-color: var(--mic-accent); }
+      /* Icon-only ghost variant for the in-composer attach (chat). Home keeps the label. */
+      .attach__btn--compact {
+        width: 34px; height: 34px; padding: 0; justify-content: center; gap: 0;
+        border-radius: 999px; background: transparent; border-color: transparent; color: var(--mic-muted);
+      }
+      .attach__btn--compact:hover:not(:disabled) { background: var(--mic-surface-2); border-color: transparent; color: var(--mic-accent); }
       .attach__icon { flex: 0 0 auto; }
       .attach__hint {
         position: absolute; left: 0; bottom: calc(100% + 6px); white-space: nowrap;
@@ -150,6 +159,10 @@ import type { SkippedAttachment } from '../core/types';
 export class AttachControlComponent {
   /** Emitted whenever the pending selection changes (parent reads `currentFiles`). */
   readonly filesChanged = output<File[]>();
+
+  /** Render the trigger as an icon-only ghost button (no "Attach" label) — used
+   *  inside the chat composer's action bar. Home keeps the labeled pill. */
+  readonly compact = input(false);
 
   /** The pending source files the user has chosen but not yet had cleared by the
    *  parent (rendered as removable chips). */

@@ -141,7 +141,10 @@ export const ANNOTATION_SDK_SOURCE = String.raw`(function () {
       '.bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483647;display:flex;gap:8px;' +
       'padding:6px;border-radius:999px;background:#1b1f27;border:1px solid #3a4150;box-shadow:0 10px 30px rgba(0,0,0,.35)}' +
       '.bar button{border:0;border-radius:999px;padding:6px 12px;font:13px/1 system-ui;cursor:pointer;background:#2a2f3a;color:#f3f3f0}' +
-      '.bar button.on{background:#6aa0ff;color:#0b0f17}';
+      '.bar button.on{background:#6aa0ff;color:#0b0f17}' +
+      '.coach{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:2147483647;' +
+      'max-width:min(90vw,440px);padding:8px 14px;border-radius:10px;background:#11141a;color:#f3f3f0;' +
+      'border:1px solid #3a4150;box-shadow:0 10px 30px rgba(0,0,0,.4);font:13px/1.45 system-ui;text-align:center}';
     root.appendChild(style);
     return root;
   }
@@ -175,14 +178,31 @@ export const ANNOTATION_SDK_SOURCE = String.raw`(function () {
   function buildBar() {
     var r = ensureRoot();
     var bar = document.createElement('div'); bar.className = 'bar'; bar.setAttribute('data-ss-annotation', 'bar');
-    var toggle = document.createElement('button'); toggle.textContent = 'Annotate'; toggle.className = 'on';
+    var toggle = document.createElement('button'); toggle.className = 'on';
     var slide = document.createElement('button'); slide.textContent = 'Comment on this slide';
-    toggle.onclick = function () { setEnabled(!enabled); toggle.className = enabled ? 'on' : ''; };
+    // Make the model obvious: this is a MODE (click-to-comment), not a per-element
+    // button. Label it with its on/off state so users know clicking the slide works.
+    function relabel() {
+      toggle.textContent = enabled ? '✎ Click-to-comment: ON' : '✎ Click-to-comment: OFF';
+      toggle.title = enabled
+        ? 'Click any part of a slide — or select text — to tell the agent what to change. Click here to turn it off.'
+        : 'Turn click-to-comment back on';
+    }
+    relabel();
+    toggle.onclick = function () { setEnabled(!enabled); toggle.className = enabled ? 'on' : ''; relabel(); };
     slide.onclick = function () {
       var rect = { left: window.innerWidth / 2 - 150, bottom: window.innerHeight - 60 };
       showCard(rect, 'Comment on slide ' + (activeSlide + 1), function (v) { emit(v, null, activeSlide); });
     };
     bar.appendChild(toggle); bar.appendChild(slide); r.appendChild(bar);
+    // One-time coachmark so the click-to-comment model is discoverable; auto-hides
+    // after a few seconds or on the first click anywhere.
+    var coach = document.createElement('div'); coach.className = 'coach'; coach.setAttribute('data-ss-annotation', 'coach');
+    coach.textContent = 'Tip: click any part of a slide — or select text — to tell the agent what to change.';
+    r.appendChild(coach);
+    function hideCoach() { if (coach && coach.parentNode) { coach.parentNode.removeChild(coach); coach = null; } }
+    setTimeout(hideCoach, 9000);
+    document.addEventListener('click', hideCoach, true);
   }
   function setEnabled(on) { enabled = !!on; if (!enabled) { clearCard(); document.body.style.cursor = ''; } else { document.body.style.cursor = 'crosshair'; } }
 
