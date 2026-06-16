@@ -1,0 +1,132 @@
+/* keynote-vivid tokens — frozen.
+ *
+ * Dark product-launch keynote: a near-black indigo canvas, oversized bold
+ * geometric sans display, ONE electric-violet moment per slide, coral + amber
+ * as rare pops. Headlines are WHITE, never violet. Charts live on the solid
+ * raised --surface panel, never on a gradient. palette_lock is ON — every
+ * visible slide color resolves to a token below.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ---------- Palette ---------- */
+  --bg: #14111F;            /* near-black indigo canvas */
+  --surface: #211B33;       /* raised SOLID panel — the chart ground */
+  --surface-2: #2B2440;     /* slightly lighter inset / row fill */
+  --ink: #FFFFFF;           /* primary text — 17.9:1 on bg */
+  --ink-muted: #B9B3CC;     /* secondary text — 8.6:1 on bg */
+
+  --accent: #6E5BFF;        /* electric violet — fills, eyebrows, dots; NEVER on headlines */
+  --accent-text: #9B8CFF;   /* brightened violet for stats/links — 6.6:1 on bg */
+  --accent-2: #FF7A59;      /* coral pop — rare */
+  --accent-3: #FFC75B;      /* amber pop — rare */
+
+  --rule: rgba(255, 255, 255, 0.12);        /* hairline borders */
+  --rule-strong: rgba(255, 255, 255, 0.20); /* stronger hairline */
+
+  /* ---------- Type families ---------- */
+  --font-display: "Sora", system-ui, -apple-system, sans-serif;      /* oversized bold geometric sans */
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+
+  /* ---------- Scale / grid ---------- */
+  --scale-ratio: 1.333;
+  --col-count: 12;
+  --col-gap: 24px;
+  --margin-outer: 96px;
+
+  /* Fixed px type — never vw-clamped. Small screens get their own smaller
+     fixed px values in the deck's media query. */
+  --title-size: 116px;
+  --section-size: 84px;
+  --headline-size: 64px;
+  --body-size: 26px;
+
+  --radius: 18px;
+
+  /* ---------- Motion ---------- */
+  --ease-out-expo: cubic-bezier(.16, 1, .3, 1);
+  --duration-normal: .6s;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headlines are WHITE display type — never violet. */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+/* Pill-badge eyebrow — mono uppercase chrome above every headline,
+   with the pulsing 6px electric-violet dot (markup: <span class="dot"></span>).
+   The eyebrow is the ONE rationed violet moment when a slide has no other. */
+.eyebrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: rgba(110, 91, 255, 0.10);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+.eyebrow .dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: kv-dot-pulse 2.6s var(--ease-out-expo) infinite;
+}
+
+/* Raised SOLID panel — the mandatory ground for charts. No gradient, ever. */
+.surface {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.7),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.muted { color: var(--ink-muted); }
+.accent-text { color: var(--accent-text); }   /* stats/links — brightened violet, passes 4.5:1 */
+.coral { color: var(--accent-2); }             /* rare pop */
+.amber { color: var(--accent-3); }             /* rare pop */
+
+@keyframes kv-dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.55); opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .eyebrow .dot { animation: none; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}

@@ -1,0 +1,145 @@
+/* editorial-serif tokens — frozen.
+   Magazine editorial: warm paper, high-contrast serif display, antique-gold
+   hairlines, generous leading, one pull-quote moment per deck. Print-light,
+   literary, restrained. Every visible slide color is a token below
+   (palette_lock). */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* === Palette === */
+  --bg: #FBFAF6;            /* warm paper canvas */
+  --surface: #F3F0E7;       /* solid ground for exhibits + cards (never a gradient) */
+  --ink: #1A1A1A;          /* primary text — ~15.5:1 on paper */
+  --ink-muted: #5A564E;    /* secondary text — ~6.6:1 on paper */
+  --accent: #B08D57;       /* antique gold — hairlines, rules, small marks (rgb 176,141,87) */
+  --rule: #E3DECF;         /* hairline borders / gridlines */
+  --deep: #2B2B28;         /* deep ink for section dividers + footers */
+
+  /* Chart tokens — solid editorial palette, no gradients. */
+  --chart-1: #B08D57;      /* gold — the focal series */
+  --chart-2: #1A1A1A;      /* ink — the comparison series */
+  --chart-3: #9A958A;      /* warm grey — context */
+  --chart-4: #CFC9BA;      /* pale grey — faint background bars */
+
+  /* === Typography === */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;  /* high-contrast serif */
+  --font-body: "Newsreader", Georgia, "Times New Roman", serif;   /* readable serif body */
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;   /* kickers, folios, chrome */
+
+  --scale-ratio: 1.333;
+  --col-count: 12;
+  --col-gap: 28px;
+  --margin-outer: 104px;
+
+  /* Fixed px type — never vw-clamped. Small screens shrink these, still in px. */
+  --title-size: 104px;
+  --section-size: 84px;
+  --headline-size: 62px;
+  --body-size: 26px;
+
+  --radius: 4px;           /* editorial surfaces are barely rounded */
+  --hairline: 1px;
+
+  --ease-paper: cubic-bezier(.2, .7, .25, 1);
+  --duration-normal: .6s;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Display + body type — BARE selectors only (never .slide x). === */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  font-optical-sizing: auto;
+}
+
+/* Kicker — mono, gold, with a short gold rule before it. The editorial eyebrow.
+   Note: example.html raises small mono chrome (masthead, side-note label,
+   illustrative badge) to the 20px label floor; keep deck chrome >= 20px. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 38px;
+  height: var(--hairline);
+  background: var(--accent);
+  flex: none;
+}
+
+/* Gold hairline rule — the theme's connective tissue. */
+.rule {
+  border: 0;
+  border-top: var(--hairline) solid var(--rule);
+  margin: 0;
+}
+.rule.gold { border-top-color: var(--accent); }
+
+/* Solid editorial surface — the ONLY ground for exhibits. Never a gradient. */
+.surface {
+  background: var(--surface);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--radius);
+}
+
+/* Drop-cap accent for the lede paragraph. */
+.dropcap::first-letter {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 3.4em;
+  line-height: 0.82;
+  float: left;
+  margin: 0.06em 0.10em 0 0;
+  color: var(--accent);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+.muted { color: var(--ink-muted); }
+.accent-text { color: var(--accent); }
+
+/* Reveal — the shell toggles is-active + visible on the active slide. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--duration-normal) var(--ease-paper),
+    transform var(--duration-normal) var(--ease-paper);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.reveal:nth-child(1) { transition-delay: 0.04s; }
+.reveal:nth-child(2) { transition-delay: 0.12s; }
+.reveal:nth-child(3) { transition-delay: 0.20s; }
+.reveal:nth-child(4) { transition-delay: 0.28s; }
+.reveal:nth-child(5) { transition-delay: 0.36s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}

@@ -1,0 +1,130 @@
+/* swiss-international tokens — frozen.
+ *
+ * International Typographic Style: a strict baseline grid, flush-left grotesque
+ * type, generous white space, hairline rules, and ONE rationed international-red
+ * accent for data emphasis — never on headlines. The deck is white, the ink is
+ * black, the red is rationed paint. palette_lock is ON: every visible color on
+ * slide content comes from a token below; no ad-hoc hex in slide markup or CSS.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ---- Palette (every visible color is a token) ---- */
+  --bg: #FFFFFF;            /* paper-white canvas */
+  --surface: #F4F4F2;       /* warm-grey solid surface — charts, tables, panels */
+  --ink: #111111;           /* near-black primary text — 18.9:1 on bg */
+  --ink-muted: #5E5E5A;     /* warm-grey secondary text — 6.4:1 on bg */
+  --accent: #E2231A;        /* international red — fills / rules / figures ONLY, never headlines */
+  --rule: #E2E2DE;          /* hairline borders */
+  --rule-strong: #111111;   /* heavy rule — the black baseline bar */
+
+  /* ---- Chart tokens (quiet greyscale + one red series) ---- */
+  --chart-ink: #111111;     /* primary data series / bars */
+  --chart-mid: #8A8A85;     /* secondary series */
+  --chart-light: #C9C9C4;   /* tertiary series / gridlines on surface */
+  /* The single red series reuses --accent. */
+
+  /* ---- Type ---- */
+  --font-display: "Archivo", "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  /* ---- Grid + rhythm ---- */
+  --col-count: 12;
+  --col-gap: 28px;
+  --margin-outer: 104px;    /* generous flush-left margin */
+  --baseline: 12px;         /* baseline grid unit */
+
+  /* Fixed px type — never vw-clamped. Small screens get their own fixed px. */
+  --title-size: 104px;
+  --section-size: 84px;
+  --headline-size: 64px;
+  --body-size: 25px;
+
+  --radius: 0px;            /* Swiss: no rounded corners on content surfaces */
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --duration-normal: .5s;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Content typography — bare selectors only (never .slide x) ---- */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Eyebrow / kicker — mono, uppercase, sits on a short red tick. Flush-left. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.eyebrow .tick {
+  flex: none;
+  width: 28px;
+  height: 4px;
+  background: var(--accent);   /* the rationed red as a rule tick */
+}
+
+/* Heavy black baseline bar — the structural anchor under headlines/sections. */
+.bar {
+  height: 4px;
+  background: var(--rule-strong);
+  border: 0;
+  margin: 0;
+}
+
+/* Hairline rule. */
+.hr {
+  height: 1px;
+  background: var(--rule);
+  border: 0;
+  margin: 0;
+}
+
+/* Solid warm-grey surface — the ONLY ground for charts and tables. Never a
+   gradient (the verifier walks ancestors of svg[role="img"]). */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+}
+
+/* Mono numerals — every figure, index, axis label, footer. */
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.muted { color: var(--ink-muted); }
+
+/* Reveal — the shell toggles is-active + visible on the active slide. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity var(--duration-normal) var(--ease),
+    transform var(--duration-normal) var(--ease);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}

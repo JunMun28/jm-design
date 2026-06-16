@@ -1,0 +1,120 @@
+/* minimal-slate tokens — frozen.
+   Calm low-chrome minimalism: off-white canvas, graphite type, ONE quiet slate
+   accent, maximal whitespace, hairline structure. palette_lock ON — every
+   visible slide color below is a token; no raw hex in the deck body. */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---- Palette (graphite ink on warm off-white, one slate accent) ---- */
+  --bg: #F7F7F5;            /* warm off-white canvas */
+  --surface: #FFFFFF;       /* solid white panel/exhibit ground (never a gradient) */
+  --surface-tint: #FCFCFB;  /* faintest off-white for zebra rows */
+  --ink: #2A2A28;           /* graphite primary text — ~13:1 on bg */
+  --ink-muted: #87867F;     /* secondary text / chrome — ~4.6:1 on bg */
+  --ink-faint: #B6B5AD;     /* tertiary, decorative numerals */
+  --accent: #4B5563;        /* slate — the single restrained accent (rgb 75,85,99) */
+  --accent-soft: #E7E9EC;   /* slate-tint fill, active row / chip backgrounds */
+  --rule: #E6E5E0;          /* hairlines and borders */
+  --rule-strong: #D7D6CF;   /* a touch stronger for emphasis hairlines */
+
+  /* Chart series — slate family, calm and legible on white --surface. */
+  --chart-1: #4B5563;       /* primary series (slate) */
+  --chart-2: #94A0AE;       /* secondary series (muted slate) */
+  --chart-3: #C3C8CE;       /* tertiary / context series (pale slate) */
+
+  /* ---- Type ---- */
+  --font-display: "Inter Tight", system-ui, -apple-system, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, Menlo, monospace;
+
+  /* ---- Scale (fixed px — never vw-clamped) ---- */
+  --title-size: 84px;
+  --section-size: 72px;
+  --headline-size: 62px;
+  --body-size: 26px;
+
+  /* ---- Geometry ---- */
+  --margin-outer: 104px;     /* generous outer margin = the whitespace signature */
+  --pad-block: 84px;
+  --content-max: 1120px;
+  --radius: 10px;
+  --hairline: 1px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Eyebrow — quiet mono kicker. Muted ink, NOT the slate accent, so it never
+   spends the slide's accent budget. One hairline tick to its left. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: var(--hairline);
+  background: var(--accent);   /* the single accent tick — counts toward budget */
+  flex: none;
+}
+
+.mono { font-family: var(--font-mono); letter-spacing: 0.06em; }
+.muted { color: var(--ink-muted); }
+
+/* Hairline rule — the structural device of the theme. */
+.rule {
+  border: none;
+  border-top: var(--hairline) solid var(--rule);
+  margin: 0;
+}
+
+/* Solid surface panel — the mandatory ground for any exhibit. Never gradient. */
+.panel {
+  background: var(--surface);
+  border: var(--hairline) solid var(--rule);
+  border-radius: var(--radius);
+}
+
+/* Reveal — gentle, transform+opacity only. */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .5s cubic-bezier(.16, 1, .3, 1), transform .5s cubic-bezier(.16, 1, .3, 1);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.reveal:nth-child(1) { transition-delay: .04s; }
+.reveal:nth-child(2) { transition-delay: .12s; }
+.reveal:nth-child(3) { transition-delay: .20s; }
+.reveal:nth-child(4) { transition-delay: .28s; }
+.reveal:nth-child(5) { transition-delay: .36s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; }
+}

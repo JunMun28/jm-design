@@ -265,6 +265,173 @@
         "headline_contrast_min": 4.5,
         "palette_lock": true
       }
+    },
+    {
+      "id": "swiss-international",
+      "name": "Swiss international",
+      "status": "stable",
+      "role": "editorial-data",
+      "when": "International Typographic Style: a strict baseline grid, flush-left grotesque type, generous white space, hairline rules, and one rationed international-red accent for data emphasis — never on headlines.",
+      "design": "themes/swiss-international/design.md",
+      "example": "themes/swiss-international/example.html",
+      "preview": "themes/swiss-international/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--ink", "--ink-muted", "--accent", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "226, 35, 26",
+        "accent_max_per_slide": 6,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "forbid_accent_text_selectors": ["h1", "h2", "h3"],
+        "enforce_sentence_case_headlines": true,
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
+    },
+    {
+      "id": "consulting-navy",
+      "name": "Consulting navy",
+      "status": "stable",
+      "role": "executive-strategy",
+      "when": "Boardroom strategy style: navy structure on white, a serif headline voice, rationed blue for data and a single gold emphasis per slide, action titles, and source lines under every exhibit.",
+      "design": "themes/consulting-navy/design.md",
+      "example": "themes/consulting-navy/example.html",
+      "preview": "themes/consulting-navy/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--ink", "--ink-muted", "--accent", "--accent-2", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "27, 110, 200",
+        "accent_max_per_slide": 10,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "enforce_sentence_case_headlines": true,
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 70
+      }
+    },
+    {
+      "id": "editorial-serif",
+      "name": "Editorial serif",
+      "status": "stable",
+      "role": "narrative",
+      "when": "Magazine editorial style: warm paper canvas, high-contrast serif display, generous leading, antique-gold hairlines and pull quotes, for thought-leadership and narrative decks.",
+      "design": "themes/editorial-serif/design.md",
+      "example": "themes/editorial-serif/example.html",
+      "preview": "themes/editorial-serif/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--ink", "--ink-muted", "--accent", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "176, 141, 87",
+        "accent_max_per_slide": 8,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
+    },
+    {
+      "id": "minimal-slate",
+      "name": "Minimal slate",
+      "status": "stable",
+      "role": "minimal",
+      "when": "Calm, low-chrome minimalism: off-white canvas, graphite type, one quiet slate accent, lots of whitespace and hairlines — for internal updates and weekly status.",
+      "design": "themes/minimal-slate/design.md",
+      "example": "themes/minimal-slate/example.html",
+      "preview": "themes/minimal-slate/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--surface", "--ink", "--ink-muted", "--accent", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "75, 85, 99",
+        "accent_max_per_slide": 6,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
+    },
+    {
+      "id": "keynote-vivid",
+      "name": "Keynote vivid",
+      "status": "stable",
+      "role": "product-launch",
+      "when": "Dark product-launch keynote: near-black indigo canvas, oversized bold sans display, one electric-violet moment per slide with coral and amber pops, charts on solid panels.",
+      "design": "themes/keynote-vivid/design.md",
+      "example": "themes/keynote-vivid/example.html",
+      "preview": "themes/keynote-vivid/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--surface", "--ink", "--ink-muted", "--accent", "--accent-2", "--accent-3", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "110, 91, 255",
+        "accent_max_per_slide": 10,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "forbid_accent_text_selectors": ["h1", "h2", "h3"],
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
+    },
+    {
+      "id": "brutalist-bold",
+      "name": "Brutalist bold",
+      "status": "stable",
+      "role": "statement",
+      "when": "Raw brutalist statement style: stark white canvas, oversized heavy black type, thick black borders and blocks, and one screaming accent used only as fills — for manifestos, bold launches, and slides that must stop the room.",
+      "design": "themes/brutalist-bold/design.md",
+      "example": "themes/brutalist-bold/example.html",
+      "preview": "themes/brutalist-bold/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--ink", "--ink-muted", "--accent", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "255, 230, 0",
+        "accent_max_per_slide": 6,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "forbid_accent_text_selectors": ["h1", "h2", "h3"],
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
+    },
+    {
+      "id": "soft-pastel",
+      "name": "Soft pastel",
+      "status": "stable",
+      "role": "friendly",
+      "when": "Gentle, approachable style: warm off-white canvas, rounded cards and shapes, and soft peach, lavender, and mint accents — for HR, onboarding, culture, and community decks that should feel warm, not corporate.",
+      "design": "themes/soft-pastel/design.md",
+      "example": "themes/soft-pastel/example.html",
+      "preview": "themes/soft-pastel/screenshots/example-overview-1280x720.png",
+      "extras": [],
+      "verify": {
+        "required_tokens": ["--bg", "--surface", "--ink", "--ink-muted", "--accent", "--accent-2", "--accent-3", "--rule", "--font-display", "--font-body", "--font-mono"],
+        "accent_rgb": "242, 150, 111",
+        "accent_max_per_slide": 10,
+        "logo_pattern": null,
+        "require_logo_on_content_slides": false,
+        "forbid_chart_on_gradient": true,
+        "headline_contrast_min": 4.5,
+        "palette_lock": true,
+        "forbid_accent_text_selectors": ["h1", "h2", "h3"],
+        "require_assertion_titles": true,
+        "max_body_words_per_slide": 90
+      }
     }
   ]
 }

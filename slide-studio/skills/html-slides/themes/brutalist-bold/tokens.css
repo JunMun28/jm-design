@@ -1,0 +1,47 @@
+/* brutalist-bold tokens — frozen.
+ *
+ * Raw brutalist statement style: stark white canvas, oversized heavy black
+ * type, thick black borders and hard-edged blocks, and ONE screaming electric-
+ * yellow accent used only as fills / highlight blocks (never as text — it fails
+ * contrast). Black text on a yellow block is fine; yellow text is not.
+ *
+ * palette_lock is ON: every visible color on slide content comes from a token.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* ---- Palette (every visible color is a token) ---- */
+  --bg: #FFFFFF;            /* stark white canvas */
+  --surface: #F4F4F2;       /* off-white solid panel ground (charts/tables) */
+  --panel-dark: #111111;    /* black block background */
+  --ink: #111111;           /* near-black primary type — 18.9:1 on white */
+  --ink-inverse: #FFFFFF;   /* text on black blocks */
+  --ink-muted: #555555;     /* secondary type — 7.4:1 on white */
+  --accent: #FFE600;        /* electric yellow — FILLS / HIGHLIGHTS ONLY, never text */
+  --rule: #111111;          /* heavy black borders / rules */
+  --rule-soft: #D6D6D2;     /* hairline divider */
+
+  /* chart tokens */
+  --chart-ink: #111111;     /* primary bar / data ink */
+  --chart-accent: #FFE600;  /* highlighted bar fill (one per chart) */
+  --chart-mid: #888888;     /* mid-weight comparison series */
+  --chart-light: #C9C9C4;   /* faint comparison / background bars */
+
+  /* ---- Fonts ---- */
+  --font-display: "Archivo Black", "Arial Black", system-ui, sans-serif; /* heavy grotesque headlines */
+  --font-body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Space Mono", ui-monospace, Menlo, monospace;
+
+  /* ---- Scale (fixed px — never vw-clamped) ---- */
+  --title-size: 132px;
+  --section-size: 104px;
+  --headline-size: 72px;
+  --body-size: 26px;
+
+  --border-thick: 8px;      /* the signature heavy black border */
+  --border-med: 4px;
+  --margin-outer: 88px;
+
+  --ease-hard: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --duration-normal: 0.4s;
+}

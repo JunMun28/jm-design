@@ -1,0 +1,60 @@
+/* consulting-navy tokens — frozen. Boardroom strategy: navy structure on white,
+   a serif headline voice, rationed blue for data, one gold emphasis per slide. */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Palette — every visible slide color is a token (palette_lock is ON). */
+  --bg: #FFFFFF;            /* white deck canvas */
+  --surface: #F5F7FA;       /* pale slate — solid ground for exhibits + cards */
+  --ink: #0A2540;           /* navy — body + headlines (15.5:1 on white) */
+  --ink-muted: #5A6B7B;     /* secondary text — 5.5:1 on white */
+  --accent: #1B6EC8;        /* blue — data series + accents (5.1:1 on white) */
+  --accent-2: #C8A45B;      /* gold — ONE rationed emphasis per slide (fills/rules only) */
+  --rule: #DCE3EA;          /* hairline borders + gridlines */
+  --navy: #0A2540;          /* cover / section background */
+  --ink-on-navy: #FFFFFF;   /* text on navy (15.5:1) */
+
+  /* Chart tokens — solid surfaces only, never gradients. */
+  --chart-1: #1B6EC8;       /* primary blue series */
+  --chart-2: #5B9BE0;       /* lighter blue comparison series */
+  --chart-3: #0A2540;       /* navy series / baseline */
+  --chart-gold: #C8A45B;    /* the single highlighted bar/marker */
+
+  /* Fonts (Google Fonts, loaded by the @import above). */
+  --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;  /* authoritative headlines */
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+
+  /* Layout + type scale — fixed px, never vw-clamped. */
+  --margin-outer: 92px;
+  --content-max: 1180px;
+
+  --title-size: 96px;       /* cover h1 */
+  --section-size: 76px;     /* section divider h2 */
+  --headline-size: 60px;    /* content h2 (the readability floor) */
+  --body-size: 24px;        /* body floor */
+
+  --radius: 6px;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: var(--body-size);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* CONTENT TYPOGRAPHY — bare selectors only (never .slide x). */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+</content>
+</invoke>
