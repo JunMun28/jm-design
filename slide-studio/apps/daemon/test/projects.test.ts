@@ -11,12 +11,14 @@ import { join } from 'node:path';
 import {
   appendConversation,
   createProject,
+  deleteProject,
   listProjects,
   listRecent,
   load,
   projectDir,
   readConversation,
   readProject,
+  renameProject,
   setGate1,
   setGate2,
   setTheme,
@@ -177,6 +179,88 @@ test('setTheme returns null for an unknown project', async () => {
   await withTempStore(async (env) => {
     assert.equal(await setTheme('nope', 'micron-dark', undefined, env), null);
   });
+});
+
+// --- Project mutations: rename + delete ------------------------------------
+
+test('deleteProject removes the dir and drops it from listProjects', async () => {
+  await withTempStore(async (env) => {
+    const a = await createProject({ brief: 'keep me' }, env);
+    const b = await createProject({ brief: 'delete me' }, env);
+    assert.ok(existsSync(projectDir(b.id, env)));
+
+    const removed = await deleteProject(b.id, env);
+    assert.equal(removed, true);
+    assert.ok(!existsSync(projectDir(b.id, env)));
+
+    // Gone from the list; the other project survives.
+    assert.equal(await readProject(b.id, env), null);
+    const list = await listProjects(env);
+    assert.deepEqual(
+      list.map((p) => p.id),
+      [a.id],
+    );
+  });
+});
+
+test('deleteProject returns false for an unknown project', async () => {
+  await withTempStore(async (env) => {
+    assert.equal(await deleteProject('does-not-exist', env), false);
+  });
+});
+
+test('renameProject persists the new title (re-read with readProject)', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck', title: 'Old title' }, env);
+    const renamed = await renameProject(p.id, '  New title  ', env);
+    assert.equal(renamed?.title, 'New title'); // trimmed
+
+    // Persisted on disk.
+    const reread = await readProject(p.id, env);
+    assert.equal(reread?.title, 'New title');
+  });
+});
+
+test('renameProject caps the title at 120 chars (like createProject)', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    const long = 'x'.repeat(200);
+    const renamed = await renameProject(p.id, long, env);
+    assert.equal(renamed?.title.length, 120);
+  });
+});
+
+test('renameProject rejects an empty / whitespace-only title', async () => {
+  await withTempStore(async (env) => {
+    const p = await createProject({ brief: 'deck' }, env);
+    await assert.rejects(() => renameProject(p.id, '   ', env));
+  });
+});
+
+test('renameProject returns null for an unknown project', async () => {
+  await withTempStore(async (env) => {
+    assert.equal(await renameProject('nope', 'A title', env), null);
+  });
+});
+
+test('deleteProject/renameProject refuse a path-traversal id and never escape the store', async () => {
+  const base = await mkdtemp(join(tmpdir(), 'slide-studio-traversal-'));
+  const env = { ...process.env, SLIDE_STUDIO_DATA_DIR: join(base, 'store') } as NodeJS.ProcessEnv;
+  const { mkdir, writeFile } = await import('node:fs/promises');
+  await mkdir(env.SLIDE_STUDIO_DATA_DIR!, { recursive: true });
+  // A sibling of the store that a malicious id of `../victim` would resolve to.
+  const victim = join(base, 'victim');
+  await mkdir(victim, { recursive: true });
+  await writeFile(join(victim, 'keep.txt'), 'precious', 'utf8');
+  try {
+    assert.equal(await deleteProject('../victim', env), false);
+    assert.equal(await deleteProject('..', env), false);
+    assert.equal(await renameProject('../victim', 'x', env), null);
+    // The out-of-store directory and its file are untouched.
+    assert.ok(existsSync(join(victim, 'keep.txt')), 'traversal must not delete outside the store');
+  } finally {
+    await rm(base, { recursive: true, force: true });
+  }
 });
 
 // --- Slice 11: recent projects + resume ------------------------------------

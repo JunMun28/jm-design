@@ -310,6 +310,26 @@ export class ApiService {
     if (!res.ok) return null;
     return (await res.json()).project;
   }
+
+  // --- Library card actions: rename + delete -------------------------------
+
+  /** Rename a Project (the library card's title); returns the updated record, or
+   *  null if the project is unknown / the title was rejected. */
+  async renameProject(id: string, title: string): Promise<ProjectRecord | null> {
+    const res = await fetch(`/api/projects/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
+    if (!res.ok) return null;
+    return (await res.json()).project;
+  }
+
+  /** Delete a Project (and its whole directory). Resolves once the daemon has
+   *  removed it; a missing project is a no-op from the caller's view. */
+  async deleteProject(id: string): Promise<void> {
+    await fetch(`/api/projects/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  }
 }
 
 /** Read a browser File into base64 (no data-URL prefix) — the shape the daemon's

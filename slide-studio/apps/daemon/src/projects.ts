@@ -4,10 +4,10 @@
  * it simple — a per-project directory on disk with a `project.json` and a
  * `conversation.jsonl` log. No SQLite until perf demands it.
  */
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import type { Brief } from './brief.ts';
 import type { Questionnaire } from './questionnaire.ts';
@@ -104,6 +104,20 @@ export function projectDir(id: string, env: NodeJS.ProcessEnv = process.env): st
 }
 
 /**
+ * The on-disk directory for a project id, but ONLY when it resolves to a direct
+ * child of the projects root — guarding the filesystem boundary against path
+ * traversal (e.g. an `id` of `..` or `../../etc`). Returns null for any id that
+ * would escape the store or point at the root itself. Real ids are always
+ * `slug-<hex>` with no separators, so a legitimate id never trips this.
+ */
+function safeProjectDir(id: string, env: NodeJS.ProcessEnv = process.env): string | null {
+  const root = resolve(projectsRoot(env));
+  const dir = resolve(root, id);
+  if (dir === root || !dir.startsWith(root + sep)) return null;
+  return dir;
+}
+
+/**
  * Create a Project on disk and return its record. The directory holds
  * `project.json` plus an empty `conversation.jsonl`. Idempotent per id (a fresh
  * UUID is minted each call).
@@ -196,6 +210,38 @@ async function patchProject(
   const next: ProjectRecord = { ...rec, ...patch, updatedAt: new Date().toISOString() };
   await writeFile(join(projectDir(id, env), 'project.json'), JSON.stringify(next, null, 2), 'utf8');
   return next;
+}
+
+/**
+ * Rename a Project (the library card's title). Trims the title, rejects an empty
+ * one, and caps it to 120 chars (matching {@link createProject}). Persists via
+ * {@link patchProject} (which touches updatedAt) and returns the updated record,
+ * or null when the Project does not exist.
+ */
+export async function renameProject(
+  id: string,
+  title: string,
+  env: NodeJS.ProcessEnv = process.env,
+): Promise<ProjectRecord | null> {
+  const trimmed = (title ?? '').trim();
+  if (!trimmed) throw new Error('title is required');
+  // Reject traversal ids before touching disk (maps to a 404 at the route).
+  if (!safeProjectDir(id, env)) return null;
+  return patchProject(id, { title: trimmed.slice(0, 120) }, env);
+}
+
+/**
+ * Delete a Project: remove its whole directory recursively. Returns true when it
+ * existed (and was removed), false when there was nothing to delete — so the
+ * route can map a missing Project to a 404.
+ */
+export async function deleteProject(id: string, env: NodeJS.ProcessEnv = process.env): Promise<boolean> {
+  // Guard the filesystem boundary: only ever remove a direct child of the
+  // projects root, never a path an attacker-supplied id could escape to.
+  const dir = safeProjectDir(id, env);
+  if (!dir || !existsSync(dir)) return false;
+  await rm(dir, { recursive: true, force: true });
+  return true;
 }
 
 /** Merge a freshly-parsed Brief into the project's Recorded Discussion. */

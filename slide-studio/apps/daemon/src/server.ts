@@ -21,6 +21,7 @@ import {
   appendConversation,
   createProject,
   deckFileForTheme,
+  deleteProject,
   listRecent,
   load,
   markQuestionnaireAnswered,
@@ -28,6 +29,7 @@ import {
   readConversation,
   readProject,
   registerGeneratedDeck,
+  renameProject,
   setActiveDeck,
   setGate1,
   setGate2,
@@ -226,6 +228,24 @@ export async function createDaemon(
     const project = await readProject(req.params.id);
     if (!project) return res.status(404).json({ error: 'not found' });
     return res.json({ project });
+  });
+
+  // Rename a Project (the library card's title). 400 on a missing/empty title;
+  // 404 when the Project does not exist; otherwise the renamed record.
+  app.patch('/api/projects/:id', async (req, res) => {
+    const title = String(req.body?.title ?? '').trim();
+    if (!title) return res.status(400).json({ error: 'title is required' });
+    const project = await renameProject(req.params.id, title);
+    if (!project) return res.status(404).json({ error: 'not found' });
+    return res.json({ project });
+  });
+
+  // Delete a Project (its whole directory). 200 { ok: true } when it existed,
+  // 404 when there was nothing to delete.
+  app.delete('/api/projects/:id', async (req, res) => {
+    const removed = await deleteProject(req.params.id);
+    if (!removed) return res.status(404).json({ error: 'not found' });
+    return res.json({ ok: true });
   });
 
   // Resume a past Project into its prior state (Slice 11): record + the full
