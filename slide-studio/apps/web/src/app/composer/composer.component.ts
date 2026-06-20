@@ -48,8 +48,8 @@ import type { DetectedAgent } from '../core/types';
                 }
               </select>
             }
-            <button class="mic-btn mic-btn--primary start__go" type="submit" [disabled]="!brief().trim() || busy()">
-              {{ busy() ? 'Creating…' : 'Start' }}
+            <button class="go start__go" type="submit" [disabled]="!brief().trim() || busy()">
+              <span class="go__sq" aria-hidden="true"></span> {{ busy() ? 'Creating…' : 'Start' }}
             </button>
           </div>
 
@@ -58,7 +58,7 @@ import type { DetectedAgent } from '../core/types';
                Continue affordance — the staged files still ride into the workspace,
                nothing is blocked. -->
           @if (pendingProjectId(); as pid) {
-            <button class="mic-btn mic-btn--primary start__continue" type="button" (click)="continueToWorkspace(pid)">
+            <button class="go start__continue" type="button" (click)="continueToWorkspace(pid)">
               Continue to workspace →
             </button>
           }
@@ -78,33 +78,46 @@ import type { DetectedAgent } from '../core/types';
   `,
   styles: [
     `
-      .home { position: relative; min-height: 100vh; display: grid; place-items: center; padding: 7vh 20px 48px; }
+      :host { display: block; }
+      .home { position: relative; min-height: 100vh; display: grid; place-items: center; padding: 7vh 20px 48px;
+        background: var(--studio-paper); color: var(--studio-ink); }
       .home__center { width: 100%; max-width: 960px; text-align: center; }
       .back {
         position: absolute; top: 18px; left: 18px; font: inherit; font-size: 13px;
-        display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px;
-        border-radius: var(--mic-radius-sm); border: 1px solid var(--mic-border);
-        background: var(--mic-surface); color: var(--mic-ink-2); cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px;
+        border-radius: 999px; border: 1px solid var(--studio-line);
+        background: var(--studio-panel); color: var(--studio-muted); cursor: pointer;
       }
-      .back:hover { border-color: var(--mic-accent); color: var(--mic-accent); }
-      .back:focus-visible { outline: 3px solid var(--mic-accent-soft); border-color: var(--mic-accent); }
-      .wordmark { font-weight: 700; letter-spacing: -0.02em; color: var(--mic-accent); font-size: 15px; text-transform: uppercase; }
-      .headline { font-size: 30px; font-weight: 600; margin: 12px 0 28px; letter-spacing: -0.02em; }
-      .start { display: flex; flex-direction: column; gap: 12px; max-width: 600px; width: 100%; margin: 0 auto; }
+      .back:hover { border-color: var(--studio-muted); color: var(--studio-ink); }
+      .back:focus-visible { outline: 2px solid var(--studio-ink); outline-offset: 1px; }
+      .wordmark { font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--studio-faint); }
+      .headline { font-size: clamp(28px, 4vw, 40px); font-weight: 300; margin: 12px 0 30px; letter-spacing: -0.02em; }
+      .start { display: flex; flex-direction: column; gap: 14px; max-width: 600px; width: 100%; margin: 0 auto; }
       .start__input {
-        font: inherit; resize: vertical; padding: 14px 16px; border-radius: var(--mic-radius);
-        border: 1px solid var(--mic-border-strong); background: var(--mic-surface); color: var(--mic-ink);
+        font: inherit; resize: vertical; padding: 16px 18px; border-radius: 16px;
+        border: 1px solid var(--studio-line); background: var(--studio-panel); color: var(--studio-ink);
       }
-      .start__input:focus-visible { outline: 3px solid var(--mic-accent-soft); border-color: var(--mic-accent); }
+      .start__input::placeholder { color: var(--studio-faint); }
+      .start__input:focus-visible { outline: 2px solid var(--studio-ink); outline-offset: 1px; }
       .start__row { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
       .start__attach { margin-right: auto; }
-      .start__runtime { font: inherit; padding: 9px 12px; border-radius: var(--mic-radius-sm); border: 1px solid var(--mic-border-strong); background: var(--mic-surface); color: var(--mic-ink); }
-      .start__go { min-width: 120px; }
+      .start__runtime { font: inherit; padding: 11px 14px; border-radius: 12px; border: 1px solid var(--studio-line); background: var(--studio-panel); color: var(--studio-ink); cursor: pointer; }
+
+      .go { display: inline-flex; align-items: center; justify-content: center; gap: 11px; font: inherit; font-size: 14px; font-weight: 500;
+        background: var(--studio-ink); color: var(--studio-paper); border: 0; border-radius: 13px; padding: 14px 22px; cursor: pointer;
+        transition: opacity 0.2s ease, transform 0.15s ease; }
+      .go:hover { opacity: 0.9; }
+      .go:active { transform: translateY(1px); }
+      .go:disabled { opacity: 0.45; cursor: default; }
+      .go:focus-visible { outline: 2px solid var(--studio-ink); outline-offset: 2px; }
+      .go__sq { width: 10px; height: 10px; border-radius: 2px; background: var(--mag); }
+      .start__go { min-width: 130px; }
       .start__continue { align-self: flex-end; }
-      .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
-      .chip { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--mic-border); background: var(--mic-surface-2); color: var(--mic-ink-2); cursor: pointer; }
-      .chip:hover { border-color: var(--mic-accent); color: var(--mic-accent); }
-      .agent-note { margin-top: 24px; color: var(--mic-muted); font-size: 13px; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 20px; }
+      .chip { font: inherit; font-size: 13px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--studio-line); background: var(--studio-panel); color: var(--studio-muted); cursor: pointer; }
+      .chip:hover { border-color: var(--studio-muted); color: var(--studio-ink); }
+      .agent-note { margin-top: 24px; color: var(--studio-muted); font-size: 13px; }
     `,
   ],
 })
